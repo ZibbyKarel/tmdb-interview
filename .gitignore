@@ -3,3 +3,4 @@ dist
 .nx
 .DS_Store
 yarn-error.log
+api-doc.json

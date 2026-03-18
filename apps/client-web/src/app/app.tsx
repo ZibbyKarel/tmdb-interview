@@ -1,4 +1,8 @@
+import { useMovieTopRatedList } from '@tmdb-interview/data-access';
+
 export default function App() {
+  const { data } = useMovieTopRatedList();
+  console.log('>>> ', data);
   return (
     <main className="page-shell">
       <section className="hero-card">

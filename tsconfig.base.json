@@ -13,7 +13,7 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "paths": {
-      "@tmdb-interview/data-access": ["libs/data-access/src/index.ts"]
+      "@tmdb-interview/data-access": ["libs/data-access/index.ts"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

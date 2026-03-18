@@ -291,64 +291,36 @@ import type {
   WatchProvidersMovieListParams,
 } from '.././model';
 
+import { customInstance } from '../../utils/custom-fetch';
+import type { ErrorType, BodyType } from '../../utils/custom-fetch';
+
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
 /**
  * Test your API Key to see if it's valid.
  * @summary Validate Key
  */
-export type authenticationValidateKeyResponse200 = {
-  data: AuthenticationValidateKey200;
-  status: 200;
-};
-
-export type authenticationValidateKeyResponse401 = {
-  data: AuthenticationValidateKey401;
-  status: 401;
-};
-
-export type authenticationValidateKeyResponseSuccess =
-  authenticationValidateKeyResponse200 & {
-    headers: Headers;
-  };
-export type authenticationValidateKeyResponseError =
-  authenticationValidateKeyResponse401 & {
-    headers: Headers;
-  };
-
-export type authenticationValidateKeyResponse =
-  | authenticationValidateKeyResponseSuccess
-  | authenticationValidateKeyResponseError;
-
-export const getAuthenticationValidateKeyUrl = () => {
-  return `/3/authentication`;
-};
-
-export const authenticationValidateKey = async (
-  options?: RequestInit
-): Promise<authenticationValidateKeyResponse> => {
-  const res = await fetch(getAuthenticationValidateKeyUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationValidateKeyResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationValidateKeyResponse;
+export const authenticationValidateKey = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationValidateKey200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationValidateKeyQueryKey = () => {
-  return [`/3/authentication`] as const;
+  return [`https://api.themoviedb.org/3/authentication`] as const;
 };
 
 export const getAuthenticationValidateKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
-  TError = AuthenticationValidateKey401,
+  TError = ErrorType<AuthenticationValidateKey401>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -357,16 +329,16 @@ export const getAuthenticationValidateKeyQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAuthenticationValidateKeyQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof authenticationValidateKey>>
-  > = ({ signal }) => authenticationValidateKey({ signal, ...fetchOptions });
+  > = ({ signal }) => authenticationValidateKey(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationValidateKey>>,
@@ -378,11 +350,12 @@ export const getAuthenticationValidateKeyQueryOptions = <
 export type AuthenticationValidateKeyQueryResult = NonNullable<
   Awaited<ReturnType<typeof authenticationValidateKey>>
 >;
-export type AuthenticationValidateKeyQueryError = AuthenticationValidateKey401;
+export type AuthenticationValidateKeyQueryError =
+  ErrorType<AuthenticationValidateKey401>;
 
 export function useAuthenticationValidateKey<
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
-  TError = AuthenticationValidateKey401,
+  TError = ErrorType<AuthenticationValidateKey401>,
 >(
   options: {
     query: Partial<
@@ -400,7 +373,7 @@ export function useAuthenticationValidateKey<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -408,7 +381,7 @@ export function useAuthenticationValidateKey<
 };
 export function useAuthenticationValidateKey<
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
-  TError = AuthenticationValidateKey401,
+  TError = ErrorType<AuthenticationValidateKey401>,
 >(
   options?: {
     query?: Partial<
@@ -426,7 +399,7 @@ export function useAuthenticationValidateKey<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -434,7 +407,7 @@ export function useAuthenticationValidateKey<
 };
 export function useAuthenticationValidateKey<
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
-  TError = AuthenticationValidateKey401,
+  TError = ErrorType<AuthenticationValidateKey401>,
 >(
   options?: {
     query?: Partial<
@@ -444,7 +417,7 @@ export function useAuthenticationValidateKey<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -456,7 +429,7 @@ export function useAuthenticationValidateKey<
 
 export function useAuthenticationValidateKey<
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
-  TError = AuthenticationValidateKey401,
+  TError = ErrorType<AuthenticationValidateKey401>,
 >(
   options?: {
     query?: Partial<
@@ -466,7 +439,7 @@ export function useAuthenticationValidateKey<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -488,65 +461,36 @@ export function useAuthenticationValidateKey<
  * Get the public details of an account on TMDB.
  * @summary Details
  */
-export type accountDetailsResponse200 = {
-  data: AccountDetails200;
-  status: 200;
-};
-
-export type accountDetailsResponseSuccess = accountDetailsResponse200 & {
-  headers: Headers;
-};
-export type accountDetailsResponse = accountDetailsResponseSuccess;
-
-export const getAccountDetailsUrl = (
-  accountId: number,
-  params?: AccountDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}?${stringifiedParams}`
-    : `/3/account/${accountId}`;
-};
-
-export const accountDetails = async (
+export const accountDetails = (
   accountId: number,
   params?: AccountDetailsParams,
-  options?: RequestInit
-): Promise<accountDetailsResponse> => {
-  const res = await fetch(getAccountDetailsUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountDetailsQueryKey = (
   accountId?: number,
   params?: AccountDetailsParams
 ) => {
-  return [`/3/account/${accountId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/account/${accountId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getAccountDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof accountDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountDetailsParams,
@@ -554,17 +498,17 @@ export const getAccountDetailsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountDetailsQueryKey(accountId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof accountDetails>>> = ({
     signal,
-  }) => accountDetails(accountId, params, { signal, ...fetchOptions });
+  }) => accountDetails(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -581,11 +525,11 @@ export const getAccountDetailsQueryOptions = <
 export type AccountDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountDetails>>
 >;
-export type AccountDetailsQueryError = unknown;
+export type AccountDetailsQueryError = ErrorType<unknown>;
 
 export function useAccountDetails<
   TData = Awaited<ReturnType<typeof accountDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountDetailsParams,
@@ -601,7 +545,7 @@ export function useAccountDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -609,7 +553,7 @@ export function useAccountDetails<
 };
 export function useAccountDetails<
   TData = Awaited<ReturnType<typeof accountDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountDetailsParams,
@@ -625,7 +569,7 @@ export function useAccountDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -633,7 +577,7 @@ export function useAccountDetails<
 };
 export function useAccountDetails<
   TData = Awaited<ReturnType<typeof accountDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountDetailsParams,
@@ -641,7 +585,7 @@ export function useAccountDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -653,7 +597,7 @@ export function useAccountDetails<
 
 export function useAccountDetails<
   TData = Awaited<ReturnType<typeof accountDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountDetailsParams,
@@ -661,7 +605,7 @@ export function useAccountDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -687,61 +631,28 @@ export function useAccountDetails<
  * Mark a movie or TV show as a favourite.
  * @summary Add Favorite
  */
-export type accountAddFavoriteResponse200 = {
-  data: AccountAddFavorite200;
-  status: 200;
-};
-
-export type accountAddFavoriteResponseSuccess =
-  accountAddFavoriteResponse200 & {
-    headers: Headers;
-  };
-export type accountAddFavoriteResponse = accountAddFavoriteResponseSuccess;
-
-export const getAccountAddFavoriteUrl = (
+export const accountAddFavorite = (
   accountId: number,
-  params?: AccountAddFavoriteParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/favorite?${stringifiedParams}`
-    : `/3/account/${accountId}/favorite`;
-};
-
-export const accountAddFavorite = async (
-  accountId: number,
-  accountAddFavoriteBody: AccountAddFavoriteBody,
+  accountAddFavoriteBody: BodyType<AccountAddFavoriteBody>,
   params?: AccountAddFavoriteParams,
-  options?: RequestInit
-): Promise<accountAddFavoriteResponse> => {
-  const res = await fetch(getAccountAddFavoriteUrl(accountId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(accountAddFavoriteBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountAddFavoriteResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountAddFavoriteResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountAddFavorite200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/favorite`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: accountAddFavoriteBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountAddFavoriteMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -749,42 +660,42 @@ export const getAccountAddFavoriteMutationOptions = <
     TError,
     {
       accountId: number;
-      data: AccountAddFavoriteBody;
+      data: BodyType<AccountAddFavoriteBody>;
       params?: AccountAddFavoriteParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof accountAddFavorite>>,
   TError,
   {
     accountId: number;
-    data: AccountAddFavoriteBody;
+    data: BodyType<AccountAddFavoriteBody>;
     params?: AccountAddFavoriteParams;
   },
   TContext
 > => {
   const mutationKey = ['accountAddFavorite'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof accountAddFavorite>>,
     {
       accountId: number;
-      data: AccountAddFavoriteBody;
+      data: BodyType<AccountAddFavoriteBody>;
       params?: AccountAddFavoriteParams;
     }
   > = (props) => {
     const { accountId, data, params } = props ?? {};
 
-    return accountAddFavorite(accountId, data, params, fetchOptions);
+    return accountAddFavorite(accountId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -793,25 +704,28 @@ export const getAccountAddFavoriteMutationOptions = <
 export type AccountAddFavoriteMutationResult = NonNullable<
   Awaited<ReturnType<typeof accountAddFavorite>>
 >;
-export type AccountAddFavoriteMutationBody = AccountAddFavoriteBody;
-export type AccountAddFavoriteMutationError = unknown;
+export type AccountAddFavoriteMutationBody = BodyType<AccountAddFavoriteBody>;
+export type AccountAddFavoriteMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add Favorite
  */
-export const useAccountAddFavorite = <TError = unknown, TContext = unknown>(
+export const useAccountAddFavorite = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof accountAddFavorite>>,
       TError,
       {
         accountId: number;
-        data: AccountAddFavoriteBody;
+        data: BodyType<AccountAddFavoriteBody>;
         params?: AccountAddFavoriteParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -819,7 +733,7 @@ export const useAccountAddFavorite = <TError = unknown, TContext = unknown>(
   TError,
   {
     accountId: number;
-    data: AccountAddFavoriteBody;
+    data: BodyType<AccountAddFavoriteBody>;
     params?: AccountAddFavoriteParams;
   },
   TContext
@@ -832,64 +746,28 @@ export const useAccountAddFavorite = <TError = unknown, TContext = unknown>(
  * Add a movie or TV show to your watchlist.
  * @summary Add To Watchlist
  */
-export type accountAddToWatchlistResponse200 = {
-  data: AccountAddToWatchlist200;
-  status: 200;
-};
-
-export type accountAddToWatchlistResponseSuccess =
-  accountAddToWatchlistResponse200 & {
-    headers: Headers;
-  };
-export type accountAddToWatchlistResponse =
-  accountAddToWatchlistResponseSuccess;
-
-export const getAccountAddToWatchlistUrl = (
+export const accountAddToWatchlist = (
   accountId: number,
-  params?: AccountAddToWatchlistParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/watchlist?${stringifiedParams}`
-    : `/3/account/${accountId}/watchlist`;
-};
-
-export const accountAddToWatchlist = async (
-  accountId: number,
-  accountAddToWatchlistBody: AccountAddToWatchlistBody,
+  accountAddToWatchlistBody: BodyType<AccountAddToWatchlistBody>,
   params?: AccountAddToWatchlistParams,
-  options?: RequestInit
-): Promise<accountAddToWatchlistResponse> => {
-  const res = await fetch(getAccountAddToWatchlistUrl(accountId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(accountAddToWatchlistBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountAddToWatchlistResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountAddToWatchlistResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountAddToWatchlist200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/watchlist`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: accountAddToWatchlistBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountAddToWatchlistMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -897,42 +775,42 @@ export const getAccountAddToWatchlistMutationOptions = <
     TError,
     {
       accountId: number;
-      data: AccountAddToWatchlistBody;
+      data: BodyType<AccountAddToWatchlistBody>;
       params?: AccountAddToWatchlistParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof accountAddToWatchlist>>,
   TError,
   {
     accountId: number;
-    data: AccountAddToWatchlistBody;
+    data: BodyType<AccountAddToWatchlistBody>;
     params?: AccountAddToWatchlistParams;
   },
   TContext
 > => {
   const mutationKey = ['accountAddToWatchlist'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof accountAddToWatchlist>>,
     {
       accountId: number;
-      data: AccountAddToWatchlistBody;
+      data: BodyType<AccountAddToWatchlistBody>;
       params?: AccountAddToWatchlistParams;
     }
   > = (props) => {
     const { accountId, data, params } = props ?? {};
 
-    return accountAddToWatchlist(accountId, data, params, fetchOptions);
+    return accountAddToWatchlist(accountId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -941,25 +819,29 @@ export const getAccountAddToWatchlistMutationOptions = <
 export type AccountAddToWatchlistMutationResult = NonNullable<
   Awaited<ReturnType<typeof accountAddToWatchlist>>
 >;
-export type AccountAddToWatchlistMutationBody = AccountAddToWatchlistBody;
-export type AccountAddToWatchlistMutationError = unknown;
+export type AccountAddToWatchlistMutationBody =
+  BodyType<AccountAddToWatchlistBody>;
+export type AccountAddToWatchlistMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add To Watchlist
  */
-export const useAccountAddToWatchlist = <TError = unknown, TContext = unknown>(
+export const useAccountAddToWatchlist = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof accountAddToWatchlist>>,
       TError,
       {
         accountId: number;
-        data: AccountAddToWatchlistBody;
+        data: BodyType<AccountAddToWatchlistBody>;
         params?: AccountAddToWatchlistParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -967,7 +849,7 @@ export const useAccountAddToWatchlist = <TError = unknown, TContext = unknown>(
   TError,
   {
     accountId: number;
-    data: AccountAddToWatchlistBody;
+    data: BodyType<AccountAddToWatchlistBody>;
     params?: AccountAddToWatchlistParams;
   },
   TContext
@@ -980,56 +862,21 @@ export const useAccountAddToWatchlist = <TError = unknown, TContext = unknown>(
  * Get a users list of favourite movies.
  * @summary Favorite Movies
  */
-export type accountGetFavoritesResponse200 = {
-  data: AccountGetFavorites200;
-  status: 200;
-};
-
-export type accountGetFavoritesResponseSuccess =
-  accountGetFavoritesResponse200 & {
-    headers: Headers;
-  };
-export type accountGetFavoritesResponse = accountGetFavoritesResponseSuccess;
-
-export const getAccountGetFavoritesUrl = (
-  accountId: number,
-  params?: AccountGetFavoritesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/favorite/movies?${stringifiedParams}`
-    : `/3/account/${accountId}/favorite/movies`;
-};
-
-export const accountGetFavorites = async (
+export const accountGetFavorites = (
   accountId: number,
   params?: AccountGetFavoritesParams,
-  options?: RequestInit
-): Promise<accountGetFavoritesResponse> => {
-  const res = await fetch(getAccountGetFavoritesUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountGetFavoritesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountGetFavoritesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountGetFavorites200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/favorite/movies`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountGetFavoritesQueryKey = (
@@ -1037,14 +884,14 @@ export const getAccountGetFavoritesQueryKey = (
   params?: AccountGetFavoritesParams
 ) => {
   return [
-    `/3/account/${accountId}/favorite/movies`,
+    `https://api.themoviedb.org/3/account/${accountId}/favorite/movies`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountGetFavoritesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountGetFavoritesParams,
@@ -1056,10 +903,10 @@ export const getAccountGetFavoritesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountGetFavoritesQueryKey(accountId, params);
@@ -1067,7 +914,7 @@ export const getAccountGetFavoritesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountGetFavorites>>
   > = ({ signal }) =>
-    accountGetFavorites(accountId, params, { signal, ...fetchOptions });
+    accountGetFavorites(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -1084,11 +931,11 @@ export const getAccountGetFavoritesQueryOptions = <
 export type AccountGetFavoritesQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountGetFavorites>>
 >;
-export type AccountGetFavoritesQueryError = unknown;
+export type AccountGetFavoritesQueryError = ErrorType<unknown>;
 
 export function useAccountGetFavorites<
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountGetFavoritesParams,
@@ -1108,7 +955,7 @@ export function useAccountGetFavorites<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -1116,7 +963,7 @@ export function useAccountGetFavorites<
 };
 export function useAccountGetFavorites<
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountGetFavoritesParams,
@@ -1136,7 +983,7 @@ export function useAccountGetFavorites<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1144,7 +991,7 @@ export function useAccountGetFavorites<
 };
 export function useAccountGetFavorites<
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountGetFavoritesParams,
@@ -1156,7 +1003,7 @@ export function useAccountGetFavorites<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1168,7 +1015,7 @@ export function useAccountGetFavorites<
 
 export function useAccountGetFavorites<
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountGetFavoritesParams,
@@ -1180,7 +1027,7 @@ export function useAccountGetFavorites<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1206,53 +1053,21 @@ export function useAccountGetFavorites<
  * Get a users list of favourite TV shows.
  * @summary Favorite TV
  */
-export type accountFavoriteTvResponse200 = {
-  data: AccountFavoriteTv200;
-  status: 200;
-};
-
-export type accountFavoriteTvResponseSuccess = accountFavoriteTvResponse200 & {
-  headers: Headers;
-};
-export type accountFavoriteTvResponse = accountFavoriteTvResponseSuccess;
-
-export const getAccountFavoriteTvUrl = (
-  accountId: number,
-  params?: AccountFavoriteTvParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/favorite/tv?${stringifiedParams}`
-    : `/3/account/${accountId}/favorite/tv`;
-};
-
-export const accountFavoriteTv = async (
+export const accountFavoriteTv = (
   accountId: number,
   params?: AccountFavoriteTvParams,
-  options?: RequestInit
-): Promise<accountFavoriteTvResponse> => {
-  const res = await fetch(getAccountFavoriteTvUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountFavoriteTvResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountFavoriteTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountFavoriteTv200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/favorite/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountFavoriteTvQueryKey = (
@@ -1260,14 +1075,14 @@ export const getAccountFavoriteTvQueryKey = (
   params?: AccountFavoriteTvParams
 ) => {
   return [
-    `/3/account/${accountId}/favorite/tv`,
+    `https://api.themoviedb.org/3/account/${accountId}/favorite/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountFavoriteTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountFavoriteTvParams,
@@ -1279,10 +1094,10 @@ export const getAccountFavoriteTvQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountFavoriteTvQueryKey(accountId, params);
@@ -1290,7 +1105,7 @@ export const getAccountFavoriteTvQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountFavoriteTv>>
   > = ({ signal }) =>
-    accountFavoriteTv(accountId, params, { signal, ...fetchOptions });
+    accountFavoriteTv(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -1307,11 +1122,11 @@ export const getAccountFavoriteTvQueryOptions = <
 export type AccountFavoriteTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountFavoriteTv>>
 >;
-export type AccountFavoriteTvQueryError = unknown;
+export type AccountFavoriteTvQueryError = ErrorType<unknown>;
 
 export function useAccountFavoriteTv<
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountFavoriteTvParams,
@@ -1331,7 +1146,7 @@ export function useAccountFavoriteTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -1339,7 +1154,7 @@ export function useAccountFavoriteTv<
 };
 export function useAccountFavoriteTv<
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountFavoriteTvParams,
@@ -1359,7 +1174,7 @@ export function useAccountFavoriteTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1367,7 +1182,7 @@ export function useAccountFavoriteTv<
 };
 export function useAccountFavoriteTv<
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountFavoriteTvParams,
@@ -1379,7 +1194,7 @@ export function useAccountFavoriteTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1391,7 +1206,7 @@ export function useAccountFavoriteTv<
 
 export function useAccountFavoriteTv<
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountFavoriteTvParams,
@@ -1403,7 +1218,7 @@ export function useAccountFavoriteTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1429,53 +1244,21 @@ export function useAccountFavoriteTv<
  * Get a users list of custom lists.
  * @summary Lists
  */
-export type accountListsResponse200 = {
-  data: AccountLists200;
-  status: 200;
-};
-
-export type accountListsResponseSuccess = accountListsResponse200 & {
-  headers: Headers;
-};
-export type accountListsResponse = accountListsResponseSuccess;
-
-export const getAccountListsUrl = (
-  accountId: number,
-  params?: AccountListsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/lists?${stringifiedParams}`
-    : `/3/account/${accountId}/lists`;
-};
-
-export const accountLists = async (
+export const accountLists = (
   accountId: number,
   params?: AccountListsParams,
-  options?: RequestInit
-): Promise<accountListsResponse> => {
-  const res = await fetch(getAccountListsUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountListsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountListsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountLists200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/lists`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountListsQueryKey = (
@@ -1483,14 +1266,14 @@ export const getAccountListsQueryKey = (
   params?: AccountListsParams
 ) => {
   return [
-    `/3/account/${accountId}/lists`,
+    `https://api.themoviedb.org/3/account/${accountId}/lists`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountListsQueryOptions = <
   TData = Awaited<ReturnType<typeof accountLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountListsParams,
@@ -1498,17 +1281,17 @@ export const getAccountListsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountListsQueryKey(accountId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof accountLists>>> = ({
     signal,
-  }) => accountLists(accountId, params, { signal, ...fetchOptions });
+  }) => accountLists(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -1525,11 +1308,11 @@ export const getAccountListsQueryOptions = <
 export type AccountListsQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountLists>>
 >;
-export type AccountListsQueryError = unknown;
+export type AccountListsQueryError = ErrorType<unknown>;
 
 export function useAccountLists<
   TData = Awaited<ReturnType<typeof accountLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountListsParams,
@@ -1545,7 +1328,7 @@ export function useAccountLists<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -1553,7 +1336,7 @@ export function useAccountLists<
 };
 export function useAccountLists<
   TData = Awaited<ReturnType<typeof accountLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountListsParams,
@@ -1569,7 +1352,7 @@ export function useAccountLists<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1577,7 +1360,7 @@ export function useAccountLists<
 };
 export function useAccountLists<
   TData = Awaited<ReturnType<typeof accountLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountListsParams,
@@ -1585,7 +1368,7 @@ export function useAccountLists<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1597,7 +1380,7 @@ export function useAccountLists<
 
 export function useAccountLists<
   TData = Awaited<ReturnType<typeof accountLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountListsParams,
@@ -1605,7 +1388,7 @@ export function useAccountLists<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1627,54 +1410,21 @@ export function useAccountLists<
  * Get a users list of rated movies.
  * @summary Rated Movies
  */
-export type accountRatedMoviesResponse200 = {
-  data: AccountRatedMovies200;
-  status: 200;
-};
-
-export type accountRatedMoviesResponseSuccess =
-  accountRatedMoviesResponse200 & {
-    headers: Headers;
-  };
-export type accountRatedMoviesResponse = accountRatedMoviesResponseSuccess;
-
-export const getAccountRatedMoviesUrl = (
-  accountId: number,
-  params?: AccountRatedMoviesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/rated/movies?${stringifiedParams}`
-    : `/3/account/${accountId}/rated/movies`;
-};
-
-export const accountRatedMovies = async (
+export const accountRatedMovies = (
   accountId: number,
   params?: AccountRatedMoviesParams,
-  options?: RequestInit
-): Promise<accountRatedMoviesResponse> => {
-  const res = await fetch(getAccountRatedMoviesUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountRatedMoviesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountRatedMoviesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountRatedMovies200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/rated/movies`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountRatedMoviesQueryKey = (
@@ -1682,14 +1432,14 @@ export const getAccountRatedMoviesQueryKey = (
   params?: AccountRatedMoviesParams
 ) => {
   return [
-    `/3/account/${accountId}/rated/movies`,
+    `https://api.themoviedb.org/3/account/${accountId}/rated/movies`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountRatedMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedMoviesParams,
@@ -1701,10 +1451,10 @@ export const getAccountRatedMoviesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountRatedMoviesQueryKey(accountId, params);
@@ -1712,7 +1462,7 @@ export const getAccountRatedMoviesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountRatedMovies>>
   > = ({ signal }) =>
-    accountRatedMovies(accountId, params, { signal, ...fetchOptions });
+    accountRatedMovies(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -1729,11 +1479,11 @@ export const getAccountRatedMoviesQueryOptions = <
 export type AccountRatedMoviesQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountRatedMovies>>
 >;
-export type AccountRatedMoviesQueryError = unknown;
+export type AccountRatedMoviesQueryError = ErrorType<unknown>;
 
 export function useAccountRatedMovies<
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountRatedMoviesParams,
@@ -1753,7 +1503,7 @@ export function useAccountRatedMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -1761,7 +1511,7 @@ export function useAccountRatedMovies<
 };
 export function useAccountRatedMovies<
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedMoviesParams,
@@ -1781,7 +1531,7 @@ export function useAccountRatedMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1789,7 +1539,7 @@ export function useAccountRatedMovies<
 };
 export function useAccountRatedMovies<
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedMoviesParams,
@@ -1801,7 +1551,7 @@ export function useAccountRatedMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1813,7 +1563,7 @@ export function useAccountRatedMovies<
 
 export function useAccountRatedMovies<
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedMoviesParams,
@@ -1825,7 +1575,7 @@ export function useAccountRatedMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1851,53 +1601,21 @@ export function useAccountRatedMovies<
  * Get a users list of rated TV shows.
  * @summary Rated TV
  */
-export type accountRatedTvResponse200 = {
-  data: AccountRatedTv200;
-  status: 200;
-};
-
-export type accountRatedTvResponseSuccess = accountRatedTvResponse200 & {
-  headers: Headers;
-};
-export type accountRatedTvResponse = accountRatedTvResponseSuccess;
-
-export const getAccountRatedTvUrl = (
-  accountId: number,
-  params?: AccountRatedTvParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/rated/tv?${stringifiedParams}`
-    : `/3/account/${accountId}/rated/tv`;
-};
-
-export const accountRatedTv = async (
+export const accountRatedTv = (
   accountId: number,
   params?: AccountRatedTvParams,
-  options?: RequestInit
-): Promise<accountRatedTvResponse> => {
-  const res = await fetch(getAccountRatedTvUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountRatedTvResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountRatedTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountRatedTv200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/rated/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountRatedTvQueryKey = (
@@ -1905,14 +1623,14 @@ export const getAccountRatedTvQueryKey = (
   params?: AccountRatedTvParams
 ) => {
   return [
-    `/3/account/${accountId}/rated/tv`,
+    `https://api.themoviedb.org/3/account/${accountId}/rated/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountRatedTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvParams,
@@ -1920,17 +1638,17 @@ export const getAccountRatedTvQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountRatedTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountRatedTvQueryKey(accountId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof accountRatedTv>>> = ({
     signal,
-  }) => accountRatedTv(accountId, params, { signal, ...fetchOptions });
+  }) => accountRatedTv(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -1947,11 +1665,11 @@ export const getAccountRatedTvQueryOptions = <
 export type AccountRatedTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountRatedTv>>
 >;
-export type AccountRatedTvQueryError = unknown;
+export type AccountRatedTvQueryError = ErrorType<unknown>;
 
 export function useAccountRatedTv<
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountRatedTvParams,
@@ -1967,7 +1685,7 @@ export function useAccountRatedTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -1975,7 +1693,7 @@ export function useAccountRatedTv<
 };
 export function useAccountRatedTv<
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvParams,
@@ -1991,7 +1709,7 @@ export function useAccountRatedTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -1999,7 +1717,7 @@ export function useAccountRatedTv<
 };
 export function useAccountRatedTv<
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvParams,
@@ -2007,7 +1725,7 @@ export function useAccountRatedTv<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountRatedTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2019,7 +1737,7 @@ export function useAccountRatedTv<
 
 export function useAccountRatedTv<
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvParams,
@@ -2027,7 +1745,7 @@ export function useAccountRatedTv<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof accountRatedTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2053,57 +1771,21 @@ export function useAccountRatedTv<
  * Get a users list of rated TV episodes.
  * @summary Rated TV Episodes
  */
-export type accountRatedTvEpisodesResponse200 = {
-  data: AccountRatedTvEpisodes200;
-  status: 200;
-};
-
-export type accountRatedTvEpisodesResponseSuccess =
-  accountRatedTvEpisodesResponse200 & {
-    headers: Headers;
-  };
-export type accountRatedTvEpisodesResponse =
-  accountRatedTvEpisodesResponseSuccess;
-
-export const getAccountRatedTvEpisodesUrl = (
-  accountId: number,
-  params?: AccountRatedTvEpisodesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/rated/tv/episodes?${stringifiedParams}`
-    : `/3/account/${accountId}/rated/tv/episodes`;
-};
-
-export const accountRatedTvEpisodes = async (
+export const accountRatedTvEpisodes = (
   accountId: number,
   params?: AccountRatedTvEpisodesParams,
-  options?: RequestInit
-): Promise<accountRatedTvEpisodesResponse> => {
-  const res = await fetch(getAccountRatedTvEpisodesUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountRatedTvEpisodesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountRatedTvEpisodesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountRatedTvEpisodes200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/rated/tv/episodes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountRatedTvEpisodesQueryKey = (
@@ -2111,14 +1793,14 @@ export const getAccountRatedTvEpisodesQueryKey = (
   params?: AccountRatedTvEpisodesParams
 ) => {
   return [
-    `/3/account/${accountId}/rated/tv/episodes`,
+    `https://api.themoviedb.org/3/account/${accountId}/rated/tv/episodes`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountRatedTvEpisodesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvEpisodesParams,
@@ -2130,10 +1812,10 @@ export const getAccountRatedTvEpisodesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -2142,7 +1824,7 @@ export const getAccountRatedTvEpisodesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountRatedTvEpisodes>>
   > = ({ signal }) =>
-    accountRatedTvEpisodes(accountId, params, { signal, ...fetchOptions });
+    accountRatedTvEpisodes(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -2159,11 +1841,11 @@ export const getAccountRatedTvEpisodesQueryOptions = <
 export type AccountRatedTvEpisodesQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountRatedTvEpisodes>>
 >;
-export type AccountRatedTvEpisodesQueryError = unknown;
+export type AccountRatedTvEpisodesQueryError = ErrorType<unknown>;
 
 export function useAccountRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountRatedTvEpisodesParams,
@@ -2183,7 +1865,7 @@ export function useAccountRatedTvEpisodes<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -2191,7 +1873,7 @@ export function useAccountRatedTvEpisodes<
 };
 export function useAccountRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvEpisodesParams,
@@ -2211,7 +1893,7 @@ export function useAccountRatedTvEpisodes<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2219,7 +1901,7 @@ export function useAccountRatedTvEpisodes<
 };
 export function useAccountRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvEpisodesParams,
@@ -2231,7 +1913,7 @@ export function useAccountRatedTvEpisodes<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2243,7 +1925,7 @@ export function useAccountRatedTvEpisodes<
 
 export function useAccountRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountRatedTvEpisodesParams,
@@ -2255,7 +1937,7 @@ export function useAccountRatedTvEpisodes<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2281,57 +1963,21 @@ export function useAccountRatedTvEpisodes<
  * Get a list of movies added to a users watchlist.
  * @summary Watchlist Movies
  */
-export type accountWatchlistMoviesResponse200 = {
-  data: AccountWatchlistMovies200;
-  status: 200;
-};
-
-export type accountWatchlistMoviesResponseSuccess =
-  accountWatchlistMoviesResponse200 & {
-    headers: Headers;
-  };
-export type accountWatchlistMoviesResponse =
-  accountWatchlistMoviesResponseSuccess;
-
-export const getAccountWatchlistMoviesUrl = (
-  accountId: number,
-  params?: AccountWatchlistMoviesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/watchlist/movies?${stringifiedParams}`
-    : `/3/account/${accountId}/watchlist/movies`;
-};
-
-export const accountWatchlistMovies = async (
+export const accountWatchlistMovies = (
   accountId: number,
   params?: AccountWatchlistMoviesParams,
-  options?: RequestInit
-): Promise<accountWatchlistMoviesResponse> => {
-  const res = await fetch(getAccountWatchlistMoviesUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountWatchlistMoviesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountWatchlistMoviesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountWatchlistMovies200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/watchlist/movies`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountWatchlistMoviesQueryKey = (
@@ -2339,14 +1985,14 @@ export const getAccountWatchlistMoviesQueryKey = (
   params?: AccountWatchlistMoviesParams
 ) => {
   return [
-    `/3/account/${accountId}/watchlist/movies`,
+    `https://api.themoviedb.org/3/account/${accountId}/watchlist/movies`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountWatchlistMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistMoviesParams,
@@ -2358,10 +2004,10 @@ export const getAccountWatchlistMoviesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -2370,7 +2016,7 @@ export const getAccountWatchlistMoviesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountWatchlistMovies>>
   > = ({ signal }) =>
-    accountWatchlistMovies(accountId, params, { signal, ...fetchOptions });
+    accountWatchlistMovies(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -2387,11 +2033,11 @@ export const getAccountWatchlistMoviesQueryOptions = <
 export type AccountWatchlistMoviesQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountWatchlistMovies>>
 >;
-export type AccountWatchlistMoviesQueryError = unknown;
+export type AccountWatchlistMoviesQueryError = ErrorType<unknown>;
 
 export function useAccountWatchlistMovies<
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountWatchlistMoviesParams,
@@ -2411,7 +2057,7 @@ export function useAccountWatchlistMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -2419,7 +2065,7 @@ export function useAccountWatchlistMovies<
 };
 export function useAccountWatchlistMovies<
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistMoviesParams,
@@ -2439,7 +2085,7 @@ export function useAccountWatchlistMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2447,7 +2093,7 @@ export function useAccountWatchlistMovies<
 };
 export function useAccountWatchlistMovies<
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistMoviesParams,
@@ -2459,7 +2105,7 @@ export function useAccountWatchlistMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2471,7 +2117,7 @@ export function useAccountWatchlistMovies<
 
 export function useAccountWatchlistMovies<
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistMoviesParams,
@@ -2483,7 +2129,7 @@ export function useAccountWatchlistMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2509,54 +2155,21 @@ export function useAccountWatchlistMovies<
  * Get a list of TV shows added to a users watchlist.
  * @summary Watchlist TV
  */
-export type accountWatchlistTvResponse200 = {
-  data: AccountWatchlistTv200;
-  status: 200;
-};
-
-export type accountWatchlistTvResponseSuccess =
-  accountWatchlistTvResponse200 & {
-    headers: Headers;
-  };
-export type accountWatchlistTvResponse = accountWatchlistTvResponseSuccess;
-
-export const getAccountWatchlistTvUrl = (
-  accountId: number,
-  params?: AccountWatchlistTvParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/account/${accountId}/watchlist/tv?${stringifiedParams}`
-    : `/3/account/${accountId}/watchlist/tv`;
-};
-
-export const accountWatchlistTv = async (
+export const accountWatchlistTv = (
   accountId: number,
   params?: AccountWatchlistTvParams,
-  options?: RequestInit
-): Promise<accountWatchlistTvResponse> => {
-  const res = await fetch(getAccountWatchlistTvUrl(accountId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: accountWatchlistTvResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as accountWatchlistTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AccountWatchlistTv200>(
+    {
+      url: `https://api.themoviedb.org/3/account/${accountId}/watchlist/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAccountWatchlistTvQueryKey = (
@@ -2564,14 +2177,14 @@ export const getAccountWatchlistTvQueryKey = (
   params?: AccountWatchlistTvParams
 ) => {
   return [
-    `/3/account/${accountId}/watchlist/tv`,
+    `https://api.themoviedb.org/3/account/${accountId}/watchlist/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getAccountWatchlistTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistTvParams,
@@ -2583,10 +2196,10 @@ export const getAccountWatchlistTvQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAccountWatchlistTvQueryKey(accountId, params);
@@ -2594,7 +2207,7 @@ export const getAccountWatchlistTvQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof accountWatchlistTv>>
   > = ({ signal }) =>
-    accountWatchlistTv(accountId, params, { signal, ...fetchOptions });
+    accountWatchlistTv(accountId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -2611,11 +2224,11 @@ export const getAccountWatchlistTvQueryOptions = <
 export type AccountWatchlistTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof accountWatchlistTv>>
 >;
-export type AccountWatchlistTvQueryError = unknown;
+export type AccountWatchlistTvQueryError = ErrorType<unknown>;
 
 export function useAccountWatchlistTv<
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params: undefined | AccountWatchlistTvParams,
@@ -2635,7 +2248,7 @@ export function useAccountWatchlistTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -2643,7 +2256,7 @@ export function useAccountWatchlistTv<
 };
 export function useAccountWatchlistTv<
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistTvParams,
@@ -2663,7 +2276,7 @@ export function useAccountWatchlistTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2671,7 +2284,7 @@ export function useAccountWatchlistTv<
 };
 export function useAccountWatchlistTv<
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistTvParams,
@@ -2683,7 +2296,7 @@ export function useAccountWatchlistTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2695,7 +2308,7 @@ export function useAccountWatchlistTv<
 
 export function useAccountWatchlistTv<
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   accountId: number,
   params?: AccountWatchlistTvParams,
@@ -2707,7 +2320,7 @@ export function useAccountWatchlistTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2732,49 +2345,29 @@ export function useAccountWatchlistTv<
 /**
  * @summary Create Guest Session
  */
-export type authenticationCreateGuestSessionResponse200 = {
-  data: AuthenticationCreateGuestSession200;
-  status: 200;
-};
-
-export type authenticationCreateGuestSessionResponseSuccess =
-  authenticationCreateGuestSessionResponse200 & {
-    headers: Headers;
-  };
-export type authenticationCreateGuestSessionResponse =
-  authenticationCreateGuestSessionResponseSuccess;
-
-export const getAuthenticationCreateGuestSessionUrl = () => {
-  return `/3/authentication/guest_session/new`;
-};
-
-export const authenticationCreateGuestSession = async (
-  options?: RequestInit
-): Promise<authenticationCreateGuestSessionResponse> => {
-  const res = await fetch(getAuthenticationCreateGuestSessionUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationCreateGuestSessionResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationCreateGuestSessionResponse;
+export const authenticationCreateGuestSession = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationCreateGuestSession200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/guest_session/new`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationCreateGuestSessionQueryKey = () => {
-  return [`/3/authentication/guest_session/new`] as const;
+  return [
+    `https://api.themoviedb.org/3/authentication/guest_session/new`,
+  ] as const;
 };
 
 export const getAuthenticationCreateGuestSessionQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -2783,17 +2376,16 @@ export const getAuthenticationCreateGuestSessionQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAuthenticationCreateGuestSessionQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof authenticationCreateGuestSession>>
-  > = ({ signal }) =>
-    authenticationCreateGuestSession({ signal, ...fetchOptions });
+  > = ({ signal }) => authenticationCreateGuestSession(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
@@ -2805,11 +2397,11 @@ export const getAuthenticationCreateGuestSessionQueryOptions = <
 export type AuthenticationCreateGuestSessionQueryResult = NonNullable<
   Awaited<ReturnType<typeof authenticationCreateGuestSession>>
 >;
-export type AuthenticationCreateGuestSessionQueryError = unknown;
+export type AuthenticationCreateGuestSessionQueryError = ErrorType<unknown>;
 
 export function useAuthenticationCreateGuestSession<
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -2827,7 +2419,7 @@ export function useAuthenticationCreateGuestSession<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -2835,7 +2427,7 @@ export function useAuthenticationCreateGuestSession<
 };
 export function useAuthenticationCreateGuestSession<
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -2853,7 +2445,7 @@ export function useAuthenticationCreateGuestSession<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2861,7 +2453,7 @@ export function useAuthenticationCreateGuestSession<
 };
 export function useAuthenticationCreateGuestSession<
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -2871,7 +2463,7 @@ export function useAuthenticationCreateGuestSession<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2883,7 +2475,7 @@ export function useAuthenticationCreateGuestSession<
 
 export function useAuthenticationCreateGuestSession<
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -2893,7 +2485,7 @@ export function useAuthenticationCreateGuestSession<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -2914,49 +2506,27 @@ export function useAuthenticationCreateGuestSession<
 /**
  * @summary Create Request Token
  */
-export type authenticationCreateRequestTokenResponse200 = {
-  data: AuthenticationCreateRequestToken200;
-  status: 200;
-};
-
-export type authenticationCreateRequestTokenResponseSuccess =
-  authenticationCreateRequestTokenResponse200 & {
-    headers: Headers;
-  };
-export type authenticationCreateRequestTokenResponse =
-  authenticationCreateRequestTokenResponseSuccess;
-
-export const getAuthenticationCreateRequestTokenUrl = () => {
-  return `/3/authentication/token/new`;
-};
-
-export const authenticationCreateRequestToken = async (
-  options?: RequestInit
-): Promise<authenticationCreateRequestTokenResponse> => {
-  const res = await fetch(getAuthenticationCreateRequestTokenUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationCreateRequestTokenResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationCreateRequestTokenResponse;
+export const authenticationCreateRequestToken = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationCreateRequestToken200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/token/new`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationCreateRequestTokenQueryKey = () => {
-  return [`/3/authentication/token/new`] as const;
+  return [`https://api.themoviedb.org/3/authentication/token/new`] as const;
 };
 
 export const getAuthenticationCreateRequestTokenQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -2965,17 +2535,16 @@ export const getAuthenticationCreateRequestTokenQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAuthenticationCreateRequestTokenQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof authenticationCreateRequestToken>>
-  > = ({ signal }) =>
-    authenticationCreateRequestToken({ signal, ...fetchOptions });
+  > = ({ signal }) => authenticationCreateRequestToken(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
@@ -2987,11 +2556,11 @@ export const getAuthenticationCreateRequestTokenQueryOptions = <
 export type AuthenticationCreateRequestTokenQueryResult = NonNullable<
   Awaited<ReturnType<typeof authenticationCreateRequestToken>>
 >;
-export type AuthenticationCreateRequestTokenQueryError = unknown;
+export type AuthenticationCreateRequestTokenQueryError = ErrorType<unknown>;
 
 export function useAuthenticationCreateRequestToken<
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -3009,7 +2578,7 @@ export function useAuthenticationCreateRequestToken<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -3017,7 +2586,7 @@ export function useAuthenticationCreateRequestToken<
 };
 export function useAuthenticationCreateRequestToken<
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3035,7 +2604,7 @@ export function useAuthenticationCreateRequestToken<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3043,7 +2612,7 @@ export function useAuthenticationCreateRequestToken<
 };
 export function useAuthenticationCreateRequestToken<
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3053,7 +2622,7 @@ export function useAuthenticationCreateRequestToken<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3065,7 +2634,7 @@ export function useAuthenticationCreateRequestToken<
 
 export function useAuthenticationCreateRequestToken<
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3075,7 +2644,7 @@ export function useAuthenticationCreateRequestToken<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3096,78 +2665,56 @@ export function useAuthenticationCreateRequestToken<
 /**
  * @summary Create Session
  */
-export type authenticationCreateSessionResponse200 = {
-  data: AuthenticationCreateSession200;
-  status: 200;
-};
-
-export type authenticationCreateSessionResponseSuccess =
-  authenticationCreateSessionResponse200 & {
-    headers: Headers;
-  };
-export type authenticationCreateSessionResponse =
-  authenticationCreateSessionResponseSuccess;
-
-export const getAuthenticationCreateSessionUrl = () => {
-  return `/3/authentication/session/new`;
-};
-
-export const authenticationCreateSession = async (
-  authenticationCreateSessionBody: AuthenticationCreateSessionBody,
-  options?: RequestInit
-): Promise<authenticationCreateSessionResponse> => {
-  const res = await fetch(getAuthenticationCreateSessionUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authenticationCreateSessionBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationCreateSessionResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationCreateSessionResponse;
+export const authenticationCreateSession = (
+  authenticationCreateSessionBody: BodyType<AuthenticationCreateSessionBody>,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationCreateSession200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/session/new`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authenticationCreateSessionBody,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationCreateSessionMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authenticationCreateSession>>,
     TError,
-    { data: AuthenticationCreateSessionBody },
+    { data: BodyType<AuthenticationCreateSessionBody> },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authenticationCreateSession>>,
   TError,
-  { data: AuthenticationCreateSessionBody },
+  { data: BodyType<AuthenticationCreateSessionBody> },
   TContext
 > => {
   const mutationKey = ['authenticationCreateSession'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authenticationCreateSession>>,
-    { data: AuthenticationCreateSessionBody }
+    { data: BodyType<AuthenticationCreateSessionBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authenticationCreateSession(data, fetchOptions);
+    return authenticationCreateSession(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -3177,30 +2724,30 @@ export type AuthenticationCreateSessionMutationResult = NonNullable<
   Awaited<ReturnType<typeof authenticationCreateSession>>
 >;
 export type AuthenticationCreateSessionMutationBody =
-  AuthenticationCreateSessionBody;
-export type AuthenticationCreateSessionMutationError = unknown;
+  BodyType<AuthenticationCreateSessionBody>;
+export type AuthenticationCreateSessionMutationError = ErrorType<unknown>;
 
 /**
  * @summary Create Session
  */
 export const useAuthenticationCreateSession = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authenticationCreateSession>>,
       TError,
-      { data: AuthenticationCreateSessionBody },
+      { data: BodyType<AuthenticationCreateSessionBody> },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof authenticationCreateSession>>,
   TError,
-  { data: AuthenticationCreateSessionBody },
+  { data: BodyType<AuthenticationCreateSessionBody> },
   TContext
 > => {
   const mutationOptions =
@@ -3211,78 +2758,56 @@ export const useAuthenticationCreateSession = <
 /**
  * @summary Create Session (from v4 token)
  */
-export type authenticationCreateSessionFromV4TokenResponse200 = {
-  data: AuthenticationCreateSessionFromV4Token200;
-  status: 200;
-};
-
-export type authenticationCreateSessionFromV4TokenResponseSuccess =
-  authenticationCreateSessionFromV4TokenResponse200 & {
-    headers: Headers;
-  };
-export type authenticationCreateSessionFromV4TokenResponse =
-  authenticationCreateSessionFromV4TokenResponseSuccess;
-
-export const getAuthenticationCreateSessionFromV4TokenUrl = () => {
-  return `/3/authentication/session/convert/4`;
-};
-
-export const authenticationCreateSessionFromV4Token = async (
-  authenticationCreateSessionFromV4TokenBody: AuthenticationCreateSessionFromV4TokenBody,
-  options?: RequestInit
-): Promise<authenticationCreateSessionFromV4TokenResponse> => {
-  const res = await fetch(getAuthenticationCreateSessionFromV4TokenUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authenticationCreateSessionFromV4TokenBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationCreateSessionFromV4TokenResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationCreateSessionFromV4TokenResponse;
+export const authenticationCreateSessionFromV4Token = (
+  authenticationCreateSessionFromV4TokenBody: BodyType<AuthenticationCreateSessionFromV4TokenBody>,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationCreateSessionFromV4Token200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/session/convert/4`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authenticationCreateSessionFromV4TokenBody,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationCreateSessionFromV4TokenMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>,
     TError,
-    { data: AuthenticationCreateSessionFromV4TokenBody },
+    { data: BodyType<AuthenticationCreateSessionFromV4TokenBody> },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>,
   TError,
-  { data: AuthenticationCreateSessionFromV4TokenBody },
+  { data: BodyType<AuthenticationCreateSessionFromV4TokenBody> },
   TContext
 > => {
   const mutationKey = ['authenticationCreateSessionFromV4Token'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>,
-    { data: AuthenticationCreateSessionFromV4TokenBody }
+    { data: BodyType<AuthenticationCreateSessionFromV4TokenBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authenticationCreateSessionFromV4Token(data, fetchOptions);
+    return authenticationCreateSessionFromV4Token(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -3292,30 +2817,31 @@ export type AuthenticationCreateSessionFromV4TokenMutationResult = NonNullable<
   Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>
 >;
 export type AuthenticationCreateSessionFromV4TokenMutationBody =
-  AuthenticationCreateSessionFromV4TokenBody;
-export type AuthenticationCreateSessionFromV4TokenMutationError = unknown;
+  BodyType<AuthenticationCreateSessionFromV4TokenBody>;
+export type AuthenticationCreateSessionFromV4TokenMutationError =
+  ErrorType<unknown>;
 
 /**
  * @summary Create Session (from v4 token)
  */
 export const useAuthenticationCreateSessionFromV4Token = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>,
       TError,
-      { data: AuthenticationCreateSessionFromV4TokenBody },
+      { data: BodyType<AuthenticationCreateSessionFromV4TokenBody> },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof authenticationCreateSessionFromV4Token>>,
   TError,
-  { data: AuthenticationCreateSessionFromV4TokenBody },
+  { data: BodyType<AuthenticationCreateSessionFromV4TokenBody> },
   TContext
 > => {
   const mutationOptions =
@@ -3327,78 +2853,56 @@ export const useAuthenticationCreateSessionFromV4Token = <
  * This method allows an application to validate a request token by entering a username and password.
  * @summary Create Session (with login)
  */
-export type authenticationCreateSessionFromLoginResponse200 = {
-  data: AuthenticationCreateSessionFromLogin200;
-  status: 200;
-};
-
-export type authenticationCreateSessionFromLoginResponseSuccess =
-  authenticationCreateSessionFromLoginResponse200 & {
-    headers: Headers;
-  };
-export type authenticationCreateSessionFromLoginResponse =
-  authenticationCreateSessionFromLoginResponseSuccess;
-
-export const getAuthenticationCreateSessionFromLoginUrl = () => {
-  return `/3/authentication/token/validate_with_login`;
-};
-
-export const authenticationCreateSessionFromLogin = async (
-  authenticationCreateSessionFromLoginBody: AuthenticationCreateSessionFromLoginBody,
-  options?: RequestInit
-): Promise<authenticationCreateSessionFromLoginResponse> => {
-  const res = await fetch(getAuthenticationCreateSessionFromLoginUrl(), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authenticationCreateSessionFromLoginBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationCreateSessionFromLoginResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationCreateSessionFromLoginResponse;
+export const authenticationCreateSessionFromLogin = (
+  authenticationCreateSessionFromLoginBody: BodyType<AuthenticationCreateSessionFromLoginBody>,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AuthenticationCreateSessionFromLogin200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/token/validate_with_login`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: authenticationCreateSessionFromLoginBody,
+      signal,
+    },
+    options
+  );
 };
 
 export const getAuthenticationCreateSessionFromLoginMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>,
     TError,
-    { data: AuthenticationCreateSessionFromLoginBody },
+    { data: BodyType<AuthenticationCreateSessionFromLoginBody> },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>,
   TError,
-  { data: AuthenticationCreateSessionFromLoginBody },
+  { data: BodyType<AuthenticationCreateSessionFromLoginBody> },
   TContext
 > => {
   const mutationKey = ['authenticationCreateSessionFromLogin'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>,
-    { data: AuthenticationCreateSessionFromLoginBody }
+    { data: BodyType<AuthenticationCreateSessionFromLoginBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authenticationCreateSessionFromLogin(data, fetchOptions);
+    return authenticationCreateSessionFromLogin(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -3408,30 +2912,31 @@ export type AuthenticationCreateSessionFromLoginMutationResult = NonNullable<
   Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>
 >;
 export type AuthenticationCreateSessionFromLoginMutationBody =
-  AuthenticationCreateSessionFromLoginBody;
-export type AuthenticationCreateSessionFromLoginMutationError = unknown;
+  BodyType<AuthenticationCreateSessionFromLoginBody>;
+export type AuthenticationCreateSessionFromLoginMutationError =
+  ErrorType<unknown>;
 
 /**
  * @summary Create Session (with login)
  */
 export const useAuthenticationCreateSessionFromLogin = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>,
       TError,
-      { data: AuthenticationCreateSessionFromLoginBody },
+      { data: BodyType<AuthenticationCreateSessionFromLoginBody> },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof authenticationCreateSessionFromLogin>>,
   TError,
-  { data: AuthenticationCreateSessionFromLoginBody },
+  { data: BodyType<AuthenticationCreateSessionFromLoginBody> },
   TContext
 > => {
   const mutationOptions =
@@ -3442,78 +2947,54 @@ export const useAuthenticationCreateSessionFromLogin = <
 /**
  * @summary Delete Session
  */
-export type authenticationDeleteSessionResponse200 = {
-  data: AuthenticationDeleteSession200;
-  status: 200;
-};
-
-export type authenticationDeleteSessionResponseSuccess =
-  authenticationDeleteSessionResponse200 & {
-    headers: Headers;
-  };
-export type authenticationDeleteSessionResponse =
-  authenticationDeleteSessionResponseSuccess;
-
-export const getAuthenticationDeleteSessionUrl = () => {
-  return `/3/authentication/session`;
-};
-
-export const authenticationDeleteSession = async (
-  authenticationDeleteSessionBody: AuthenticationDeleteSessionBody,
-  options?: RequestInit
-): Promise<authenticationDeleteSessionResponse> => {
-  const res = await fetch(getAuthenticationDeleteSessionUrl(), {
-    ...options,
-    method: 'DELETE',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(authenticationDeleteSessionBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: authenticationDeleteSessionResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as authenticationDeleteSessionResponse;
+export const authenticationDeleteSession = (
+  authenticationDeleteSessionBody: BodyType<AuthenticationDeleteSessionBody>,
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<AuthenticationDeleteSession200>(
+    {
+      url: `https://api.themoviedb.org/3/authentication/session`,
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      data: authenticationDeleteSessionBody,
+    },
+    options
+  );
 };
 
 export const getAuthenticationDeleteSessionMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authenticationDeleteSession>>,
     TError,
-    { data: AuthenticationDeleteSessionBody },
+    { data: BodyType<AuthenticationDeleteSessionBody> },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof authenticationDeleteSession>>,
   TError,
-  { data: AuthenticationDeleteSessionBody },
+  { data: BodyType<AuthenticationDeleteSessionBody> },
   TContext
 > => {
   const mutationKey = ['authenticationDeleteSession'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof authenticationDeleteSession>>,
-    { data: AuthenticationDeleteSessionBody }
+    { data: BodyType<AuthenticationDeleteSessionBody> }
   > = (props) => {
     const { data } = props ?? {};
 
-    return authenticationDeleteSession(data, fetchOptions);
+    return authenticationDeleteSession(data, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -3523,30 +3004,30 @@ export type AuthenticationDeleteSessionMutationResult = NonNullable<
   Awaited<ReturnType<typeof authenticationDeleteSession>>
 >;
 export type AuthenticationDeleteSessionMutationBody =
-  AuthenticationDeleteSessionBody;
-export type AuthenticationDeleteSessionMutationError = unknown;
+  BodyType<AuthenticationDeleteSessionBody>;
+export type AuthenticationDeleteSessionMutationError = ErrorType<unknown>;
 
 /**
  * @summary Delete Session
  */
 export const useAuthenticationDeleteSession = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof authenticationDeleteSession>>,
       TError,
-      { data: AuthenticationDeleteSessionBody },
+      { data: BodyType<AuthenticationDeleteSessionBody> },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof authenticationDeleteSession>>,
   TError,
-  { data: AuthenticationDeleteSessionBody },
+  { data: BodyType<AuthenticationDeleteSessionBody> },
   TContext
 > => {
   const mutationOptions =
@@ -3558,49 +3039,27 @@ export const useAuthenticationDeleteSession = <
  * Get an up to date list of the officially supported movie certifications on TMDB.
  * @summary Movie Certifications
  */
-export type certificationMovieListResponse200 = {
-  data: CertificationMovieList200;
-  status: 200;
-};
-
-export type certificationMovieListResponseSuccess =
-  certificationMovieListResponse200 & {
-    headers: Headers;
-  };
-export type certificationMovieListResponse =
-  certificationMovieListResponseSuccess;
-
-export const getCertificationMovieListUrl = () => {
-  return `/3/certification/movie/list`;
-};
-
-export const certificationMovieList = async (
-  options?: RequestInit
-): Promise<certificationMovieListResponse> => {
-  const res = await fetch(getCertificationMovieListUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: certificationMovieListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as certificationMovieListResponse;
+export const certificationMovieList = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CertificationMovieList200>(
+    {
+      url: `https://api.themoviedb.org/3/certification/movie/list`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCertificationMovieListQueryKey = () => {
-  return [`/3/certification/movie/list`] as const;
+  return [`https://api.themoviedb.org/3/certification/movie/list`] as const;
 };
 
 export const getCertificationMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -3609,16 +3068,16 @@ export const getCertificationMovieListQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCertificationMovieListQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof certificationMovieList>>
-  > = ({ signal }) => certificationMovieList({ signal, ...fetchOptions });
+  > = ({ signal }) => certificationMovieList(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof certificationMovieList>>,
@@ -3630,11 +3089,11 @@ export const getCertificationMovieListQueryOptions = <
 export type CertificationMovieListQueryResult = NonNullable<
   Awaited<ReturnType<typeof certificationMovieList>>
 >;
-export type CertificationMovieListQueryError = unknown;
+export type CertificationMovieListQueryError = ErrorType<unknown>;
 
 export function useCertificationMovieList<
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -3652,7 +3111,7 @@ export function useCertificationMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -3660,7 +3119,7 @@ export function useCertificationMovieList<
 };
 export function useCertificationMovieList<
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3678,7 +3137,7 @@ export function useCertificationMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3686,7 +3145,7 @@ export function useCertificationMovieList<
 };
 export function useCertificationMovieList<
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3696,7 +3155,7 @@ export function useCertificationMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3708,7 +3167,7 @@ export function useCertificationMovieList<
 
 export function useCertificationMovieList<
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3718,7 +3177,7 @@ export function useCertificationMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3739,48 +3198,27 @@ export function useCertificationMovieList<
 /**
  * @summary TV Certifications
  */
-export type certificationsTvListResponse200 = {
-  data: CertificationsTvList200;
-  status: 200;
-};
-
-export type certificationsTvListResponseSuccess =
-  certificationsTvListResponse200 & {
-    headers: Headers;
-  };
-export type certificationsTvListResponse = certificationsTvListResponseSuccess;
-
-export const getCertificationsTvListUrl = () => {
-  return `/3/certification/tv/list`;
-};
-
-export const certificationsTvList = async (
-  options?: RequestInit
-): Promise<certificationsTvListResponse> => {
-  const res = await fetch(getCertificationsTvListUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: certificationsTvListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as certificationsTvListResponse;
+export const certificationsTvList = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CertificationsTvList200>(
+    {
+      url: `https://api.themoviedb.org/3/certification/tv/list`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCertificationsTvListQueryKey = () => {
-  return [`/3/certification/tv/list`] as const;
+  return [`https://api.themoviedb.org/3/certification/tv/list`] as const;
 };
 
 export const getCertificationsTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -3789,15 +3227,15 @@ export const getCertificationsTvListQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getCertificationsTvListQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof certificationsTvList>>
-  > = ({ signal }) => certificationsTvList({ signal, ...fetchOptions });
+  > = ({ signal }) => certificationsTvList(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof certificationsTvList>>,
@@ -3809,11 +3247,11 @@ export const getCertificationsTvListQueryOptions = <
 export type CertificationsTvListQueryResult = NonNullable<
   Awaited<ReturnType<typeof certificationsTvList>>
 >;
-export type CertificationsTvListQueryError = unknown;
+export type CertificationsTvListQueryError = ErrorType<unknown>;
 
 export function useCertificationsTvList<
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -3831,7 +3269,7 @@ export function useCertificationsTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -3839,7 +3277,7 @@ export function useCertificationsTvList<
 };
 export function useCertificationsTvList<
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3857,7 +3295,7 @@ export function useCertificationsTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3865,7 +3303,7 @@ export function useCertificationsTvList<
 };
 export function useCertificationsTvList<
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3875,7 +3313,7 @@ export function useCertificationsTvList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3887,7 +3325,7 @@ export function useCertificationsTvList<
 
 export function useCertificationsTvList<
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -3897,7 +3335,7 @@ export function useCertificationsTvList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -3919,60 +3357,34 @@ export function useCertificationsTvList<
  * Get a list of all of the movie ids that have been changed in the past 24 hours.
  * @summary Movie List
  */
-export type changesMovieListResponse200 = {
-  data: ChangesMovieList200;
-  status: 200;
-};
-
-export type changesMovieListResponseSuccess = changesMovieListResponse200 & {
-  headers: Headers;
-};
-export type changesMovieListResponse = changesMovieListResponseSuccess;
-
-export const getChangesMovieListUrl = (params?: ChangesMovieListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/changes?${stringifiedParams}`
-    : `/3/movie/changes`;
-};
-
-export const changesMovieList = async (
+export const changesMovieList = (
   params?: ChangesMovieListParams,
-  options?: RequestInit
-): Promise<changesMovieListResponse> => {
-  const res = await fetch(getChangesMovieListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: changesMovieListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as changesMovieListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ChangesMovieList200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getChangesMovieListQueryKey = (
   params?: ChangesMovieListParams
 ) => {
-  return [`/3/movie/changes`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/changes`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getChangesMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesMovieListParams,
   options?: {
@@ -3983,17 +3395,17 @@ export const getChangesMovieListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getChangesMovieListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof changesMovieList>>
-  > = ({ signal }) => changesMovieList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => changesMovieList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof changesMovieList>>,
@@ -4005,11 +3417,11 @@ export const getChangesMovieListQueryOptions = <
 export type ChangesMovieListQueryResult = NonNullable<
   Awaited<ReturnType<typeof changesMovieList>>
 >;
-export type ChangesMovieListQueryError = unknown;
+export type ChangesMovieListQueryError = ErrorType<unknown>;
 
 export function useChangesMovieList<
   TData = Awaited<ReturnType<typeof changesMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | ChangesMovieListParams,
   options: {
@@ -4028,7 +3440,7 @@ export function useChangesMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -4036,7 +3448,7 @@ export function useChangesMovieList<
 };
 export function useChangesMovieList<
   TData = Awaited<ReturnType<typeof changesMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesMovieListParams,
   options?: {
@@ -4055,7 +3467,7 @@ export function useChangesMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4063,7 +3475,7 @@ export function useChangesMovieList<
 };
 export function useChangesMovieList<
   TData = Awaited<ReturnType<typeof changesMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesMovieListParams,
   options?: {
@@ -4074,7 +3486,7 @@ export function useChangesMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4086,7 +3498,7 @@ export function useChangesMovieList<
 
 export function useChangesMovieList<
   TData = Awaited<ReturnType<typeof changesMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesMovieListParams,
   options?: {
@@ -4097,7 +3509,7 @@ export function useChangesMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4118,60 +3530,34 @@ export function useChangesMovieList<
 /**
  * @summary People List
  */
-export type changesPeopleListResponse200 = {
-  data: ChangesPeopleList200;
-  status: 200;
-};
-
-export type changesPeopleListResponseSuccess = changesPeopleListResponse200 & {
-  headers: Headers;
-};
-export type changesPeopleListResponse = changesPeopleListResponseSuccess;
-
-export const getChangesPeopleListUrl = (params?: ChangesPeopleListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/changes?${stringifiedParams}`
-    : `/3/person/changes`;
-};
-
-export const changesPeopleList = async (
+export const changesPeopleList = (
   params?: ChangesPeopleListParams,
-  options?: RequestInit
-): Promise<changesPeopleListResponse> => {
-  const res = await fetch(getChangesPeopleListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: changesPeopleListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as changesPeopleListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ChangesPeopleList200>(
+    {
+      url: `https://api.themoviedb.org/3/person/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getChangesPeopleListQueryKey = (
   params?: ChangesPeopleListParams
 ) => {
-  return [`/3/person/changes`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/person/changes`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getChangesPeopleListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesPeopleListParams,
   options?: {
@@ -4182,17 +3568,17 @@ export const getChangesPeopleListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getChangesPeopleListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof changesPeopleList>>
-  > = ({ signal }) => changesPeopleList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => changesPeopleList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof changesPeopleList>>,
@@ -4204,11 +3590,11 @@ export const getChangesPeopleListQueryOptions = <
 export type ChangesPeopleListQueryResult = NonNullable<
   Awaited<ReturnType<typeof changesPeopleList>>
 >;
-export type ChangesPeopleListQueryError = unknown;
+export type ChangesPeopleListQueryError = ErrorType<unknown>;
 
 export function useChangesPeopleList<
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | ChangesPeopleListParams,
   options: {
@@ -4227,7 +3613,7 @@ export function useChangesPeopleList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -4235,7 +3621,7 @@ export function useChangesPeopleList<
 };
 export function useChangesPeopleList<
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesPeopleListParams,
   options?: {
@@ -4254,7 +3640,7 @@ export function useChangesPeopleList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4262,7 +3648,7 @@ export function useChangesPeopleList<
 };
 export function useChangesPeopleList<
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesPeopleListParams,
   options?: {
@@ -4273,7 +3659,7 @@ export function useChangesPeopleList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4285,7 +3671,7 @@ export function useChangesPeopleList<
 
 export function useChangesPeopleList<
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesPeopleListParams,
   options?: {
@@ -4296,7 +3682,7 @@ export function useChangesPeopleList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4317,74 +3703,48 @@ export function useChangesPeopleList<
 /**
  * @summary TV List
  */
-export type changesTvListResponse200 = {
-  data: ChangesTvList200;
-  status: 200;
-};
-
-export type changesTvListResponseSuccess = changesTvListResponse200 & {
-  headers: Headers;
-};
-export type changesTvListResponse = changesTvListResponseSuccess;
-
-export const getChangesTvListUrl = (params?: ChangesTvListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/changes?${stringifiedParams}`
-    : `/3/tv/changes`;
-};
-
-export const changesTvList = async (
+export const changesTvList = (
   params?: ChangesTvListParams,
-  options?: RequestInit
-): Promise<changesTvListResponse> => {
-  const res = await fetch(getChangesTvListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: changesTvListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as changesTvListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ChangesTvList200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getChangesTvListQueryKey = (params?: ChangesTvListParams) => {
-  return [`/3/tv/changes`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/changes`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getChangesTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof changesTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getChangesTvListQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof changesTvList>>> = ({
     signal,
-  }) => changesTvList(params, { signal, ...fetchOptions });
+  }) => changesTvList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof changesTvList>>,
@@ -4396,11 +3756,11 @@ export const getChangesTvListQueryOptions = <
 export type ChangesTvListQueryResult = NonNullable<
   Awaited<ReturnType<typeof changesTvList>>
 >;
-export type ChangesTvListQueryError = unknown;
+export type ChangesTvListQueryError = ErrorType<unknown>;
 
 export function useChangesTvList<
   TData = Awaited<ReturnType<typeof changesTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | ChangesTvListParams,
   options: {
@@ -4415,7 +3775,7 @@ export function useChangesTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -4423,7 +3783,7 @@ export function useChangesTvList<
 };
 export function useChangesTvList<
   TData = Awaited<ReturnType<typeof changesTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesTvListParams,
   options?: {
@@ -4438,7 +3798,7 @@ export function useChangesTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4446,14 +3806,14 @@ export function useChangesTvList<
 };
 export function useChangesTvList<
   TData = Awaited<ReturnType<typeof changesTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof changesTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4465,14 +3825,14 @@ export function useChangesTvList<
 
 export function useChangesTvList<
   TData = Awaited<ReturnType<typeof changesTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ChangesTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof changesTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4494,53 +3854,21 @@ export function useChangesTvList<
  * Get collection details by ID.
  * @summary Details
  */
-export type collectionDetailsResponse200 = {
-  data: CollectionDetails200;
-  status: 200;
-};
-
-export type collectionDetailsResponseSuccess = collectionDetailsResponse200 & {
-  headers: Headers;
-};
-export type collectionDetailsResponse = collectionDetailsResponseSuccess;
-
-export const getCollectionDetailsUrl = (
-  collectionId: number,
-  params?: CollectionDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/collection/${collectionId}?${stringifiedParams}`
-    : `/3/collection/${collectionId}`;
-};
-
-export const collectionDetails = async (
+export const collectionDetails = (
   collectionId: number,
   params?: CollectionDetailsParams,
-  options?: RequestInit
-): Promise<collectionDetailsResponse> => {
-  const res = await fetch(getCollectionDetailsUrl(collectionId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: collectionDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as collectionDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CollectionDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/collection/${collectionId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getCollectionDetailsQueryKey = (
@@ -4548,14 +3876,14 @@ export const getCollectionDetailsQueryKey = (
   params?: CollectionDetailsParams
 ) => {
   return [
-    `/3/collection/${collectionId}`,
+    `https://api.themoviedb.org/3/collection/${collectionId}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getCollectionDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionDetailsParams,
@@ -4567,10 +3895,10 @@ export const getCollectionDetailsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -4579,7 +3907,7 @@ export const getCollectionDetailsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof collectionDetails>>
   > = ({ signal }) =>
-    collectionDetails(collectionId, params, { signal, ...fetchOptions });
+    collectionDetails(collectionId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -4596,11 +3924,11 @@ export const getCollectionDetailsQueryOptions = <
 export type CollectionDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof collectionDetails>>
 >;
-export type CollectionDetailsQueryError = unknown;
+export type CollectionDetailsQueryError = ErrorType<unknown>;
 
 export function useCollectionDetails<
   TData = Awaited<ReturnType<typeof collectionDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params: undefined | CollectionDetailsParams,
@@ -4620,7 +3948,7 @@ export function useCollectionDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -4628,7 +3956,7 @@ export function useCollectionDetails<
 };
 export function useCollectionDetails<
   TData = Awaited<ReturnType<typeof collectionDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionDetailsParams,
@@ -4648,7 +3976,7 @@ export function useCollectionDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4656,7 +3984,7 @@ export function useCollectionDetails<
 };
 export function useCollectionDetails<
   TData = Awaited<ReturnType<typeof collectionDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionDetailsParams,
@@ -4668,7 +3996,7 @@ export function useCollectionDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4680,7 +4008,7 @@ export function useCollectionDetails<
 
 export function useCollectionDetails<
   TData = Awaited<ReturnType<typeof collectionDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionDetailsParams,
@@ -4692,7 +4020,7 @@ export function useCollectionDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4718,53 +4046,21 @@ export function useCollectionDetails<
  * Get the images that belong to a collection.
  * @summary Images
  */
-export type collectionImagesResponse200 = {
-  data: CollectionImages200;
-  status: 200;
-};
-
-export type collectionImagesResponseSuccess = collectionImagesResponse200 & {
-  headers: Headers;
-};
-export type collectionImagesResponse = collectionImagesResponseSuccess;
-
-export const getCollectionImagesUrl = (
-  collectionId: number,
-  params?: CollectionImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/collection/${collectionId}/images?${stringifiedParams}`
-    : `/3/collection/${collectionId}/images`;
-};
-
-export const collectionImages = async (
+export const collectionImages = (
   collectionId: number,
   params?: CollectionImagesParams,
-  options?: RequestInit
-): Promise<collectionImagesResponse> => {
-  const res = await fetch(getCollectionImagesUrl(collectionId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: collectionImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as collectionImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CollectionImages200>(
+    {
+      url: `https://api.themoviedb.org/3/collection/${collectionId}/images`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getCollectionImagesQueryKey = (
@@ -4772,14 +4068,14 @@ export const getCollectionImagesQueryKey = (
   params?: CollectionImagesParams
 ) => {
   return [
-    `/3/collection/${collectionId}/images`,
+    `https://api.themoviedb.org/3/collection/${collectionId}/images`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getCollectionImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionImagesParams,
@@ -4791,10 +4087,10 @@ export const getCollectionImagesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCollectionImagesQueryKey(collectionId, params);
@@ -4802,7 +4098,7 @@ export const getCollectionImagesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof collectionImages>>
   > = ({ signal }) =>
-    collectionImages(collectionId, params, { signal, ...fetchOptions });
+    collectionImages(collectionId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -4819,11 +4115,11 @@ export const getCollectionImagesQueryOptions = <
 export type CollectionImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof collectionImages>>
 >;
-export type CollectionImagesQueryError = unknown;
+export type CollectionImagesQueryError = ErrorType<unknown>;
 
 export function useCollectionImages<
   TData = Awaited<ReturnType<typeof collectionImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params: undefined | CollectionImagesParams,
@@ -4843,7 +4139,7 @@ export function useCollectionImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -4851,7 +4147,7 @@ export function useCollectionImages<
 };
 export function useCollectionImages<
   TData = Awaited<ReturnType<typeof collectionImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionImagesParams,
@@ -4871,7 +4167,7 @@ export function useCollectionImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4879,7 +4175,7 @@ export function useCollectionImages<
 };
 export function useCollectionImages<
   TData = Awaited<ReturnType<typeof collectionImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionImagesParams,
@@ -4891,7 +4187,7 @@ export function useCollectionImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4903,7 +4199,7 @@ export function useCollectionImages<
 
 export function useCollectionImages<
   TData = Awaited<ReturnType<typeof collectionImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   params?: CollectionImagesParams,
@@ -4915,7 +4211,7 @@ export function useCollectionImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -4940,50 +4236,30 @@ export function useCollectionImages<
 /**
  * @summary Translations
  */
-export type collectionTranslationsResponse200 = {
-  data: CollectionTranslations200;
-  status: 200;
-};
-
-export type collectionTranslationsResponseSuccess =
-  collectionTranslationsResponse200 & {
-    headers: Headers;
-  };
-export type collectionTranslationsResponse =
-  collectionTranslationsResponseSuccess;
-
-export const getCollectionTranslationsUrl = (collectionId: number) => {
-  return `/3/collection/${collectionId}/translations`;
-};
-
-export const collectionTranslations = async (
+export const collectionTranslations = (
   collectionId: number,
-  options?: RequestInit
-): Promise<collectionTranslationsResponse> => {
-  const res = await fetch(getCollectionTranslationsUrl(collectionId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: collectionTranslationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as collectionTranslationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CollectionTranslations200>(
+    {
+      url: `https://api.themoviedb.org/3/collection/${collectionId}/translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCollectionTranslationsQueryKey = (collectionId?: number) => {
-  return [`/3/collection/${collectionId}/translations`] as const;
+  return [
+    `https://api.themoviedb.org/3/collection/${collectionId}/translations`,
+  ] as const;
 };
 
 export const getCollectionTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   options?: {
@@ -4994,10 +4270,10 @@ export const getCollectionTranslationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCollectionTranslationsQueryKey(collectionId);
@@ -5005,7 +4281,7 @@ export const getCollectionTranslationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof collectionTranslations>>
   > = ({ signal }) =>
-    collectionTranslations(collectionId, { signal, ...fetchOptions });
+    collectionTranslations(collectionId, requestOptions, signal);
 
   return {
     queryKey,
@@ -5022,11 +4298,11 @@ export const getCollectionTranslationsQueryOptions = <
 export type CollectionTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof collectionTranslations>>
 >;
-export type CollectionTranslationsQueryError = unknown;
+export type CollectionTranslationsQueryError = ErrorType<unknown>;
 
 export function useCollectionTranslations<
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   options: {
@@ -5045,7 +4321,7 @@ export function useCollectionTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5053,7 +4329,7 @@ export function useCollectionTranslations<
 };
 export function useCollectionTranslations<
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   options?: {
@@ -5072,7 +4348,7 @@ export function useCollectionTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5080,7 +4356,7 @@ export function useCollectionTranslations<
 };
 export function useCollectionTranslations<
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   options?: {
@@ -5091,7 +4367,7 @@ export function useCollectionTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5103,7 +4379,7 @@ export function useCollectionTranslations<
 
 export function useCollectionTranslations<
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   collectionId: number,
   options?: {
@@ -5114,7 +4390,7 @@ export function useCollectionTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5139,63 +4415,45 @@ export function useCollectionTranslations<
  * Get the company details by ID.
  * @summary Details
  */
-export type companyDetailsResponse200 = {
-  data: CompanyDetails200;
-  status: 200;
-};
-
-export type companyDetailsResponseSuccess = companyDetailsResponse200 & {
-  headers: Headers;
-};
-export type companyDetailsResponse = companyDetailsResponseSuccess;
-
-export const getCompanyDetailsUrl = (companyId: number) => {
-  return `/3/company/${companyId}`;
-};
-
-export const companyDetails = async (
+export const companyDetails = (
   companyId: number,
-  options?: RequestInit
-): Promise<companyDetailsResponse> => {
-  const res = await fetch(getCompanyDetailsUrl(companyId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: companyDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as companyDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CompanyDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/company/${companyId}`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCompanyDetailsQueryKey = (companyId?: number) => {
-  return [`/3/company/${companyId}`] as const;
+  return [`https://api.themoviedb.org/3/company/${companyId}`] as const;
 };
 
 export const getCompanyDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof companyDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCompanyDetailsQueryKey(companyId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof companyDetails>>> = ({
     signal,
-  }) => companyDetails(companyId, { signal, ...fetchOptions });
+  }) => companyDetails(companyId, requestOptions, signal);
 
   return {
     queryKey,
@@ -5212,11 +4470,11 @@ export const getCompanyDetailsQueryOptions = <
 export type CompanyDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof companyDetails>>
 >;
-export type CompanyDetailsQueryError = unknown;
+export type CompanyDetailsQueryError = ErrorType<unknown>;
 
 export function useCompanyDetails<
   TData = Awaited<ReturnType<typeof companyDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options: {
@@ -5231,7 +4489,7 @@ export function useCompanyDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5239,7 +4497,7 @@ export function useCompanyDetails<
 };
 export function useCompanyDetails<
   TData = Awaited<ReturnType<typeof companyDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5254,7 +4512,7 @@ export function useCompanyDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5262,14 +4520,14 @@ export function useCompanyDetails<
 };
 export function useCompanyDetails<
   TData = Awaited<ReturnType<typeof companyDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5281,14 +4539,14 @@ export function useCompanyDetails<
 
 export function useCompanyDetails<
   TData = Awaited<ReturnType<typeof companyDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5310,50 +4568,30 @@ export function useCompanyDetails<
  * Get the company details by ID.
  * @summary Alternative Names
  */
-export type companyAlternativeNamesResponse200 = {
-  data: CompanyAlternativeNames200;
-  status: 200;
-};
-
-export type companyAlternativeNamesResponseSuccess =
-  companyAlternativeNamesResponse200 & {
-    headers: Headers;
-  };
-export type companyAlternativeNamesResponse =
-  companyAlternativeNamesResponseSuccess;
-
-export const getCompanyAlternativeNamesUrl = (companyId: number) => {
-  return `/3/company/${companyId}/alternative_names`;
-};
-
-export const companyAlternativeNames = async (
+export const companyAlternativeNames = (
   companyId: number,
-  options?: RequestInit
-): Promise<companyAlternativeNamesResponse> => {
-  const res = await fetch(getCompanyAlternativeNamesUrl(companyId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: companyAlternativeNamesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as companyAlternativeNamesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CompanyAlternativeNames200>(
+    {
+      url: `https://api.themoviedb.org/3/company/${companyId}/alternative_names`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCompanyAlternativeNamesQueryKey = (companyId?: number) => {
-  return [`/3/company/${companyId}/alternative_names`] as const;
+  return [
+    `https://api.themoviedb.org/3/company/${companyId}/alternative_names`,
+  ] as const;
 };
 
 export const getCompanyAlternativeNamesQueryOptions = <
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5364,10 +4602,10 @@ export const getCompanyAlternativeNamesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCompanyAlternativeNamesQueryKey(companyId);
@@ -5375,7 +4613,7 @@ export const getCompanyAlternativeNamesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof companyAlternativeNames>>
   > = ({ signal }) =>
-    companyAlternativeNames(companyId, { signal, ...fetchOptions });
+    companyAlternativeNames(companyId, requestOptions, signal);
 
   return {
     queryKey,
@@ -5392,11 +4630,11 @@ export const getCompanyAlternativeNamesQueryOptions = <
 export type CompanyAlternativeNamesQueryResult = NonNullable<
   Awaited<ReturnType<typeof companyAlternativeNames>>
 >;
-export type CompanyAlternativeNamesQueryError = unknown;
+export type CompanyAlternativeNamesQueryError = ErrorType<unknown>;
 
 export function useCompanyAlternativeNames<
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options: {
@@ -5415,7 +4653,7 @@ export function useCompanyAlternativeNames<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5423,7 +4661,7 @@ export function useCompanyAlternativeNames<
 };
 export function useCompanyAlternativeNames<
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5442,7 +4680,7 @@ export function useCompanyAlternativeNames<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5450,7 +4688,7 @@ export function useCompanyAlternativeNames<
 };
 export function useCompanyAlternativeNames<
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5461,7 +4699,7 @@ export function useCompanyAlternativeNames<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5473,7 +4711,7 @@ export function useCompanyAlternativeNames<
 
 export function useCompanyAlternativeNames<
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5484,7 +4722,7 @@ export function useCompanyAlternativeNames<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5509,63 +4747,45 @@ export function useCompanyAlternativeNames<
  * Get the company logos by id.
  * @summary Images
  */
-export type companyImagesResponse200 = {
-  data: CompanyImages200;
-  status: 200;
-};
-
-export type companyImagesResponseSuccess = companyImagesResponse200 & {
-  headers: Headers;
-};
-export type companyImagesResponse = companyImagesResponseSuccess;
-
-export const getCompanyImagesUrl = (companyId: number) => {
-  return `/3/company/${companyId}/images`;
-};
-
-export const companyImages = async (
+export const companyImages = (
   companyId: number,
-  options?: RequestInit
-): Promise<companyImagesResponse> => {
-  const res = await fetch(getCompanyImagesUrl(companyId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: companyImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as companyImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CompanyImages200>(
+    {
+      url: `https://api.themoviedb.org/3/company/${companyId}/images`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getCompanyImagesQueryKey = (companyId?: number) => {
-  return [`/3/company/${companyId}/images`] as const;
+  return [`https://api.themoviedb.org/3/company/${companyId}/images`] as const;
 };
 
 export const getCompanyImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof companyImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCompanyImagesQueryKey(companyId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof companyImages>>> = ({
     signal,
-  }) => companyImages(companyId, { signal, ...fetchOptions });
+  }) => companyImages(companyId, requestOptions, signal);
 
   return {
     queryKey,
@@ -5582,11 +4802,11 @@ export const getCompanyImagesQueryOptions = <
 export type CompanyImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof companyImages>>
 >;
-export type CompanyImagesQueryError = unknown;
+export type CompanyImagesQueryError = ErrorType<unknown>;
 
 export function useCompanyImages<
   TData = Awaited<ReturnType<typeof companyImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options: {
@@ -5601,7 +4821,7 @@ export function useCompanyImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5609,7 +4829,7 @@ export function useCompanyImages<
 };
 export function useCompanyImages<
   TData = Awaited<ReturnType<typeof companyImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
@@ -5624,7 +4844,7 @@ export function useCompanyImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5632,14 +4852,14 @@ export function useCompanyImages<
 };
 export function useCompanyImages<
   TData = Awaited<ReturnType<typeof companyImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5651,14 +4871,14 @@ export function useCompanyImages<
 
 export function useCompanyImages<
   TData = Awaited<ReturnType<typeof companyImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   companyId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof companyImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5680,48 +4900,27 @@ export function useCompanyImages<
  * Query the API configuration details.
  * @summary Details
  */
-export type configurationDetailsResponse200 = {
-  data: ConfigurationDetails200;
-  status: 200;
-};
-
-export type configurationDetailsResponseSuccess =
-  configurationDetailsResponse200 & {
-    headers: Headers;
-  };
-export type configurationDetailsResponse = configurationDetailsResponseSuccess;
-
-export const getConfigurationDetailsUrl = () => {
-  return `/3/configuration`;
-};
-
-export const configurationDetails = async (
-  options?: RequestInit
-): Promise<configurationDetailsResponse> => {
-  const res = await fetch(getConfigurationDetailsUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationDetailsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationDetailsResponse;
+export const configurationDetails = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ConfigurationDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/configuration`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationDetailsQueryKey = () => {
-  return [`/3/configuration`] as const;
+  return [`https://api.themoviedb.org/3/configuration`] as const;
 };
 
 export const getConfigurationDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -5730,15 +4929,15 @@ export const getConfigurationDetailsQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getConfigurationDetailsQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationDetails>>
-  > = ({ signal }) => configurationDetails({ signal, ...fetchOptions });
+  > = ({ signal }) => configurationDetails(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationDetails>>,
@@ -5750,11 +4949,11 @@ export const getConfigurationDetailsQueryOptions = <
 export type ConfigurationDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationDetails>>
 >;
-export type ConfigurationDetailsQueryError = unknown;
+export type ConfigurationDetailsQueryError = ErrorType<unknown>;
 
 export function useConfigurationDetails<
   TData = Awaited<ReturnType<typeof configurationDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -5772,7 +4971,7 @@ export function useConfigurationDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5780,7 +4979,7 @@ export function useConfigurationDetails<
 };
 export function useConfigurationDetails<
   TData = Awaited<ReturnType<typeof configurationDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -5798,7 +4997,7 @@ export function useConfigurationDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5806,7 +5005,7 @@ export function useConfigurationDetails<
 };
 export function useConfigurationDetails<
   TData = Awaited<ReturnType<typeof configurationDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -5816,7 +5015,7 @@ export function useConfigurationDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5828,7 +5027,7 @@ export function useConfigurationDetails<
 
 export function useConfigurationDetails<
   TData = Awaited<ReturnType<typeof configurationDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -5838,7 +5037,7 @@ export function useConfigurationDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -5860,66 +5059,34 @@ export function useConfigurationDetails<
  * Get the list of countries (ISO 3166-1 tags) used throughout TMDB.
  * @summary Countries
  */
-export type configurationCountriesResponse200 = {
-  data: ConfigurationCountries200Item[];
-  status: 200;
-};
-
-export type configurationCountriesResponseSuccess =
-  configurationCountriesResponse200 & {
-    headers: Headers;
-  };
-export type configurationCountriesResponse =
-  configurationCountriesResponseSuccess;
-
-export const getConfigurationCountriesUrl = (
-  params?: ConfigurationCountriesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/configuration/countries?${stringifiedParams}`
-    : `/3/configuration/countries`;
-};
-
-export const configurationCountries = async (
+export const configurationCountries = (
   params?: ConfigurationCountriesParams,
-  options?: RequestInit
-): Promise<configurationCountriesResponse> => {
-  const res = await fetch(getConfigurationCountriesUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationCountriesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationCountriesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ConfigurationCountries200Item[]>(
+    {
+      url: `https://api.themoviedb.org/3/configuration/countries`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationCountriesQueryKey = (
   params?: ConfigurationCountriesParams
 ) => {
-  return [`/3/configuration/countries`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/configuration/countries`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getConfigurationCountriesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationCountries>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ConfigurationCountriesParams,
   options?: {
@@ -5930,18 +5097,17 @@ export const getConfigurationCountriesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getConfigurationCountriesQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationCountries>>
-  > = ({ signal }) =>
-    configurationCountries(params, { signal, ...fetchOptions });
+  > = ({ signal }) => configurationCountries(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationCountries>>,
@@ -5953,11 +5119,11 @@ export const getConfigurationCountriesQueryOptions = <
 export type ConfigurationCountriesQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationCountries>>
 >;
-export type ConfigurationCountriesQueryError = unknown;
+export type ConfigurationCountriesQueryError = ErrorType<unknown>;
 
 export function useConfigurationCountries<
   TData = Awaited<ReturnType<typeof configurationCountries>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | ConfigurationCountriesParams,
   options: {
@@ -5976,7 +5142,7 @@ export function useConfigurationCountries<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -5984,7 +5150,7 @@ export function useConfigurationCountries<
 };
 export function useConfigurationCountries<
   TData = Awaited<ReturnType<typeof configurationCountries>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ConfigurationCountriesParams,
   options?: {
@@ -6003,7 +5169,7 @@ export function useConfigurationCountries<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6011,7 +5177,7 @@ export function useConfigurationCountries<
 };
 export function useConfigurationCountries<
   TData = Awaited<ReturnType<typeof configurationCountries>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ConfigurationCountriesParams,
   options?: {
@@ -6022,7 +5188,7 @@ export function useConfigurationCountries<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6034,7 +5200,7 @@ export function useConfigurationCountries<
 
 export function useConfigurationCountries<
   TData = Awaited<ReturnType<typeof configurationCountries>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: ConfigurationCountriesParams,
   options?: {
@@ -6045,7 +5211,7 @@ export function useConfigurationCountries<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6067,45 +5233,27 @@ export function useConfigurationCountries<
  * Get the list of the jobs and departments we use on TMDB.
  * @summary Jobs
  */
-export type configurationJobsResponse200 = {
-  data: ConfigurationJobs200Item[];
-  status: 200;
-};
-
-export type configurationJobsResponseSuccess = configurationJobsResponse200 & {
-  headers: Headers;
-};
-export type configurationJobsResponse = configurationJobsResponseSuccess;
-
-export const getConfigurationJobsUrl = () => {
-  return `/3/configuration/jobs`;
-};
-
-export const configurationJobs = async (
-  options?: RequestInit
-): Promise<configurationJobsResponse> => {
-  const res = await fetch(getConfigurationJobsUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationJobsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationJobsResponse;
+export const configurationJobs = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ConfigurationJobs200Item[]>(
+    {
+      url: `https://api.themoviedb.org/3/configuration/jobs`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationJobsQueryKey = () => {
-  return [`/3/configuration/jobs`] as const;
+  return [`https://api.themoviedb.org/3/configuration/jobs`] as const;
 };
 
 export const getConfigurationJobsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationJobs>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -6114,15 +5262,15 @@ export const getConfigurationJobsQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getConfigurationJobsQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationJobs>>
-  > = ({ signal }) => configurationJobs({ signal, ...fetchOptions });
+  > = ({ signal }) => configurationJobs(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationJobs>>,
@@ -6134,11 +5282,11 @@ export const getConfigurationJobsQueryOptions = <
 export type ConfigurationJobsQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationJobs>>
 >;
-export type ConfigurationJobsQueryError = unknown;
+export type ConfigurationJobsQueryError = ErrorType<unknown>;
 
 export function useConfigurationJobs<
   TData = Awaited<ReturnType<typeof configurationJobs>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -6156,7 +5304,7 @@ export function useConfigurationJobs<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -6164,7 +5312,7 @@ export function useConfigurationJobs<
 };
 export function useConfigurationJobs<
   TData = Awaited<ReturnType<typeof configurationJobs>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6182,7 +5330,7 @@ export function useConfigurationJobs<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6190,7 +5338,7 @@ export function useConfigurationJobs<
 };
 export function useConfigurationJobs<
   TData = Awaited<ReturnType<typeof configurationJobs>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6200,7 +5348,7 @@ export function useConfigurationJobs<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6212,7 +5360,7 @@ export function useConfigurationJobs<
 
 export function useConfigurationJobs<
   TData = Awaited<ReturnType<typeof configurationJobs>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6222,7 +5370,7 @@ export function useConfigurationJobs<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6244,49 +5392,27 @@ export function useConfigurationJobs<
  * Get the list of languages (ISO 639-1 tags) used throughout TMDB.
  * @summary Languages
  */
-export type configurationLanguagesResponse200 = {
-  data: ConfigurationLanguages200Item[];
-  status: 200;
-};
-
-export type configurationLanguagesResponseSuccess =
-  configurationLanguagesResponse200 & {
-    headers: Headers;
-  };
-export type configurationLanguagesResponse =
-  configurationLanguagesResponseSuccess;
-
-export const getConfigurationLanguagesUrl = () => {
-  return `/3/configuration/languages`;
-};
-
-export const configurationLanguages = async (
-  options?: RequestInit
-): Promise<configurationLanguagesResponse> => {
-  const res = await fetch(getConfigurationLanguagesUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationLanguagesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationLanguagesResponse;
+export const configurationLanguages = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ConfigurationLanguages200Item[]>(
+    {
+      url: `https://api.themoviedb.org/3/configuration/languages`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationLanguagesQueryKey = () => {
-  return [`/3/configuration/languages`] as const;
+  return [`https://api.themoviedb.org/3/configuration/languages`] as const;
 };
 
 export const getConfigurationLanguagesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -6295,16 +5421,16 @@ export const getConfigurationLanguagesQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getConfigurationLanguagesQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationLanguages>>
-  > = ({ signal }) => configurationLanguages({ signal, ...fetchOptions });
+  > = ({ signal }) => configurationLanguages(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationLanguages>>,
@@ -6316,11 +5442,11 @@ export const getConfigurationLanguagesQueryOptions = <
 export type ConfigurationLanguagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationLanguages>>
 >;
-export type ConfigurationLanguagesQueryError = unknown;
+export type ConfigurationLanguagesQueryError = ErrorType<unknown>;
 
 export function useConfigurationLanguages<
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -6338,7 +5464,7 @@ export function useConfigurationLanguages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -6346,7 +5472,7 @@ export function useConfigurationLanguages<
 };
 export function useConfigurationLanguages<
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6364,7 +5490,7 @@ export function useConfigurationLanguages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6372,7 +5498,7 @@ export function useConfigurationLanguages<
 };
 export function useConfigurationLanguages<
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6382,7 +5508,7 @@ export function useConfigurationLanguages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6394,7 +5520,7 @@ export function useConfigurationLanguages<
 
 export function useConfigurationLanguages<
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6404,7 +5530,7 @@ export function useConfigurationLanguages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6426,49 +5552,29 @@ export function useConfigurationLanguages<
  * Get a list of the officially supported translations on TMDB.
  * @summary Primary Translations
  */
-export type configurationPrimaryTranslationsResponse200 = {
-  data: string[];
-  status: 200;
-};
-
-export type configurationPrimaryTranslationsResponseSuccess =
-  configurationPrimaryTranslationsResponse200 & {
-    headers: Headers;
-  };
-export type configurationPrimaryTranslationsResponse =
-  configurationPrimaryTranslationsResponseSuccess;
-
-export const getConfigurationPrimaryTranslationsUrl = () => {
-  return `/3/configuration/primary_translations`;
-};
-
-export const configurationPrimaryTranslations = async (
-  options?: RequestInit
-): Promise<configurationPrimaryTranslationsResponse> => {
-  const res = await fetch(getConfigurationPrimaryTranslationsUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationPrimaryTranslationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationPrimaryTranslationsResponse;
+export const configurationPrimaryTranslations = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<string[]>(
+    {
+      url: `https://api.themoviedb.org/3/configuration/primary_translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationPrimaryTranslationsQueryKey = () => {
-  return [`/3/configuration/primary_translations`] as const;
+  return [
+    `https://api.themoviedb.org/3/configuration/primary_translations`,
+  ] as const;
 };
 
 export const getConfigurationPrimaryTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -6477,17 +5583,16 @@ export const getConfigurationPrimaryTranslationsQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getConfigurationPrimaryTranslationsQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationPrimaryTranslations>>
-  > = ({ signal }) =>
-    configurationPrimaryTranslations({ signal, ...fetchOptions });
+  > = ({ signal }) => configurationPrimaryTranslations(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
@@ -6499,11 +5604,11 @@ export const getConfigurationPrimaryTranslationsQueryOptions = <
 export type ConfigurationPrimaryTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationPrimaryTranslations>>
 >;
-export type ConfigurationPrimaryTranslationsQueryError = unknown;
+export type ConfigurationPrimaryTranslationsQueryError = ErrorType<unknown>;
 
 export function useConfigurationPrimaryTranslations<
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -6521,7 +5626,7 @@ export function useConfigurationPrimaryTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -6529,7 +5634,7 @@ export function useConfigurationPrimaryTranslations<
 };
 export function useConfigurationPrimaryTranslations<
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6547,7 +5652,7 @@ export function useConfigurationPrimaryTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6555,7 +5660,7 @@ export function useConfigurationPrimaryTranslations<
 };
 export function useConfigurationPrimaryTranslations<
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6565,7 +5670,7 @@ export function useConfigurationPrimaryTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6577,7 +5682,7 @@ export function useConfigurationPrimaryTranslations<
 
 export function useConfigurationPrimaryTranslations<
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6587,7 +5692,7 @@ export function useConfigurationPrimaryTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6609,49 +5714,27 @@ export function useConfigurationPrimaryTranslations<
  * Get the list of timezones used throughout TMDB.
  * @summary Timezones
  */
-export type configurationTimezonesResponse200 = {
-  data: ConfigurationTimezones200Item[];
-  status: 200;
-};
-
-export type configurationTimezonesResponseSuccess =
-  configurationTimezonesResponse200 & {
-    headers: Headers;
-  };
-export type configurationTimezonesResponse =
-  configurationTimezonesResponseSuccess;
-
-export const getConfigurationTimezonesUrl = () => {
-  return `/3/configuration/timezones`;
-};
-
-export const configurationTimezones = async (
-  options?: RequestInit
-): Promise<configurationTimezonesResponse> => {
-  const res = await fetch(getConfigurationTimezonesUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: configurationTimezonesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as configurationTimezonesResponse;
+export const configurationTimezones = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ConfigurationTimezones200Item[]>(
+    {
+      url: `https://api.themoviedb.org/3/configuration/timezones`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getConfigurationTimezonesQueryKey = () => {
-  return [`/3/configuration/timezones`] as const;
+  return [`https://api.themoviedb.org/3/configuration/timezones`] as const;
 };
 
 export const getConfigurationTimezonesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<
@@ -6660,16 +5743,16 @@ export const getConfigurationTimezonesQueryOptions = <
       TData
     >
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getConfigurationTimezonesQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof configurationTimezones>>
-  > = ({ signal }) => configurationTimezones({ signal, ...fetchOptions });
+  > = ({ signal }) => configurationTimezones(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationTimezones>>,
@@ -6681,11 +5764,11 @@ export const getConfigurationTimezonesQueryOptions = <
 export type ConfigurationTimezonesQueryResult = NonNullable<
   Awaited<ReturnType<typeof configurationTimezones>>
 >;
-export type ConfigurationTimezonesQueryError = unknown;
+export type ConfigurationTimezonesQueryError = ErrorType<unknown>;
 
 export function useConfigurationTimezones<
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -6703,7 +5786,7 @@ export function useConfigurationTimezones<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -6711,7 +5794,7 @@ export function useConfigurationTimezones<
 };
 export function useConfigurationTimezones<
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6729,7 +5812,7 @@ export function useConfigurationTimezones<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6737,7 +5820,7 @@ export function useConfigurationTimezones<
 };
 export function useConfigurationTimezones<
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6747,7 +5830,7 @@ export function useConfigurationTimezones<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6759,7 +5842,7 @@ export function useConfigurationTimezones<
 
 export function useConfigurationTimezones<
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -6769,7 +5852,7 @@ export function useConfigurationTimezones<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6791,65 +5874,36 @@ export function useConfigurationTimezones<
  * Get a movie or TV credit details by ID.
  * @summary Details
  */
-export type creditDetailsResponse200 = {
-  data: CreditDetails200;
-  status: 200;
-};
-
-export type creditDetailsResponseSuccess = creditDetailsResponse200 & {
-  headers: Headers;
-};
-export type creditDetailsResponse = creditDetailsResponseSuccess;
-
-export const getCreditDetailsUrl = (
-  creditId: string,
-  params?: CreditDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/credit/${creditId}?${stringifiedParams}`
-    : `/3/credit/${creditId}`;
-};
-
-export const creditDetails = async (
+export const creditDetails = (
   creditId: string,
   params?: CreditDetailsParams,
-  options?: RequestInit
-): Promise<creditDetailsResponse> => {
-  const res = await fetch(getCreditDetailsUrl(creditId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: creditDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as creditDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<CreditDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/credit/${creditId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getCreditDetailsQueryKey = (
   creditId?: string,
   params?: CreditDetailsParams
 ) => {
-  return [`/3/credit/${creditId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/credit/${creditId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getCreditDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof creditDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   creditId: string,
   params?: CreditDetailsParams,
@@ -6857,17 +5911,17 @@ export const getCreditDetailsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof creditDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getCreditDetailsQueryKey(creditId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof creditDetails>>> = ({
     signal,
-  }) => creditDetails(creditId, params, { signal, ...fetchOptions });
+  }) => creditDetails(creditId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -6884,11 +5938,11 @@ export const getCreditDetailsQueryOptions = <
 export type CreditDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof creditDetails>>
 >;
-export type CreditDetailsQueryError = unknown;
+export type CreditDetailsQueryError = ErrorType<unknown>;
 
 export function useCreditDetails<
   TData = Awaited<ReturnType<typeof creditDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   creditId: string,
   params: undefined | CreditDetailsParams,
@@ -6904,7 +5958,7 @@ export function useCreditDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -6912,7 +5966,7 @@ export function useCreditDetails<
 };
 export function useCreditDetails<
   TData = Awaited<ReturnType<typeof creditDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   creditId: string,
   params?: CreditDetailsParams,
@@ -6928,7 +5982,7 @@ export function useCreditDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6936,7 +5990,7 @@ export function useCreditDetails<
 };
 export function useCreditDetails<
   TData = Awaited<ReturnType<typeof creditDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   creditId: string,
   params?: CreditDetailsParams,
@@ -6944,7 +5998,7 @@ export function useCreditDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof creditDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6956,7 +6010,7 @@ export function useCreditDetails<
 
 export function useCreditDetails<
   TData = Awaited<ReturnType<typeof creditDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   creditId: string,
   params?: CreditDetailsParams,
@@ -6964,7 +6018,7 @@ export function useCreditDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof creditDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -6986,74 +6040,48 @@ export function useCreditDetails<
  * Find movies using over 30 filters and sort options.
  * @summary Movie
  */
-export type discoverMovieResponse200 = {
-  data: DiscoverMovie200;
-  status: 200;
-};
-
-export type discoverMovieResponseSuccess = discoverMovieResponse200 & {
-  headers: Headers;
-};
-export type discoverMovieResponse = discoverMovieResponseSuccess;
-
-export const getDiscoverMovieUrl = (params?: DiscoverMovieParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/discover/movie?${stringifiedParams}`
-    : `/3/discover/movie`;
-};
-
-export const discoverMovie = async (
+export const discoverMovie = (
   params?: DiscoverMovieParams,
-  options?: RequestInit
-): Promise<discoverMovieResponse> => {
-  const res = await fetch(getDiscoverMovieUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: discoverMovieResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as discoverMovieResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<DiscoverMovie200>(
+    {
+      url: `https://api.themoviedb.org/3/discover/movie`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getDiscoverMovieQueryKey = (params?: DiscoverMovieParams) => {
-  return [`/3/discover/movie`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/discover/movie`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getDiscoverMovieQueryOptions = <
   TData = Awaited<ReturnType<typeof discoverMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getDiscoverMovieQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof discoverMovie>>> = ({
     signal,
-  }) => discoverMovie(params, { signal, ...fetchOptions });
+  }) => discoverMovie(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof discoverMovie>>,
@@ -7065,11 +6093,11 @@ export const getDiscoverMovieQueryOptions = <
 export type DiscoverMovieQueryResult = NonNullable<
   Awaited<ReturnType<typeof discoverMovie>>
 >;
-export type DiscoverMovieQueryError = unknown;
+export type DiscoverMovieQueryError = ErrorType<unknown>;
 
 export function useDiscoverMovie<
   TData = Awaited<ReturnType<typeof discoverMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | DiscoverMovieParams,
   options: {
@@ -7084,7 +6112,7 @@ export function useDiscoverMovie<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -7092,7 +6120,7 @@ export function useDiscoverMovie<
 };
 export function useDiscoverMovie<
   TData = Awaited<ReturnType<typeof discoverMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverMovieParams,
   options?: {
@@ -7107,7 +6135,7 @@ export function useDiscoverMovie<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7115,14 +6143,14 @@ export function useDiscoverMovie<
 };
 export function useDiscoverMovie<
   TData = Awaited<ReturnType<typeof discoverMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7134,14 +6162,14 @@ export function useDiscoverMovie<
 
 export function useDiscoverMovie<
   TData = Awaited<ReturnType<typeof discoverMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7163,74 +6191,48 @@ export function useDiscoverMovie<
  * Find TV shows using over 30 filters and sort options.
  * @summary TV
  */
-export type discoverTvResponse200 = {
-  data: DiscoverTv200;
-  status: 200;
-};
-
-export type discoverTvResponseSuccess = discoverTvResponse200 & {
-  headers: Headers;
-};
-export type discoverTvResponse = discoverTvResponseSuccess;
-
-export const getDiscoverTvUrl = (params?: DiscoverTvParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/discover/tv?${stringifiedParams}`
-    : `/3/discover/tv`;
-};
-
-export const discoverTv = async (
+export const discoverTv = (
   params?: DiscoverTvParams,
-  options?: RequestInit
-): Promise<discoverTvResponse> => {
-  const res = await fetch(getDiscoverTvUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: discoverTvResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as discoverTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<DiscoverTv200>(
+    {
+      url: `https://api.themoviedb.org/3/discover/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getDiscoverTvQueryKey = (params?: DiscoverTvParams) => {
-  return [`/3/discover/tv`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/discover/tv`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getDiscoverTvQueryOptions = <
   TData = Awaited<ReturnType<typeof discoverTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getDiscoverTvQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof discoverTv>>> = ({
     signal,
-  }) => discoverTv(params, { signal, ...fetchOptions });
+  }) => discoverTv(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof discoverTv>>,
@@ -7242,11 +6244,11 @@ export const getDiscoverTvQueryOptions = <
 export type DiscoverTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof discoverTv>>
 >;
-export type DiscoverTvQueryError = unknown;
+export type DiscoverTvQueryError = ErrorType<unknown>;
 
 export function useDiscoverTv<
   TData = Awaited<ReturnType<typeof discoverTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | DiscoverTvParams,
   options: {
@@ -7261,7 +6263,7 @@ export function useDiscoverTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -7269,7 +6271,7 @@ export function useDiscoverTv<
 };
 export function useDiscoverTv<
   TData = Awaited<ReturnType<typeof discoverTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverTvParams,
   options?: {
@@ -7284,7 +6286,7 @@ export function useDiscoverTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7292,14 +6294,14 @@ export function useDiscoverTv<
 };
 export function useDiscoverTv<
   TData = Awaited<ReturnType<typeof discoverTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7311,14 +6313,14 @@ export function useDiscoverTv<
 
 export function useDiscoverTv<
   TData = Awaited<ReturnType<typeof discoverTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: DiscoverTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof discoverTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7340,58 +6342,36 @@ export function useDiscoverTv<
  * Find data by external ID's.
  * @summary Find By ID
  */
-export type findByIdResponse200 = {
-  data: FindById200;
-  status: 200;
-};
-
-export type findByIdResponseSuccess = findByIdResponse200 & {
-  headers: Headers;
-};
-export type findByIdResponse = findByIdResponseSuccess;
-
-export const getFindByIdUrl = (externalId: string, params: FindByIdParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/find/${externalId}?${stringifiedParams}`
-    : `/3/find/${externalId}`;
-};
-
-export const findById = async (
+export const findById = (
   externalId: string,
   params: FindByIdParams,
-  options?: RequestInit
-): Promise<findByIdResponse> => {
-  const res = await fetch(getFindByIdUrl(externalId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: findByIdResponse['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as findByIdResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<FindById200>(
+    {
+      url: `https://api.themoviedb.org/3/find/${externalId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getFindByIdQueryKey = (
   externalId?: string,
   params?: FindByIdParams
 ) => {
-  return [`/3/find/${externalId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/find/${externalId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getFindByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof findById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   externalId: string,
   params: FindByIdParams,
@@ -7399,17 +6379,17 @@ export const getFindByIdQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findById>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getFindByIdQueryKey(externalId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof findById>>> = ({
     signal,
-  }) => findById(externalId, params, { signal, ...fetchOptions });
+  }) => findById(externalId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -7424,11 +6404,11 @@ export const getFindByIdQueryOptions = <
 export type FindByIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof findById>>
 >;
-export type FindByIdQueryError = unknown;
+export type FindByIdQueryError = ErrorType<unknown>;
 
 export function useFindById<
   TData = Awaited<ReturnType<typeof findById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   externalId: string,
   params: FindByIdParams,
@@ -7444,7 +6424,7 @@ export function useFindById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -7452,7 +6432,7 @@ export function useFindById<
 };
 export function useFindById<
   TData = Awaited<ReturnType<typeof findById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   externalId: string,
   params: FindByIdParams,
@@ -7468,7 +6448,7 @@ export function useFindById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7476,7 +6456,7 @@ export function useFindById<
 };
 export function useFindById<
   TData = Awaited<ReturnType<typeof findById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   externalId: string,
   params: FindByIdParams,
@@ -7484,7 +6464,7 @@ export function useFindById<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findById>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7496,7 +6476,7 @@ export function useFindById<
 
 export function useFindById<
   TData = Awaited<ReturnType<typeof findById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   externalId: string,
   params: FindByIdParams,
@@ -7504,7 +6484,7 @@ export function useFindById<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof findById>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7526,74 +6506,48 @@ export function useFindById<
  * Get the list of official genres for movies.
  * @summary Movie List
  */
-export type genreMovieListResponse200 = {
-  data: GenreMovieList200;
-  status: 200;
-};
-
-export type genreMovieListResponseSuccess = genreMovieListResponse200 & {
-  headers: Headers;
-};
-export type genreMovieListResponse = genreMovieListResponseSuccess;
-
-export const getGenreMovieListUrl = (params?: GenreMovieListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/genre/movie/list?${stringifiedParams}`
-    : `/3/genre/movie/list`;
-};
-
-export const genreMovieList = async (
+export const genreMovieList = (
   params?: GenreMovieListParams,
-  options?: RequestInit
-): Promise<genreMovieListResponse> => {
-  const res = await fetch(getGenreMovieListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: genreMovieListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as genreMovieListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GenreMovieList200>(
+    {
+      url: `https://api.themoviedb.org/3/genre/movie/list`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getGenreMovieListQueryKey = (params?: GenreMovieListParams) => {
-  return [`/3/genre/movie/list`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/genre/movie/list`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getGenreMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof genreMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreMovieListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreMovieList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGenreMovieListQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof genreMovieList>>> = ({
     signal,
-  }) => genreMovieList(params, { signal, ...fetchOptions });
+  }) => genreMovieList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof genreMovieList>>,
@@ -7605,11 +6559,11 @@ export const getGenreMovieListQueryOptions = <
 export type GenreMovieListQueryResult = NonNullable<
   Awaited<ReturnType<typeof genreMovieList>>
 >;
-export type GenreMovieListQueryError = unknown;
+export type GenreMovieListQueryError = ErrorType<unknown>;
 
 export function useGenreMovieList<
   TData = Awaited<ReturnType<typeof genreMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | GenreMovieListParams,
   options: {
@@ -7624,7 +6578,7 @@ export function useGenreMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -7632,7 +6586,7 @@ export function useGenreMovieList<
 };
 export function useGenreMovieList<
   TData = Awaited<ReturnType<typeof genreMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreMovieListParams,
   options?: {
@@ -7647,7 +6601,7 @@ export function useGenreMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7655,14 +6609,14 @@ export function useGenreMovieList<
 };
 export function useGenreMovieList<
   TData = Awaited<ReturnType<typeof genreMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreMovieListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreMovieList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7674,14 +6628,14 @@ export function useGenreMovieList<
 
 export function useGenreMovieList<
   TData = Awaited<ReturnType<typeof genreMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreMovieListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreMovieList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7703,74 +6657,48 @@ export function useGenreMovieList<
  * Get the list of official genres for TV shows.
  * @summary TV List
  */
-export type genreTvListResponse200 = {
-  data: GenreTvList200;
-  status: 200;
-};
-
-export type genreTvListResponseSuccess = genreTvListResponse200 & {
-  headers: Headers;
-};
-export type genreTvListResponse = genreTvListResponseSuccess;
-
-export const getGenreTvListUrl = (params?: GenreTvListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/genre/tv/list?${stringifiedParams}`
-    : `/3/genre/tv/list`;
-};
-
-export const genreTvList = async (
+export const genreTvList = (
   params?: GenreTvListParams,
-  options?: RequestInit
-): Promise<genreTvListResponse> => {
-  const res = await fetch(getGenreTvListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: genreTvListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as genreTvListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GenreTvList200>(
+    {
+      url: `https://api.themoviedb.org/3/genre/tv/list`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getGenreTvListQueryKey = (params?: GenreTvListParams) => {
-  return [`/3/genre/tv/list`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/genre/tv/list`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getGenreTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof genreTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getGenreTvListQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof genreTvList>>> = ({
     signal,
-  }) => genreTvList(params, { signal, ...fetchOptions });
+  }) => genreTvList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof genreTvList>>,
@@ -7782,11 +6710,11 @@ export const getGenreTvListQueryOptions = <
 export type GenreTvListQueryResult = NonNullable<
   Awaited<ReturnType<typeof genreTvList>>
 >;
-export type GenreTvListQueryError = unknown;
+export type GenreTvListQueryError = ErrorType<unknown>;
 
 export function useGenreTvList<
   TData = Awaited<ReturnType<typeof genreTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | GenreTvListParams,
   options: {
@@ -7801,7 +6729,7 @@ export function useGenreTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -7809,7 +6737,7 @@ export function useGenreTvList<
 };
 export function useGenreTvList<
   TData = Awaited<ReturnType<typeof genreTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreTvListParams,
   options?: {
@@ -7824,7 +6752,7 @@ export function useGenreTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7832,14 +6760,14 @@ export function useGenreTvList<
 };
 export function useGenreTvList<
   TData = Awaited<ReturnType<typeof genreTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7851,14 +6779,14 @@ export function useGenreTvList<
 
 export function useGenreTvList<
   TData = Awaited<ReturnType<typeof genreTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: GenreTvListParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof genreTvList>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -7880,60 +6808,21 @@ export function useGenreTvList<
  * Get the rated movies for a guest session.
  * @summary Rated Movies
  */
-export type guestSessionRatedMoviesResponse200 = {
-  data: GuestSessionRatedMovies200;
-  status: 200;
-};
-
-export type guestSessionRatedMoviesResponseSuccess =
-  guestSessionRatedMoviesResponse200 & {
-    headers: Headers;
-  };
-export type guestSessionRatedMoviesResponse =
-  guestSessionRatedMoviesResponseSuccess;
-
-export const getGuestSessionRatedMoviesUrl = (
-  guestSessionId: string,
-  params?: GuestSessionRatedMoviesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/guest_session/${guestSessionId}/rated/movies?${stringifiedParams}`
-    : `/3/guest_session/${guestSessionId}/rated/movies`;
-};
-
-export const guestSessionRatedMovies = async (
+export const guestSessionRatedMovies = (
   guestSessionId: string,
   params?: GuestSessionRatedMoviesParams,
-  options?: RequestInit
-): Promise<guestSessionRatedMoviesResponse> => {
-  const res = await fetch(
-    getGuestSessionRatedMoviesUrl(guestSessionId, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GuestSessionRatedMovies200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: guestSessionRatedMoviesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as guestSessionRatedMoviesResponse;
 };
 
 export const getGuestSessionRatedMoviesQueryKey = (
@@ -7941,14 +6830,14 @@ export const getGuestSessionRatedMoviesQueryKey = (
   params?: GuestSessionRatedMoviesParams
 ) => {
   return [
-    `/3/guest_session/${guestSessionId}/rated/movies`,
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getGuestSessionRatedMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedMoviesParams,
@@ -7960,10 +6849,10 @@ export const getGuestSessionRatedMoviesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -7972,10 +6861,7 @@ export const getGuestSessionRatedMoviesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof guestSessionRatedMovies>>
   > = ({ signal }) =>
-    guestSessionRatedMovies(guestSessionId, params, {
-      signal,
-      ...fetchOptions,
-    });
+    guestSessionRatedMovies(guestSessionId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -7992,11 +6878,11 @@ export const getGuestSessionRatedMoviesQueryOptions = <
 export type GuestSessionRatedMoviesQueryResult = NonNullable<
   Awaited<ReturnType<typeof guestSessionRatedMovies>>
 >;
-export type GuestSessionRatedMoviesQueryError = unknown;
+export type GuestSessionRatedMoviesQueryError = ErrorType<unknown>;
 
 export function useGuestSessionRatedMovies<
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params: undefined | GuestSessionRatedMoviesParams,
@@ -8016,7 +6902,7 @@ export function useGuestSessionRatedMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -8024,7 +6910,7 @@ export function useGuestSessionRatedMovies<
 };
 export function useGuestSessionRatedMovies<
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedMoviesParams,
@@ -8044,7 +6930,7 @@ export function useGuestSessionRatedMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8052,7 +6938,7 @@ export function useGuestSessionRatedMovies<
 };
 export function useGuestSessionRatedMovies<
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedMoviesParams,
@@ -8064,7 +6950,7 @@ export function useGuestSessionRatedMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8076,7 +6962,7 @@ export function useGuestSessionRatedMovies<
 
 export function useGuestSessionRatedMovies<
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedMoviesParams,
@@ -8088,7 +6974,7 @@ export function useGuestSessionRatedMovies<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8114,56 +7000,21 @@ export function useGuestSessionRatedMovies<
  * Get the rated TV shows for a guest session.
  * @summary Rated TV
  */
-export type guestSessionRatedTvResponse200 = {
-  data: GuestSessionRatedTv200;
-  status: 200;
-};
-
-export type guestSessionRatedTvResponseSuccess =
-  guestSessionRatedTvResponse200 & {
-    headers: Headers;
-  };
-export type guestSessionRatedTvResponse = guestSessionRatedTvResponseSuccess;
-
-export const getGuestSessionRatedTvUrl = (
-  guestSessionId: string,
-  params?: GuestSessionRatedTvParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/guest_session/${guestSessionId}/rated/tv?${stringifiedParams}`
-    : `/3/guest_session/${guestSessionId}/rated/tv`;
-};
-
-export const guestSessionRatedTv = async (
+export const guestSessionRatedTv = (
   guestSessionId: string,
   params?: GuestSessionRatedTvParams,
-  options?: RequestInit
-): Promise<guestSessionRatedTvResponse> => {
-  const res = await fetch(getGuestSessionRatedTvUrl(guestSessionId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: guestSessionRatedTvResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as guestSessionRatedTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GuestSessionRatedTv200>(
+    {
+      url: `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getGuestSessionRatedTvQueryKey = (
@@ -8171,14 +7022,14 @@ export const getGuestSessionRatedTvQueryKey = (
   params?: GuestSessionRatedTvParams
 ) => {
   return [
-    `/3/guest_session/${guestSessionId}/rated/tv`,
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getGuestSessionRatedTvQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvParams,
@@ -8190,10 +7041,10 @@ export const getGuestSessionRatedTvQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -8202,7 +7053,7 @@ export const getGuestSessionRatedTvQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof guestSessionRatedTv>>
   > = ({ signal }) =>
-    guestSessionRatedTv(guestSessionId, params, { signal, ...fetchOptions });
+    guestSessionRatedTv(guestSessionId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -8219,11 +7070,11 @@ export const getGuestSessionRatedTvQueryOptions = <
 export type GuestSessionRatedTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof guestSessionRatedTv>>
 >;
-export type GuestSessionRatedTvQueryError = unknown;
+export type GuestSessionRatedTvQueryError = ErrorType<unknown>;
 
 export function useGuestSessionRatedTv<
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params: undefined | GuestSessionRatedTvParams,
@@ -8243,7 +7094,7 @@ export function useGuestSessionRatedTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -8251,7 +7102,7 @@ export function useGuestSessionRatedTv<
 };
 export function useGuestSessionRatedTv<
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvParams,
@@ -8271,7 +7122,7 @@ export function useGuestSessionRatedTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8279,7 +7130,7 @@ export function useGuestSessionRatedTv<
 };
 export function useGuestSessionRatedTv<
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvParams,
@@ -8291,7 +7142,7 @@ export function useGuestSessionRatedTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8303,7 +7154,7 @@ export function useGuestSessionRatedTv<
 
 export function useGuestSessionRatedTv<
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvParams,
@@ -8315,7 +7166,7 @@ export function useGuestSessionRatedTv<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8341,60 +7192,21 @@ export function useGuestSessionRatedTv<
  * Get the rated TV episodes for a guest session.
  * @summary Rated TV Episodes
  */
-export type guestSessionRatedTvEpisodesResponse200 = {
-  data: GuestSessionRatedTvEpisodes200;
-  status: 200;
-};
-
-export type guestSessionRatedTvEpisodesResponseSuccess =
-  guestSessionRatedTvEpisodesResponse200 & {
-    headers: Headers;
-  };
-export type guestSessionRatedTvEpisodesResponse =
-  guestSessionRatedTvEpisodesResponseSuccess;
-
-export const getGuestSessionRatedTvEpisodesUrl = (
-  guestSessionId: string,
-  params?: GuestSessionRatedTvEpisodesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/guest_session/${guestSessionId}/rated/tv/episodes?${stringifiedParams}`
-    : `/3/guest_session/${guestSessionId}/rated/tv/episodes`;
-};
-
-export const guestSessionRatedTvEpisodes = async (
+export const guestSessionRatedTvEpisodes = (
   guestSessionId: string,
   params?: GuestSessionRatedTvEpisodesParams,
-  options?: RequestInit
-): Promise<guestSessionRatedTvEpisodesResponse> => {
-  const res = await fetch(
-    getGuestSessionRatedTvEpisodesUrl(guestSessionId, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<GuestSessionRatedTvEpisodes200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv/episodes`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: guestSessionRatedTvEpisodesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as guestSessionRatedTvEpisodesResponse;
 };
 
 export const getGuestSessionRatedTvEpisodesQueryKey = (
@@ -8402,14 +7214,14 @@ export const getGuestSessionRatedTvEpisodesQueryKey = (
   params?: GuestSessionRatedTvEpisodesParams
 ) => {
   return [
-    `/3/guest_session/${guestSessionId}/rated/tv/episodes`,
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv/episodes`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getGuestSessionRatedTvEpisodesQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvEpisodesParams,
@@ -8421,10 +7233,10 @@ export const getGuestSessionRatedTvEpisodesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -8433,10 +7245,7 @@ export const getGuestSessionRatedTvEpisodesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
   > = ({ signal }) =>
-    guestSessionRatedTvEpisodes(guestSessionId, params, {
-      signal,
-      ...fetchOptions,
-    });
+    guestSessionRatedTvEpisodes(guestSessionId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -8453,11 +7262,11 @@ export const getGuestSessionRatedTvEpisodesQueryOptions = <
 export type GuestSessionRatedTvEpisodesQueryResult = NonNullable<
   Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
 >;
-export type GuestSessionRatedTvEpisodesQueryError = unknown;
+export type GuestSessionRatedTvEpisodesQueryError = ErrorType<unknown>;
 
 export function useGuestSessionRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params: undefined | GuestSessionRatedTvEpisodesParams,
@@ -8477,7 +7286,7 @@ export function useGuestSessionRatedTvEpisodes<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -8485,7 +7294,7 @@ export function useGuestSessionRatedTvEpisodes<
 };
 export function useGuestSessionRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvEpisodesParams,
@@ -8505,7 +7314,7 @@ export function useGuestSessionRatedTvEpisodes<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8513,7 +7322,7 @@ export function useGuestSessionRatedTvEpisodes<
 };
 export function useGuestSessionRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvEpisodesParams,
@@ -8525,7 +7334,7 @@ export function useGuestSessionRatedTvEpisodes<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8537,7 +7346,7 @@ export function useGuestSessionRatedTvEpisodes<
 
 export function useGuestSessionRatedTvEpisodes<
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   guestSessionId: string,
   params?: GuestSessionRatedTvEpisodesParams,
@@ -8549,7 +7358,7 @@ export function useGuestSessionRatedTvEpisodes<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8574,63 +7383,45 @@ export function useGuestSessionRatedTvEpisodes<
 /**
  * @summary Details
  */
-export type keywordDetailsResponse200 = {
-  data: KeywordDetails200;
-  status: 200;
-};
-
-export type keywordDetailsResponseSuccess = keywordDetailsResponse200 & {
-  headers: Headers;
-};
-export type keywordDetailsResponse = keywordDetailsResponseSuccess;
-
-export const getKeywordDetailsUrl = (keywordId: number) => {
-  return `/3/keyword/${keywordId}`;
-};
-
-export const keywordDetails = async (
+export const keywordDetails = (
   keywordId: number,
-  options?: RequestInit
-): Promise<keywordDetailsResponse> => {
-  const res = await fetch(getKeywordDetailsUrl(keywordId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: keywordDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as keywordDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<KeywordDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/keyword/${keywordId}`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getKeywordDetailsQueryKey = (keywordId?: number) => {
-  return [`/3/keyword/${keywordId}`] as const;
+  return [`https://api.themoviedb.org/3/keyword/${keywordId}`] as const;
 };
 
 export const getKeywordDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof keywordDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getKeywordDetailsQueryKey(keywordId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof keywordDetails>>> = ({
     signal,
-  }) => keywordDetails(keywordId, { signal, ...fetchOptions });
+  }) => keywordDetails(keywordId, requestOptions, signal);
 
   return {
     queryKey,
@@ -8647,11 +7438,11 @@ export const getKeywordDetailsQueryOptions = <
 export type KeywordDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof keywordDetails>>
 >;
-export type KeywordDetailsQueryError = unknown;
+export type KeywordDetailsQueryError = ErrorType<unknown>;
 
 export function useKeywordDetails<
   TData = Awaited<ReturnType<typeof keywordDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: number,
   options: {
@@ -8666,7 +7457,7 @@ export function useKeywordDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -8674,7 +7465,7 @@ export function useKeywordDetails<
 };
 export function useKeywordDetails<
   TData = Awaited<ReturnType<typeof keywordDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: number,
   options?: {
@@ -8689,7 +7480,7 @@ export function useKeywordDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8697,14 +7488,14 @@ export function useKeywordDetails<
 };
 export function useKeywordDetails<
   TData = Awaited<ReturnType<typeof keywordDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8716,14 +7507,14 @@ export function useKeywordDetails<
 
 export function useKeywordDetails<
   TData = Awaited<ReturnType<typeof keywordDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8744,53 +7535,21 @@ export function useKeywordDetails<
 /**
  * @summary Movies
  */
-export type keywordMoviesResponse200 = {
-  data: KeywordMovies200;
-  status: 200;
-};
-
-export type keywordMoviesResponseSuccess = keywordMoviesResponse200 & {
-  headers: Headers;
-};
-export type keywordMoviesResponse = keywordMoviesResponseSuccess;
-
-export const getKeywordMoviesUrl = (
-  keywordId: string,
-  params?: KeywordMoviesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/keyword/${keywordId}/movies?${stringifiedParams}`
-    : `/3/keyword/${keywordId}/movies`;
-};
-
-export const keywordMovies = async (
+export const keywordMovies = (
   keywordId: string,
   params?: KeywordMoviesParams,
-  options?: RequestInit
-): Promise<keywordMoviesResponse> => {
-  const res = await fetch(getKeywordMoviesUrl(keywordId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: keywordMoviesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as keywordMoviesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<KeywordMovies200>(
+    {
+      url: `https://api.themoviedb.org/3/keyword/${keywordId}/movies`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getKeywordMoviesQueryKey = (
@@ -8798,14 +7557,14 @@ export const getKeywordMoviesQueryKey = (
   params?: KeywordMoviesParams
 ) => {
   return [
-    `/3/keyword/${keywordId}/movies`,
+    `https://api.themoviedb.org/3/keyword/${keywordId}/movies`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getKeywordMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof keywordMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: string,
   params?: KeywordMoviesParams,
@@ -8813,17 +7572,17 @@ export const getKeywordMoviesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getKeywordMoviesQueryKey(keywordId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof keywordMovies>>> = ({
     signal,
-  }) => keywordMovies(keywordId, params, { signal, ...fetchOptions });
+  }) => keywordMovies(keywordId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -8840,11 +7599,11 @@ export const getKeywordMoviesQueryOptions = <
 export type KeywordMoviesQueryResult = NonNullable<
   Awaited<ReturnType<typeof keywordMovies>>
 >;
-export type KeywordMoviesQueryError = unknown;
+export type KeywordMoviesQueryError = ErrorType<unknown>;
 
 export function useKeywordMovies<
   TData = Awaited<ReturnType<typeof keywordMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: string,
   params: undefined | KeywordMoviesParams,
@@ -8860,7 +7619,7 @@ export function useKeywordMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -8868,7 +7627,7 @@ export function useKeywordMovies<
 };
 export function useKeywordMovies<
   TData = Awaited<ReturnType<typeof keywordMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: string,
   params?: KeywordMoviesParams,
@@ -8884,7 +7643,7 @@ export function useKeywordMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8892,7 +7651,7 @@ export function useKeywordMovies<
 };
 export function useKeywordMovies<
   TData = Awaited<ReturnType<typeof keywordMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: string,
   params?: KeywordMoviesParams,
@@ -8900,7 +7659,7 @@ export function useKeywordMovies<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8912,7 +7671,7 @@ export function useKeywordMovies<
 
 export function useKeywordMovies<
   TData = Awaited<ReturnType<typeof keywordMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   keywordId: string,
   params?: KeywordMoviesParams,
@@ -8920,7 +7679,7 @@ export function useKeywordMovies<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof keywordMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -8942,91 +7701,71 @@ export function useKeywordMovies<
  * Add a movie to a list.
  * @summary Add Movie
  */
-export type listAddMovieResponse200 = {
-  data: ListAddMovie200;
-  status: 200;
-};
-
-export type listAddMovieResponseSuccess = listAddMovieResponse200 & {
-  headers: Headers;
-};
-export type listAddMovieResponse = listAddMovieResponseSuccess;
-
-export const getListAddMovieUrl = (
+export const listAddMovie = (
   listId: number,
-  params: ListAddMovieParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}/add_item?${stringifiedParams}`
-    : `/3/list/${listId}/add_item`;
-};
-
-export const listAddMovie = async (
-  listId: number,
-  listAddMovieBody: ListAddMovieBody,
+  listAddMovieBody: BodyType<ListAddMovieBody>,
   params: ListAddMovieParams,
-  options?: RequestInit
-): Promise<listAddMovieResponse> => {
-  const res = await fetch(getListAddMovieUrl(listId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(listAddMovieBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listAddMovieResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listAddMovieResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListAddMovie200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}/add_item`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: listAddMovieBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListAddMovieMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof listAddMovie>>,
     TError,
-    { listId: number; data: ListAddMovieBody; params: ListAddMovieParams },
+    {
+      listId: number;
+      data: BodyType<ListAddMovieBody>;
+      params: ListAddMovieParams;
+    },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof listAddMovie>>,
   TError,
-  { listId: number; data: ListAddMovieBody; params: ListAddMovieParams },
+  {
+    listId: number;
+    data: BodyType<ListAddMovieBody>;
+    params: ListAddMovieParams;
+  },
   TContext
 > => {
   const mutationKey = ['listAddMovie'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof listAddMovie>>,
-    { listId: number; data: ListAddMovieBody; params: ListAddMovieParams }
+    {
+      listId: number;
+      data: BodyType<ListAddMovieBody>;
+      params: ListAddMovieParams;
+    }
   > = (props) => {
     const { listId, data, params } = props ?? {};
 
-    return listAddMovie(listId, data, params, fetchOptions);
+    return listAddMovie(listId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -9035,27 +7774,38 @@ export const getListAddMovieMutationOptions = <
 export type ListAddMovieMutationResult = NonNullable<
   Awaited<ReturnType<typeof listAddMovie>>
 >;
-export type ListAddMovieMutationBody = ListAddMovieBody;
-export type ListAddMovieMutationError = unknown;
+export type ListAddMovieMutationBody = BodyType<ListAddMovieBody>;
+export type ListAddMovieMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add Movie
  */
-export const useListAddMovie = <TError = unknown, TContext = unknown>(
+export const useListAddMovie = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof listAddMovie>>,
       TError,
-      { listId: number; data: ListAddMovieBody; params: ListAddMovieParams },
+      {
+        listId: number;
+        data: BodyType<ListAddMovieBody>;
+        params: ListAddMovieParams;
+      },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof listAddMovie>>,
   TError,
-  { listId: number; data: ListAddMovieBody; params: ListAddMovieParams },
+  {
+    listId: number;
+    data: BodyType<ListAddMovieBody>;
+    params: ListAddMovieParams;
+  },
   TContext
 > => {
   const mutationOptions = getListAddMovieMutationOptions(options);
@@ -9066,56 +7816,21 @@ export const useListAddMovie = <TError = unknown, TContext = unknown>(
  * Use this method to check if an item has already been added to the list.
  * @summary Check Item Status
  */
-export type listCheckItemStatusResponse200 = {
-  data: ListCheckItemStatus200;
-  status: 200;
-};
-
-export type listCheckItemStatusResponseSuccess =
-  listCheckItemStatusResponse200 & {
-    headers: Headers;
-  };
-export type listCheckItemStatusResponse = listCheckItemStatusResponseSuccess;
-
-export const getListCheckItemStatusUrl = (
-  listId: number,
-  params?: ListCheckItemStatusParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}/item_status?${stringifiedParams}`
-    : `/3/list/${listId}/item_status`;
-};
-
-export const listCheckItemStatus = async (
+export const listCheckItemStatus = (
   listId: number,
   params?: ListCheckItemStatusParams,
-  options?: RequestInit
-): Promise<listCheckItemStatusResponse> => {
-  const res = await fetch(getListCheckItemStatusUrl(listId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listCheckItemStatusResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listCheckItemStatusResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListCheckItemStatus200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}/item_status`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListCheckItemStatusQueryKey = (
@@ -9123,14 +7838,14 @@ export const getListCheckItemStatusQueryKey = (
   params?: ListCheckItemStatusParams
 ) => {
   return [
-    `/3/list/${listId}/item_status`,
+    `https://api.themoviedb.org/3/list/${listId}/item_status`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getListCheckItemStatusQueryOptions = <
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListCheckItemStatusParams,
@@ -9142,10 +7857,10 @@ export const getListCheckItemStatusQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getListCheckItemStatusQueryKey(listId, params);
@@ -9153,7 +7868,7 @@ export const getListCheckItemStatusQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof listCheckItemStatus>>
   > = ({ signal }) =>
-    listCheckItemStatus(listId, params, { signal, ...fetchOptions });
+    listCheckItemStatus(listId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -9170,11 +7885,11 @@ export const getListCheckItemStatusQueryOptions = <
 export type ListCheckItemStatusQueryResult = NonNullable<
   Awaited<ReturnType<typeof listCheckItemStatus>>
 >;
-export type ListCheckItemStatusQueryError = unknown;
+export type ListCheckItemStatusQueryError = ErrorType<unknown>;
 
 export function useListCheckItemStatus<
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params: undefined | ListCheckItemStatusParams,
@@ -9194,7 +7909,7 @@ export function useListCheckItemStatus<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -9202,7 +7917,7 @@ export function useListCheckItemStatus<
 };
 export function useListCheckItemStatus<
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListCheckItemStatusParams,
@@ -9222,7 +7937,7 @@ export function useListCheckItemStatus<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9230,7 +7945,7 @@ export function useListCheckItemStatus<
 };
 export function useListCheckItemStatus<
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListCheckItemStatusParams,
@@ -9242,7 +7957,7 @@ export function useListCheckItemStatus<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9254,7 +7969,7 @@ export function useListCheckItemStatus<
 
 export function useListCheckItemStatus<
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListCheckItemStatusParams,
@@ -9266,7 +7981,7 @@ export function useListCheckItemStatus<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9292,54 +8007,25 @@ export function useListCheckItemStatus<
  * Clear all items from a list.
  * @summary Clear
  */
-export type listClearResponse200 = {
-  data: ListClear200;
-  status: 200;
-};
-
-export type listClearResponseSuccess = listClearResponse200 & {
-  headers: Headers;
-};
-export type listClearResponse = listClearResponseSuccess;
-
-export const getListClearUrl = (listId: number, params: ListClearParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}/clear?${stringifiedParams}`
-    : `/3/list/${listId}/clear`;
-};
-
-export const listClear = async (
+export const listClear = (
   listId: number,
   params: ListClearParams,
-  options?: RequestInit
-): Promise<listClearResponse> => {
-  const res = await fetch(getListClearUrl(listId, params), {
-    ...options,
-    method: 'POST',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listClearResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listClearResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListClear200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}/clear`,
+      method: 'POST',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListClearMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -9348,7 +8034,7 @@ export const getListClearMutationOptions = <
     { listId: number; params: ListClearParams },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof listClear>>,
   TError,
@@ -9356,13 +8042,13 @@ export const getListClearMutationOptions = <
   TContext
 > => {
   const mutationKey = ['listClear'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof listClear>>,
@@ -9370,7 +8056,7 @@ export const getListClearMutationOptions = <
   > = (props) => {
     const { listId, params } = props ?? {};
 
-    return listClear(listId, params, fetchOptions);
+    return listClear(listId, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -9380,12 +8066,12 @@ export type ListClearMutationResult = NonNullable<
   Awaited<ReturnType<typeof listClear>>
 >;
 
-export type ListClearMutationError = unknown;
+export type ListClearMutationError = ErrorType<unknown>;
 
 /**
  * @summary Clear
  */
-export const useListClear = <TError = unknown, TContext = unknown>(
+export const useListClear = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof listClear>>,
@@ -9393,7 +8079,7 @@ export const useListClear = <TError = unknown, TContext = unknown>(
       { listId: number; params: ListClearParams },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -9409,87 +8095,58 @@ export const useListClear = <TError = unknown, TContext = unknown>(
 /**
  * @summary Create
  */
-export type listCreateResponse200 = {
-  data: ListCreate200;
-  status: 200;
-};
-
-export type listCreateResponseSuccess = listCreateResponse200 & {
-  headers: Headers;
-};
-export type listCreateResponse = listCreateResponseSuccess;
-
-export const getListCreateUrl = (params: ListCreateParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list?${stringifiedParams}`
-    : `/3/list`;
-};
-
-export const listCreate = async (
-  listCreateBody: ListCreateBody,
+export const listCreate = (
+  listCreateBody: BodyType<ListCreateBody>,
   params: ListCreateParams,
-  options?: RequestInit
-): Promise<listCreateResponse> => {
-  const res = await fetch(getListCreateUrl(params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(listCreateBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listCreateResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listCreateResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListCreate200>(
+    {
+      url: `https://api.themoviedb.org/3/list`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: listCreateBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListCreateMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof listCreate>>,
     TError,
-    { data: ListCreateBody; params: ListCreateParams },
+    { data: BodyType<ListCreateBody>; params: ListCreateParams },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof listCreate>>,
   TError,
-  { data: ListCreateBody; params: ListCreateParams },
+  { data: BodyType<ListCreateBody>; params: ListCreateParams },
   TContext
 > => {
   const mutationKey = ['listCreate'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof listCreate>>,
-    { data: ListCreateBody; params: ListCreateParams }
+    { data: BodyType<ListCreateBody>; params: ListCreateParams }
   > = (props) => {
     const { data, params } = props ?? {};
 
-    return listCreate(data, params, fetchOptions);
+    return listCreate(data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -9498,27 +8155,27 @@ export const getListCreateMutationOptions = <
 export type ListCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof listCreate>>
 >;
-export type ListCreateMutationBody = ListCreateBody;
-export type ListCreateMutationError = unknown;
+export type ListCreateMutationBody = BodyType<ListCreateBody>;
+export type ListCreateMutationError = ErrorType<unknown>;
 
 /**
  * @summary Create
  */
-export const useListCreate = <TError = unknown, TContext = unknown>(
+export const useListCreate = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof listCreate>>,
       TError,
-      { data: ListCreateBody; params: ListCreateParams },
+      { data: BodyType<ListCreateBody>; params: ListCreateParams },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof listCreate>>,
   TError,
-  { data: ListCreateBody; params: ListCreateParams },
+  { data: BodyType<ListCreateBody>; params: ListCreateParams },
   TContext
 > => {
   const mutationOptions = getListCreateMutationOptions(options);
@@ -9529,54 +8186,23 @@ export const useListCreate = <TError = unknown, TContext = unknown>(
  * Delete a list.
  * @summary Delete
  */
-export type listDeleteResponse200 = {
-  data: ListDelete200;
-  status: 200;
-};
-
-export type listDeleteResponseSuccess = listDeleteResponse200 & {
-  headers: Headers;
-};
-export type listDeleteResponse = listDeleteResponseSuccess;
-
-export const getListDeleteUrl = (listId: number, params: ListDeleteParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}?${stringifiedParams}`
-    : `/3/list/${listId}`;
-};
-
-export const listDelete = async (
+export const listDelete = (
   listId: number,
   params: ListDeleteParams,
-  options?: RequestInit
-): Promise<listDeleteResponse> => {
-  const res = await fetch(getListDeleteUrl(listId, params), {
-    ...options,
-    method: 'DELETE',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listDeleteResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listDeleteResponse;
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<ListDelete200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}`,
+      method: 'DELETE',
+      params,
+    },
+    options
+  );
 };
 
 export const getListDeleteMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -9585,7 +8211,7 @@ export const getListDeleteMutationOptions = <
     { listId: number; params: ListDeleteParams },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof listDelete>>,
   TError,
@@ -9593,13 +8219,13 @@ export const getListDeleteMutationOptions = <
   TContext
 > => {
   const mutationKey = ['listDelete'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof listDelete>>,
@@ -9607,7 +8233,7 @@ export const getListDeleteMutationOptions = <
   > = (props) => {
     const { listId, params } = props ?? {};
 
-    return listDelete(listId, params, fetchOptions);
+    return listDelete(listId, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -9617,12 +8243,12 @@ export type ListDeleteMutationResult = NonNullable<
   Awaited<ReturnType<typeof listDelete>>
 >;
 
-export type ListDeleteMutationError = unknown;
+export type ListDeleteMutationError = ErrorType<unknown>;
 
 /**
  * @summary Delete
  */
-export const useListDelete = <TError = unknown, TContext = unknown>(
+export const useListDelete = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof listDelete>>,
@@ -9630,7 +8256,7 @@ export const useListDelete = <TError = unknown, TContext = unknown>(
       { listId: number; params: ListDeleteParams },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -9646,65 +8272,36 @@ export const useListDelete = <TError = unknown, TContext = unknown>(
 /**
  * @summary Details
  */
-export type listDetailsResponse200 = {
-  data: ListDetails200;
-  status: 200;
-};
-
-export type listDetailsResponseSuccess = listDetailsResponse200 & {
-  headers: Headers;
-};
-export type listDetailsResponse = listDetailsResponseSuccess;
-
-export const getListDetailsUrl = (
-  listId: number,
-  params?: ListDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}?${stringifiedParams}`
-    : `/3/list/${listId}`;
-};
-
-export const listDetails = async (
+export const listDetails = (
   listId: number,
   params?: ListDetailsParams,
-  options?: RequestInit
-): Promise<listDetailsResponse> => {
-  const res = await fetch(getListDetailsUrl(listId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListDetailsQueryKey = (
   listId?: number,
   params?: ListDetailsParams
 ) => {
-  return [`/3/list/${listId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/list/${listId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getListDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof listDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListDetailsParams,
@@ -9712,17 +8309,17 @@ export const getListDetailsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getListDetailsQueryKey(listId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof listDetails>>> = ({
     signal,
-  }) => listDetails(listId, params, { signal, ...fetchOptions });
+  }) => listDetails(listId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -9739,11 +8336,11 @@ export const getListDetailsQueryOptions = <
 export type ListDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof listDetails>>
 >;
-export type ListDetailsQueryError = unknown;
+export type ListDetailsQueryError = ErrorType<unknown>;
 
 export function useListDetails<
   TData = Awaited<ReturnType<typeof listDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params: undefined | ListDetailsParams,
@@ -9759,7 +8356,7 @@ export function useListDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -9767,7 +8364,7 @@ export function useListDetails<
 };
 export function useListDetails<
   TData = Awaited<ReturnType<typeof listDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListDetailsParams,
@@ -9783,7 +8380,7 @@ export function useListDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9791,7 +8388,7 @@ export function useListDetails<
 };
 export function useListDetails<
   TData = Awaited<ReturnType<typeof listDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListDetailsParams,
@@ -9799,7 +8396,7 @@ export function useListDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9811,7 +8408,7 @@ export function useListDetails<
 
 export function useListDetails<
   TData = Awaited<ReturnType<typeof listDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   listId: number,
   params?: ListDetailsParams,
@@ -9819,7 +8416,7 @@ export function useListDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -9841,60 +8438,28 @@ export function useListDetails<
  * Remove a movie from a list.
  * @summary Remove Movie
  */
-export type listRemoveMovieResponse200 = {
-  data: ListRemoveMovie200;
-  status: 200;
-};
-
-export type listRemoveMovieResponseSuccess = listRemoveMovieResponse200 & {
-  headers: Headers;
-};
-export type listRemoveMovieResponse = listRemoveMovieResponseSuccess;
-
-export const getListRemoveMovieUrl = (
+export const listRemoveMovie = (
   listId: number,
-  params: ListRemoveMovieParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/list/${listId}/remove_item?${stringifiedParams}`
-    : `/3/list/${listId}/remove_item`;
-};
-
-export const listRemoveMovie = async (
-  listId: number,
-  listRemoveMovieBody: ListRemoveMovieBody,
+  listRemoveMovieBody: BodyType<ListRemoveMovieBody>,
   params: ListRemoveMovieParams,
-  options?: RequestInit
-): Promise<listRemoveMovieResponse> => {
-  const res = await fetch(getListRemoveMovieUrl(listId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(listRemoveMovieBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listRemoveMovieResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listRemoveMovieResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListRemoveMovie200>(
+    {
+      url: `https://api.themoviedb.org/3/list/${listId}/remove_item`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: listRemoveMovieBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListRemoveMovieMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -9902,34 +8467,42 @@ export const getListRemoveMovieMutationOptions = <
     TError,
     {
       listId: number;
-      data: ListRemoveMovieBody;
+      data: BodyType<ListRemoveMovieBody>;
       params: ListRemoveMovieParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof listRemoveMovie>>,
   TError,
-  { listId: number; data: ListRemoveMovieBody; params: ListRemoveMovieParams },
+  {
+    listId: number;
+    data: BodyType<ListRemoveMovieBody>;
+    params: ListRemoveMovieParams;
+  },
   TContext
 > => {
   const mutationKey = ['listRemoveMovie'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof listRemoveMovie>>,
-    { listId: number; data: ListRemoveMovieBody; params: ListRemoveMovieParams }
+    {
+      listId: number;
+      data: BodyType<ListRemoveMovieBody>;
+      params: ListRemoveMovieParams;
+    }
   > = (props) => {
     const { listId, data, params } = props ?? {};
 
-    return listRemoveMovie(listId, data, params, fetchOptions);
+    return listRemoveMovie(listId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -9938,31 +8511,38 @@ export const getListRemoveMovieMutationOptions = <
 export type ListRemoveMovieMutationResult = NonNullable<
   Awaited<ReturnType<typeof listRemoveMovie>>
 >;
-export type ListRemoveMovieMutationBody = ListRemoveMovieBody;
-export type ListRemoveMovieMutationError = unknown;
+export type ListRemoveMovieMutationBody = BodyType<ListRemoveMovieBody>;
+export type ListRemoveMovieMutationError = ErrorType<unknown>;
 
 /**
  * @summary Remove Movie
  */
-export const useListRemoveMovie = <TError = unknown, TContext = unknown>(
+export const useListRemoveMovie = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof listRemoveMovie>>,
       TError,
       {
         listId: number;
-        data: ListRemoveMovieBody;
+        data: BodyType<ListRemoveMovieBody>;
         params: ListRemoveMovieParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof listRemoveMovie>>,
   TError,
-  { listId: number; data: ListRemoveMovieBody; params: ListRemoveMovieParams },
+  {
+    listId: number;
+    data: BodyType<ListRemoveMovieBody>;
+    params: ListRemoveMovieParams;
+  },
   TContext
 > => {
   const mutationOptions = getListRemoveMovieMutationOptions(options);
@@ -9973,65 +8553,34 @@ export const useListRemoveMovie = <TError = unknown, TContext = unknown>(
  * Get a list of movies that are currently in theatres.
  * @summary Now Playing
  */
-export type movieNowPlayingListResponse200 = {
-  data: MovieNowPlayingList200;
-  status: 200;
-};
-
-export type movieNowPlayingListResponseSuccess =
-  movieNowPlayingListResponse200 & {
-    headers: Headers;
-  };
-export type movieNowPlayingListResponse = movieNowPlayingListResponseSuccess;
-
-export const getMovieNowPlayingListUrl = (
-  params?: MovieNowPlayingListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/now_playing?${stringifiedParams}`
-    : `/3/movie/now_playing`;
-};
-
-export const movieNowPlayingList = async (
+export const movieNowPlayingList = (
   params?: MovieNowPlayingListParams,
-  options?: RequestInit
-): Promise<movieNowPlayingListResponse> => {
-  const res = await fetch(getMovieNowPlayingListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieNowPlayingListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieNowPlayingListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieNowPlayingList200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/now_playing`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieNowPlayingListQueryKey = (
   params?: MovieNowPlayingListParams
 ) => {
-  return [`/3/movie/now_playing`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/now_playing`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieNowPlayingListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieNowPlayingListParams,
   options?: {
@@ -10042,17 +8591,17 @@ export const getMovieNowPlayingListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieNowPlayingListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieNowPlayingList>>
-  > = ({ signal }) => movieNowPlayingList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => movieNowPlayingList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof movieNowPlayingList>>,
@@ -10064,11 +8613,11 @@ export const getMovieNowPlayingListQueryOptions = <
 export type MovieNowPlayingListQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieNowPlayingList>>
 >;
-export type MovieNowPlayingListQueryError = unknown;
+export type MovieNowPlayingListQueryError = ErrorType<unknown>;
 
 export function useMovieNowPlayingList<
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | MovieNowPlayingListParams,
   options: {
@@ -10087,7 +8636,7 @@ export function useMovieNowPlayingList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -10095,7 +8644,7 @@ export function useMovieNowPlayingList<
 };
 export function useMovieNowPlayingList<
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieNowPlayingListParams,
   options?: {
@@ -10114,7 +8663,7 @@ export function useMovieNowPlayingList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10122,7 +8671,7 @@ export function useMovieNowPlayingList<
 };
 export function useMovieNowPlayingList<
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieNowPlayingListParams,
   options?: {
@@ -10133,7 +8682,7 @@ export function useMovieNowPlayingList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10145,7 +8694,7 @@ export function useMovieNowPlayingList<
 
 export function useMovieNowPlayingList<
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieNowPlayingListParams,
   options?: {
@@ -10156,7 +8705,7 @@ export function useMovieNowPlayingList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10178,60 +8727,34 @@ export function useMovieNowPlayingList<
  * Get a list of movies ordered by popularity.
  * @summary Popular
  */
-export type moviePopularListResponse200 = {
-  data: MoviePopularList200;
-  status: 200;
-};
-
-export type moviePopularListResponseSuccess = moviePopularListResponse200 & {
-  headers: Headers;
-};
-export type moviePopularListResponse = moviePopularListResponseSuccess;
-
-export const getMoviePopularListUrl = (params?: MoviePopularListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/popular?${stringifiedParams}`
-    : `/3/movie/popular`;
-};
-
-export const moviePopularList = async (
+export const moviePopularList = (
   params?: MoviePopularListParams,
-  options?: RequestInit
-): Promise<moviePopularListResponse> => {
-  const res = await fetch(getMoviePopularListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: moviePopularListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as moviePopularListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MoviePopularList200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/popular`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMoviePopularListQueryKey = (
   params?: MoviePopularListParams
 ) => {
-  return [`/3/movie/popular`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/popular`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMoviePopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof moviePopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MoviePopularListParams,
   options?: {
@@ -10242,17 +8765,17 @@ export const getMoviePopularListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMoviePopularListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof moviePopularList>>
-  > = ({ signal }) => moviePopularList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => moviePopularList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof moviePopularList>>,
@@ -10264,11 +8787,11 @@ export const getMoviePopularListQueryOptions = <
 export type MoviePopularListQueryResult = NonNullable<
   Awaited<ReturnType<typeof moviePopularList>>
 >;
-export type MoviePopularListQueryError = unknown;
+export type MoviePopularListQueryError = ErrorType<unknown>;
 
 export function useMoviePopularList<
   TData = Awaited<ReturnType<typeof moviePopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | MoviePopularListParams,
   options: {
@@ -10287,7 +8810,7 @@ export function useMoviePopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -10295,7 +8818,7 @@ export function useMoviePopularList<
 };
 export function useMoviePopularList<
   TData = Awaited<ReturnType<typeof moviePopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MoviePopularListParams,
   options?: {
@@ -10314,7 +8837,7 @@ export function useMoviePopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10322,7 +8845,7 @@ export function useMoviePopularList<
 };
 export function useMoviePopularList<
   TData = Awaited<ReturnType<typeof moviePopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MoviePopularListParams,
   options?: {
@@ -10333,7 +8856,7 @@ export function useMoviePopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10345,7 +8868,7 @@ export function useMoviePopularList<
 
 export function useMoviePopularList<
   TData = Awaited<ReturnType<typeof moviePopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MoviePopularListParams,
   options?: {
@@ -10356,7 +8879,7 @@ export function useMoviePopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10378,60 +8901,34 @@ export function useMoviePopularList<
  * Get a list of movies ordered by rating.
  * @summary Top Rated
  */
-export type movieTopRatedListResponse200 = {
-  data: MovieTopRatedList200;
-  status: 200;
-};
-
-export type movieTopRatedListResponseSuccess = movieTopRatedListResponse200 & {
-  headers: Headers;
-};
-export type movieTopRatedListResponse = movieTopRatedListResponseSuccess;
-
-export const getMovieTopRatedListUrl = (params?: MovieTopRatedListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/top_rated?${stringifiedParams}`
-    : `/3/movie/top_rated`;
-};
-
-export const movieTopRatedList = async (
+export const movieTopRatedList = (
   params?: MovieTopRatedListParams,
-  options?: RequestInit
-): Promise<movieTopRatedListResponse> => {
-  const res = await fetch(getMovieTopRatedListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieTopRatedListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieTopRatedListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieTopRatedList200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/top_rated`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieTopRatedListQueryKey = (
   params?: MovieTopRatedListParams
 ) => {
-  return [`/3/movie/top_rated`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/top_rated`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieTopRatedListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieTopRatedListParams,
   options?: {
@@ -10442,17 +8939,17 @@ export const getMovieTopRatedListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieTopRatedListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieTopRatedList>>
-  > = ({ signal }) => movieTopRatedList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => movieTopRatedList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof movieTopRatedList>>,
@@ -10464,11 +8961,11 @@ export const getMovieTopRatedListQueryOptions = <
 export type MovieTopRatedListQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieTopRatedList>>
 >;
-export type MovieTopRatedListQueryError = unknown;
+export type MovieTopRatedListQueryError = ErrorType<unknown>;
 
 export function useMovieTopRatedList<
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | MovieTopRatedListParams,
   options: {
@@ -10487,7 +8984,7 @@ export function useMovieTopRatedList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -10495,7 +8992,7 @@ export function useMovieTopRatedList<
 };
 export function useMovieTopRatedList<
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieTopRatedListParams,
   options?: {
@@ -10514,7 +9011,7 @@ export function useMovieTopRatedList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10522,7 +9019,7 @@ export function useMovieTopRatedList<
 };
 export function useMovieTopRatedList<
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieTopRatedListParams,
   options?: {
@@ -10533,7 +9030,7 @@ export function useMovieTopRatedList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10545,7 +9042,7 @@ export function useMovieTopRatedList<
 
 export function useMovieTopRatedList<
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieTopRatedListParams,
   options?: {
@@ -10556,7 +9053,7 @@ export function useMovieTopRatedList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10578,60 +9075,34 @@ export function useMovieTopRatedList<
  * Get a list of movies that are being released soon.
  * @summary Upcoming
  */
-export type movieUpcomingListResponse200 = {
-  data: MovieUpcomingList200;
-  status: 200;
-};
-
-export type movieUpcomingListResponseSuccess = movieUpcomingListResponse200 & {
-  headers: Headers;
-};
-export type movieUpcomingListResponse = movieUpcomingListResponseSuccess;
-
-export const getMovieUpcomingListUrl = (params?: MovieUpcomingListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/upcoming?${stringifiedParams}`
-    : `/3/movie/upcoming`;
-};
-
-export const movieUpcomingList = async (
+export const movieUpcomingList = (
   params?: MovieUpcomingListParams,
-  options?: RequestInit
-): Promise<movieUpcomingListResponse> => {
-  const res = await fetch(getMovieUpcomingListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieUpcomingListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieUpcomingListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieUpcomingList200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/upcoming`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieUpcomingListQueryKey = (
   params?: MovieUpcomingListParams
 ) => {
-  return [`/3/movie/upcoming`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/upcoming`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieUpcomingListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieUpcomingListParams,
   options?: {
@@ -10642,17 +9113,17 @@ export const getMovieUpcomingListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieUpcomingListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieUpcomingList>>
-  > = ({ signal }) => movieUpcomingList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => movieUpcomingList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof movieUpcomingList>>,
@@ -10664,11 +9135,11 @@ export const getMovieUpcomingListQueryOptions = <
 export type MovieUpcomingListQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieUpcomingList>>
 >;
-export type MovieUpcomingListQueryError = unknown;
+export type MovieUpcomingListQueryError = ErrorType<unknown>;
 
 export function useMovieUpcomingList<
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | MovieUpcomingListParams,
   options: {
@@ -10687,7 +9158,7 @@ export function useMovieUpcomingList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -10695,7 +9166,7 @@ export function useMovieUpcomingList<
 };
 export function useMovieUpcomingList<
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieUpcomingListParams,
   options?: {
@@ -10714,7 +9185,7 @@ export function useMovieUpcomingList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10722,7 +9193,7 @@ export function useMovieUpcomingList<
 };
 export function useMovieUpcomingList<
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieUpcomingListParams,
   options?: {
@@ -10733,7 +9204,7 @@ export function useMovieUpcomingList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10745,7 +9216,7 @@ export function useMovieUpcomingList<
 
 export function useMovieUpcomingList<
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: MovieUpcomingListParams,
   options?: {
@@ -10756,7 +9227,7 @@ export function useMovieUpcomingList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10778,65 +9249,36 @@ export function useMovieUpcomingList<
  * Get the top level details of a movie by ID.
  * @summary Details
  */
-export type movieDetailsResponse200 = {
-  data: MovieDetails200;
-  status: 200;
-};
-
-export type movieDetailsResponseSuccess = movieDetailsResponse200 & {
-  headers: Headers;
-};
-export type movieDetailsResponse = movieDetailsResponseSuccess;
-
-export const getMovieDetailsUrl = (
-  movieId: number,
-  params?: MovieDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}?${stringifiedParams}`
-    : `/3/movie/${movieId}`;
-};
-
-export const movieDetails = async (
+export const movieDetails = (
   movieId: number,
   params?: MovieDetailsParams,
-  options?: RequestInit
-): Promise<movieDetailsResponse> => {
-  const res = await fetch(getMovieDetailsUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieDetailsQueryKey = (
   movieId?: number,
   params?: MovieDetailsParams
 ) => {
-  return [`/3/movie/${movieId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieDetailsParams,
@@ -10844,17 +9286,17 @@ export const getMovieDetailsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieDetailsQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieDetails>>> = ({
     signal,
-  }) => movieDetails(movieId, params, { signal, ...fetchOptions });
+  }) => movieDetails(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -10871,11 +9313,11 @@ export const getMovieDetailsQueryOptions = <
 export type MovieDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieDetails>>
 >;
-export type MovieDetailsQueryError = unknown;
+export type MovieDetailsQueryError = ErrorType<unknown>;
 
 export function useMovieDetails<
   TData = Awaited<ReturnType<typeof movieDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieDetailsParams,
@@ -10891,7 +9333,7 @@ export function useMovieDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -10899,7 +9341,7 @@ export function useMovieDetails<
 };
 export function useMovieDetails<
   TData = Awaited<ReturnType<typeof movieDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieDetailsParams,
@@ -10915,7 +9357,7 @@ export function useMovieDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10923,7 +9365,7 @@ export function useMovieDetails<
 };
 export function useMovieDetails<
   TData = Awaited<ReturnType<typeof movieDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieDetailsParams,
@@ -10931,7 +9373,7 @@ export function useMovieDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10943,7 +9385,7 @@ export function useMovieDetails<
 
 export function useMovieDetails<
   TData = Awaited<ReturnType<typeof movieDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieDetailsParams,
@@ -10951,7 +9393,7 @@ export function useMovieDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -10973,54 +9415,21 @@ export function useMovieDetails<
  * Get the rating, watchlist and favourite status of an account.
  * @summary Account States
  */
-export type movieAccountStatesResponse200 = {
-  data: MovieAccountStates200;
-  status: 200;
-};
-
-export type movieAccountStatesResponseSuccess =
-  movieAccountStatesResponse200 & {
-    headers: Headers;
-  };
-export type movieAccountStatesResponse = movieAccountStatesResponseSuccess;
-
-export const getMovieAccountStatesUrl = (
-  movieId: number,
-  params?: MovieAccountStatesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/account_states?${stringifiedParams}`
-    : `/3/movie/${movieId}/account_states`;
-};
-
-export const movieAccountStates = async (
+export const movieAccountStates = (
   movieId: number,
   params?: MovieAccountStatesParams,
-  options?: RequestInit
-): Promise<movieAccountStatesResponse> => {
-  const res = await fetch(getMovieAccountStatesUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieAccountStatesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieAccountStatesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieAccountStates200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/account_states`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieAccountStatesQueryKey = (
@@ -11028,14 +9437,14 @@ export const getMovieAccountStatesQueryKey = (
   params?: MovieAccountStatesParams
 ) => {
   return [
-    `/3/movie/${movieId}/account_states`,
+    `https://api.themoviedb.org/3/movie/${movieId}/account_states`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getMovieAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAccountStatesParams,
@@ -11047,10 +9456,10 @@ export const getMovieAccountStatesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieAccountStatesQueryKey(movieId, params);
@@ -11058,7 +9467,7 @@ export const getMovieAccountStatesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieAccountStates>>
   > = ({ signal }) =>
-    movieAccountStates(movieId, params, { signal, ...fetchOptions });
+    movieAccountStates(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -11075,11 +9484,11 @@ export const getMovieAccountStatesQueryOptions = <
 export type MovieAccountStatesQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieAccountStates>>
 >;
-export type MovieAccountStatesQueryError = unknown;
+export type MovieAccountStatesQueryError = ErrorType<unknown>;
 
 export function useMovieAccountStates<
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieAccountStatesParams,
@@ -11099,7 +9508,7 @@ export function useMovieAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -11107,7 +9516,7 @@ export function useMovieAccountStates<
 };
 export function useMovieAccountStates<
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAccountStatesParams,
@@ -11127,7 +9536,7 @@ export function useMovieAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11135,7 +9544,7 @@ export function useMovieAccountStates<
 };
 export function useMovieAccountStates<
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAccountStatesParams,
@@ -11147,7 +9556,7 @@ export function useMovieAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11159,7 +9568,7 @@ export function useMovieAccountStates<
 
 export function useMovieAccountStates<
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAccountStatesParams,
@@ -11171,7 +9580,7 @@ export function useMovieAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11197,57 +9606,21 @@ export function useMovieAccountStates<
  * Get the alternative titles for a movie.
  * @summary Alternative Titles
  */
-export type movieAlternativeTitlesResponse200 = {
-  data: MovieAlternativeTitles200;
-  status: 200;
-};
-
-export type movieAlternativeTitlesResponseSuccess =
-  movieAlternativeTitlesResponse200 & {
-    headers: Headers;
-  };
-export type movieAlternativeTitlesResponse =
-  movieAlternativeTitlesResponseSuccess;
-
-export const getMovieAlternativeTitlesUrl = (
-  movieId: number,
-  params?: MovieAlternativeTitlesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/alternative_titles?${stringifiedParams}`
-    : `/3/movie/${movieId}/alternative_titles`;
-};
-
-export const movieAlternativeTitles = async (
+export const movieAlternativeTitles = (
   movieId: number,
   params?: MovieAlternativeTitlesParams,
-  options?: RequestInit
-): Promise<movieAlternativeTitlesResponse> => {
-  const res = await fetch(getMovieAlternativeTitlesUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieAlternativeTitlesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieAlternativeTitlesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieAlternativeTitles200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/alternative_titles`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieAlternativeTitlesQueryKey = (
@@ -11255,14 +9628,14 @@ export const getMovieAlternativeTitlesQueryKey = (
   params?: MovieAlternativeTitlesParams
 ) => {
   return [
-    `/3/movie/${movieId}/alternative_titles`,
+    `https://api.themoviedb.org/3/movie/${movieId}/alternative_titles`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getMovieAlternativeTitlesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAlternativeTitlesParams,
@@ -11274,10 +9647,10 @@ export const getMovieAlternativeTitlesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -11286,7 +9659,7 @@ export const getMovieAlternativeTitlesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieAlternativeTitles>>
   > = ({ signal }) =>
-    movieAlternativeTitles(movieId, params, { signal, ...fetchOptions });
+    movieAlternativeTitles(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -11303,11 +9676,11 @@ export const getMovieAlternativeTitlesQueryOptions = <
 export type MovieAlternativeTitlesQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieAlternativeTitles>>
 >;
-export type MovieAlternativeTitlesQueryError = unknown;
+export type MovieAlternativeTitlesQueryError = ErrorType<unknown>;
 
 export function useMovieAlternativeTitles<
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieAlternativeTitlesParams,
@@ -11327,7 +9700,7 @@ export function useMovieAlternativeTitles<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -11335,7 +9708,7 @@ export function useMovieAlternativeTitles<
 };
 export function useMovieAlternativeTitles<
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAlternativeTitlesParams,
@@ -11355,7 +9728,7 @@ export function useMovieAlternativeTitles<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11363,7 +9736,7 @@ export function useMovieAlternativeTitles<
 };
 export function useMovieAlternativeTitles<
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAlternativeTitlesParams,
@@ -11375,7 +9748,7 @@ export function useMovieAlternativeTitles<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11387,7 +9760,7 @@ export function useMovieAlternativeTitles<
 
 export function useMovieAlternativeTitles<
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieAlternativeTitlesParams,
@@ -11399,7 +9772,7 @@ export function useMovieAlternativeTitles<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11425,65 +9798,36 @@ export function useMovieAlternativeTitles<
  * Get the recent changes for a movie.
  * @summary Changes
  */
-export type movieChangesResponse200 = {
-  data: MovieChanges200;
-  status: 200;
-};
-
-export type movieChangesResponseSuccess = movieChangesResponse200 & {
-  headers: Headers;
-};
-export type movieChangesResponse = movieChangesResponseSuccess;
-
-export const getMovieChangesUrl = (
-  movieId: number,
-  params?: MovieChangesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/changes?${stringifiedParams}`
-    : `/3/movie/${movieId}/changes`;
-};
-
-export const movieChanges = async (
+export const movieChanges = (
   movieId: number,
   params?: MovieChangesParams,
-  options?: RequestInit
-): Promise<movieChangesResponse> => {
-  const res = await fetch(getMovieChangesUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieChangesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieChangesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieChanges200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieChangesQueryKey = (
   movieId?: number,
   params?: MovieChangesParams
 ) => {
-  return [`/3/movie/${movieId}/changes`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieChangesParams,
@@ -11491,17 +9835,17 @@ export const getMovieChangesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieChangesQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieChanges>>> = ({
     signal,
-  }) => movieChanges(movieId, params, { signal, ...fetchOptions });
+  }) => movieChanges(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -11518,11 +9862,11 @@ export const getMovieChangesQueryOptions = <
 export type MovieChangesQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieChanges>>
 >;
-export type MovieChangesQueryError = unknown;
+export type MovieChangesQueryError = ErrorType<unknown>;
 
 export function useMovieChanges<
   TData = Awaited<ReturnType<typeof movieChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieChangesParams,
@@ -11538,7 +9882,7 @@ export function useMovieChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -11546,7 +9890,7 @@ export function useMovieChanges<
 };
 export function useMovieChanges<
   TData = Awaited<ReturnType<typeof movieChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieChangesParams,
@@ -11562,7 +9906,7 @@ export function useMovieChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11570,7 +9914,7 @@ export function useMovieChanges<
 };
 export function useMovieChanges<
   TData = Awaited<ReturnType<typeof movieChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieChangesParams,
@@ -11578,7 +9922,7 @@ export function useMovieChanges<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11590,7 +9934,7 @@ export function useMovieChanges<
 
 export function useMovieChanges<
   TData = Awaited<ReturnType<typeof movieChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieChangesParams,
@@ -11598,7 +9942,7 @@ export function useMovieChanges<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11619,65 +9963,36 @@ export function useMovieChanges<
 /**
  * @summary Credits
  */
-export type movieCreditsResponse200 = {
-  data: MovieCredits200;
-  status: 200;
-};
-
-export type movieCreditsResponseSuccess = movieCreditsResponse200 & {
-  headers: Headers;
-};
-export type movieCreditsResponse = movieCreditsResponseSuccess;
-
-export const getMovieCreditsUrl = (
-  movieId: number,
-  params?: MovieCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/credits?${stringifiedParams}`
-    : `/3/movie/${movieId}/credits`;
-};
-
-export const movieCredits = async (
+export const movieCredits = (
   movieId: number,
   params?: MovieCreditsParams,
-  options?: RequestInit
-): Promise<movieCreditsResponse> => {
-  const res = await fetch(getMovieCreditsUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieCreditsQueryKey = (
   movieId?: number,
   params?: MovieCreditsParams
 ) => {
-  return [`/3/movie/${movieId}/credits`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieCreditsParams,
@@ -11685,17 +10000,17 @@ export const getMovieCreditsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieCredits>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieCreditsQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieCredits>>> = ({
     signal,
-  }) => movieCredits(movieId, params, { signal, ...fetchOptions });
+  }) => movieCredits(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -11712,11 +10027,11 @@ export const getMovieCreditsQueryOptions = <
 export type MovieCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieCredits>>
 >;
-export type MovieCreditsQueryError = unknown;
+export type MovieCreditsQueryError = ErrorType<unknown>;
 
 export function useMovieCredits<
   TData = Awaited<ReturnType<typeof movieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieCreditsParams,
@@ -11732,7 +10047,7 @@ export function useMovieCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -11740,7 +10055,7 @@ export function useMovieCredits<
 };
 export function useMovieCredits<
   TData = Awaited<ReturnType<typeof movieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieCreditsParams,
@@ -11756,7 +10071,7 @@ export function useMovieCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11764,7 +10079,7 @@ export function useMovieCredits<
 };
 export function useMovieCredits<
   TData = Awaited<ReturnType<typeof movieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieCreditsParams,
@@ -11772,7 +10087,7 @@ export function useMovieCredits<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieCredits>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11784,7 +10099,7 @@ export function useMovieCredits<
 
 export function useMovieCredits<
   TData = Awaited<ReturnType<typeof movieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieCreditsParams,
@@ -11792,7 +10107,7 @@ export function useMovieCredits<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieCredits>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11813,46 +10128,30 @@ export function useMovieCredits<
 /**
  * @summary External IDs
  */
-export type movieExternalIdsResponse200 = {
-  data: MovieExternalIds200;
-  status: 200;
-};
-
-export type movieExternalIdsResponseSuccess = movieExternalIdsResponse200 & {
-  headers: Headers;
-};
-export type movieExternalIdsResponse = movieExternalIdsResponseSuccess;
-
-export const getMovieExternalIdsUrl = (movieId: number) => {
-  return `/3/movie/${movieId}/external_ids`;
-};
-
-export const movieExternalIds = async (
+export const movieExternalIds = (
   movieId: number,
-  options?: RequestInit
-): Promise<movieExternalIdsResponse> => {
-  const res = await fetch(getMovieExternalIdsUrl(movieId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieExternalIdsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieExternalIdsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieExternalIds200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/external_ids`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieExternalIdsQueryKey = (movieId?: number) => {
-  return [`/3/movie/${movieId}/external_ids`] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/external_ids`,
+  ] as const;
 };
 
 export const getMovieExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -11863,17 +10162,17 @@ export const getMovieExternalIdsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieExternalIdsQueryKey(movieId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieExternalIds>>
-  > = ({ signal }) => movieExternalIds(movieId, { signal, ...fetchOptions });
+  > = ({ signal }) => movieExternalIds(movieId, requestOptions, signal);
 
   return {
     queryKey,
@@ -11890,11 +10189,11 @@ export const getMovieExternalIdsQueryOptions = <
 export type MovieExternalIdsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieExternalIds>>
 >;
-export type MovieExternalIdsQueryError = unknown;
+export type MovieExternalIdsQueryError = ErrorType<unknown>;
 
 export function useMovieExternalIds<
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options: {
@@ -11913,7 +10212,7 @@ export function useMovieExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -11921,7 +10220,7 @@ export function useMovieExternalIds<
 };
 export function useMovieExternalIds<
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -11940,7 +10239,7 @@ export function useMovieExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11948,7 +10247,7 @@ export function useMovieExternalIds<
 };
 export function useMovieExternalIds<
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -11959,7 +10258,7 @@ export function useMovieExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -11971,7 +10270,7 @@ export function useMovieExternalIds<
 
 export function useMovieExternalIds<
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -11982,7 +10281,7 @@ export function useMovieExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12004,65 +10303,36 @@ export function useMovieExternalIds<
  * Get the images that belong to a movie.
  * @summary Images
  */
-export type movieImagesResponse200 = {
-  data: MovieImages200;
-  status: 200;
-};
-
-export type movieImagesResponseSuccess = movieImagesResponse200 & {
-  headers: Headers;
-};
-export type movieImagesResponse = movieImagesResponseSuccess;
-
-export const getMovieImagesUrl = (
-  movieId: number,
-  params?: MovieImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/images?${stringifiedParams}`
-    : `/3/movie/${movieId}/images`;
-};
-
-export const movieImages = async (
+export const movieImages = (
   movieId: number,
   params?: MovieImagesParams,
-  options?: RequestInit
-): Promise<movieImagesResponse> => {
-  const res = await fetch(getMovieImagesUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieImages200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/images`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieImagesQueryKey = (
   movieId?: number,
   params?: MovieImagesParams
 ) => {
-  return [`/3/movie/${movieId}/images`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/images`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieImagesParams,
@@ -12070,17 +10340,17 @@ export const getMovieImagesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieImagesQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieImages>>> = ({
     signal,
-  }) => movieImages(movieId, params, { signal, ...fetchOptions });
+  }) => movieImages(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -12097,11 +10367,11 @@ export const getMovieImagesQueryOptions = <
 export type MovieImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieImages>>
 >;
-export type MovieImagesQueryError = unknown;
+export type MovieImagesQueryError = ErrorType<unknown>;
 
 export function useMovieImages<
   TData = Awaited<ReturnType<typeof movieImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieImagesParams,
@@ -12117,7 +10387,7 @@ export function useMovieImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -12125,7 +10395,7 @@ export function useMovieImages<
 };
 export function useMovieImages<
   TData = Awaited<ReturnType<typeof movieImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieImagesParams,
@@ -12141,7 +10411,7 @@ export function useMovieImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12149,7 +10419,7 @@ export function useMovieImages<
 };
 export function useMovieImages<
   TData = Awaited<ReturnType<typeof movieImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieImagesParams,
@@ -12157,7 +10427,7 @@ export function useMovieImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12169,7 +10439,7 @@ export function useMovieImages<
 
 export function useMovieImages<
   TData = Awaited<ReturnType<typeof movieImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieImagesParams,
@@ -12177,7 +10447,7 @@ export function useMovieImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12198,62 +10468,44 @@ export function useMovieImages<
 /**
  * @summary Keywords
  */
-export type movieKeywordsResponse200 = {
-  data: MovieKeywords200;
-  status: 200;
-};
-
-export type movieKeywordsResponseSuccess = movieKeywordsResponse200 & {
-  headers: Headers;
-};
-export type movieKeywordsResponse = movieKeywordsResponseSuccess;
-
-export const getMovieKeywordsUrl = (movieId: string) => {
-  return `/3/movie/${movieId}/keywords`;
-};
-
-export const movieKeywords = async (
+export const movieKeywords = (
   movieId: string,
-  options?: RequestInit
-): Promise<movieKeywordsResponse> => {
-  const res = await fetch(getMovieKeywordsUrl(movieId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieKeywordsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieKeywordsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieKeywords200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/keywords`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieKeywordsQueryKey = (movieId?: string) => {
-  return [`/3/movie/${movieId}/keywords`] as const;
+  return [`https://api.themoviedb.org/3/movie/${movieId}/keywords`] as const;
 };
 
 export const getMovieKeywordsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieKeywords>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getMovieKeywordsQueryKey(movieId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieKeywords>>> = ({
     signal,
-  }) => movieKeywords(movieId, { signal, ...fetchOptions });
+  }) => movieKeywords(movieId, requestOptions, signal);
 
   return {
     queryKey,
@@ -12270,11 +10522,11 @@ export const getMovieKeywordsQueryOptions = <
 export type MovieKeywordsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieKeywords>>
 >;
-export type MovieKeywordsQueryError = unknown;
+export type MovieKeywordsQueryError = ErrorType<unknown>;
 
 export function useMovieKeywords<
   TData = Awaited<ReturnType<typeof movieKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: string,
   options: {
@@ -12289,7 +10541,7 @@ export function useMovieKeywords<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -12297,7 +10549,7 @@ export function useMovieKeywords<
 };
 export function useMovieKeywords<
   TData = Awaited<ReturnType<typeof movieKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: string,
   options?: {
@@ -12312,7 +10564,7 @@ export function useMovieKeywords<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12320,14 +10572,14 @@ export function useMovieKeywords<
 };
 export function useMovieKeywords<
   TData = Awaited<ReturnType<typeof movieKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieKeywords>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12339,14 +10591,14 @@ export function useMovieKeywords<
 
 export function useMovieKeywords<
   TData = Awaited<ReturnType<typeof movieKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieKeywords>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12368,58 +10620,36 @@ export function useMovieKeywords<
  * Get the newest movie ID.
  * @summary Latest
  */
-export type movieLatestIdResponse200 = {
-  data: MovieLatestId200;
-  status: 200;
-};
-
-export type movieLatestIdResponseSuccess = movieLatestIdResponse200 & {
-  headers: Headers;
-};
-export type movieLatestIdResponse = movieLatestIdResponseSuccess;
-
-export const getMovieLatestIdUrl = () => {
-  return `/3/movie/latest`;
-};
-
-export const movieLatestId = async (
-  options?: RequestInit
-): Promise<movieLatestIdResponse> => {
-  const res = await fetch(getMovieLatestIdUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieLatestIdResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieLatestIdResponse;
+export const movieLatestId = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieLatestId200>(
+    { url: `https://api.themoviedb.org/3/movie/latest`, method: 'GET', signal },
+    options
+  );
 };
 
 export const getMovieLatestIdQueryKey = () => {
-  return [`/3/movie/latest`] as const;
+  return [`https://api.themoviedb.org/3/movie/latest`] as const;
 };
 
 export const getMovieLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof movieLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof movieLatestId>>, TError, TData>
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getMovieLatestIdQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieLatestId>>> = ({
     signal,
-  }) => movieLatestId({ signal, ...fetchOptions });
+  }) => movieLatestId(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof movieLatestId>>,
@@ -12431,11 +10661,11 @@ export const getMovieLatestIdQueryOptions = <
 export type MovieLatestIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieLatestId>>
 >;
-export type MovieLatestIdQueryError = unknown;
+export type MovieLatestIdQueryError = ErrorType<unknown>;
 
 export function useMovieLatestId<
   TData = Awaited<ReturnType<typeof movieLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -12449,7 +10679,7 @@ export function useMovieLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -12457,7 +10687,7 @@ export function useMovieLatestId<
 };
 export function useMovieLatestId<
   TData = Awaited<ReturnType<typeof movieLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -12471,7 +10701,7 @@ export function useMovieLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12479,13 +10709,13 @@ export function useMovieLatestId<
 };
 export function useMovieLatestId<
   TData = Awaited<ReturnType<typeof movieLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieLatestId>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12497,13 +10727,13 @@ export function useMovieLatestId<
 
 export function useMovieLatestId<
   TData = Awaited<ReturnType<typeof movieLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieLatestId>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12525,65 +10755,36 @@ export function useMovieLatestId<
  * Get the lists that a movie has been added to.
  * @summary Lists
  */
-export type movieListsResponse200 = {
-  data: MovieLists200;
-  status: 200;
-};
-
-export type movieListsResponseSuccess = movieListsResponse200 & {
-  headers: Headers;
-};
-export type movieListsResponse = movieListsResponseSuccess;
-
-export const getMovieListsUrl = (
-  movieId: number,
-  params?: MovieListsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/lists?${stringifiedParams}`
-    : `/3/movie/${movieId}/lists`;
-};
-
-export const movieLists = async (
+export const movieLists = (
   movieId: number,
   params?: MovieListsParams,
-  options?: RequestInit
-): Promise<movieListsResponse> => {
-  const res = await fetch(getMovieListsUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieListsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieListsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieLists200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/lists`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieListsQueryKey = (
   movieId?: number,
   params?: MovieListsParams
 ) => {
-  return [`/3/movie/${movieId}/lists`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/lists`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieListsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieListsParams,
@@ -12591,17 +10792,17 @@ export const getMovieListsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieListsQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieLists>>> = ({
     signal,
-  }) => movieLists(movieId, params, { signal, ...fetchOptions });
+  }) => movieLists(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -12618,11 +10819,11 @@ export const getMovieListsQueryOptions = <
 export type MovieListsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieLists>>
 >;
-export type MovieListsQueryError = unknown;
+export type MovieListsQueryError = ErrorType<unknown>;
 
 export function useMovieLists<
   TData = Awaited<ReturnType<typeof movieLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieListsParams,
@@ -12638,7 +10839,7 @@ export function useMovieLists<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -12646,7 +10847,7 @@ export function useMovieLists<
 };
 export function useMovieLists<
   TData = Awaited<ReturnType<typeof movieLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieListsParams,
@@ -12662,7 +10863,7 @@ export function useMovieLists<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12670,7 +10871,7 @@ export function useMovieLists<
 };
 export function useMovieLists<
   TData = Awaited<ReturnType<typeof movieLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieListsParams,
@@ -12678,7 +10879,7 @@ export function useMovieLists<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12690,7 +10891,7 @@ export function useMovieLists<
 
 export function useMovieLists<
   TData = Awaited<ReturnType<typeof movieLists>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieListsParams,
@@ -12698,7 +10899,7 @@ export function useMovieLists<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieLists>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12719,56 +10920,21 @@ export function useMovieLists<
 /**
  * @summary Recommendations
  */
-export type movieRecommendationsResponse200 = {
-  data: MovieRecommendations200;
-  status: 200;
-};
-
-export type movieRecommendationsResponseSuccess =
-  movieRecommendationsResponse200 & {
-    headers: Headers;
-  };
-export type movieRecommendationsResponse = movieRecommendationsResponseSuccess;
-
-export const getMovieRecommendationsUrl = (
-  movieId: number,
-  params?: MovieRecommendationsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/recommendations?${stringifiedParams}`
-    : `/3/movie/${movieId}/recommendations`;
-};
-
-export const movieRecommendations = async (
+export const movieRecommendations = (
   movieId: number,
   params?: MovieRecommendationsParams,
-  options?: RequestInit
-): Promise<movieRecommendationsResponse> => {
-  const res = await fetch(getMovieRecommendationsUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieRecommendationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieRecommendationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieRecommendations200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/recommendations`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieRecommendationsQueryKey = (
@@ -12776,14 +10942,14 @@ export const getMovieRecommendationsQueryKey = (
   params?: MovieRecommendationsParams
 ) => {
   return [
-    `/3/movie/${movieId}/recommendations`,
+    `https://api.themoviedb.org/3/movie/${movieId}/recommendations`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getMovieRecommendationsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieRecommendationsParams,
@@ -12795,10 +10961,10 @@ export const getMovieRecommendationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieRecommendationsQueryKey(movieId, params);
@@ -12806,7 +10972,7 @@ export const getMovieRecommendationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieRecommendations>>
   > = ({ signal }) =>
-    movieRecommendations(movieId, params, { signal, ...fetchOptions });
+    movieRecommendations(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -12823,11 +10989,11 @@ export const getMovieRecommendationsQueryOptions = <
 export type MovieRecommendationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieRecommendations>>
 >;
-export type MovieRecommendationsQueryError = unknown;
+export type MovieRecommendationsQueryError = ErrorType<unknown>;
 
 export function useMovieRecommendations<
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieRecommendationsParams,
@@ -12847,7 +11013,7 @@ export function useMovieRecommendations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -12855,7 +11021,7 @@ export function useMovieRecommendations<
 };
 export function useMovieRecommendations<
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieRecommendationsParams,
@@ -12875,7 +11041,7 @@ export function useMovieRecommendations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12883,7 +11049,7 @@ export function useMovieRecommendations<
 };
 export function useMovieRecommendations<
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieRecommendationsParams,
@@ -12895,7 +11061,7 @@ export function useMovieRecommendations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12907,7 +11073,7 @@ export function useMovieRecommendations<
 
 export function useMovieRecommendations<
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieRecommendationsParams,
@@ -12919,7 +11085,7 @@ export function useMovieRecommendations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -12945,46 +11111,30 @@ export function useMovieRecommendations<
  * Get the release dates and certifications for a movie.
  * @summary Release Dates
  */
-export type movieReleaseDatesResponse200 = {
-  data: MovieReleaseDates200;
-  status: 200;
-};
-
-export type movieReleaseDatesResponseSuccess = movieReleaseDatesResponse200 & {
-  headers: Headers;
-};
-export type movieReleaseDatesResponse = movieReleaseDatesResponseSuccess;
-
-export const getMovieReleaseDatesUrl = (movieId: number) => {
-  return `/3/movie/${movieId}/release_dates`;
-};
-
-export const movieReleaseDates = async (
+export const movieReleaseDates = (
   movieId: number,
-  options?: RequestInit
-): Promise<movieReleaseDatesResponse> => {
-  const res = await fetch(getMovieReleaseDatesUrl(movieId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieReleaseDatesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieReleaseDatesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieReleaseDates200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieReleaseDatesQueryKey = (movieId?: number) => {
-  return [`/3/movie/${movieId}/release_dates`] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
+  ] as const;
 };
 
 export const getMovieReleaseDatesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -12995,17 +11145,17 @@ export const getMovieReleaseDatesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieReleaseDatesQueryKey(movieId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieReleaseDates>>
-  > = ({ signal }) => movieReleaseDates(movieId, { signal, ...fetchOptions });
+  > = ({ signal }) => movieReleaseDates(movieId, requestOptions, signal);
 
   return {
     queryKey,
@@ -13022,11 +11172,11 @@ export const getMovieReleaseDatesQueryOptions = <
 export type MovieReleaseDatesQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieReleaseDates>>
 >;
-export type MovieReleaseDatesQueryError = unknown;
+export type MovieReleaseDatesQueryError = ErrorType<unknown>;
 
 export function useMovieReleaseDates<
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options: {
@@ -13045,7 +11195,7 @@ export function useMovieReleaseDates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -13053,7 +11203,7 @@ export function useMovieReleaseDates<
 };
 export function useMovieReleaseDates<
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13072,7 +11222,7 @@ export function useMovieReleaseDates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13080,7 +11230,7 @@ export function useMovieReleaseDates<
 };
 export function useMovieReleaseDates<
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13091,7 +11241,7 @@ export function useMovieReleaseDates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13103,7 +11253,7 @@ export function useMovieReleaseDates<
 
 export function useMovieReleaseDates<
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13114,7 +11264,7 @@ export function useMovieReleaseDates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13136,65 +11286,36 @@ export function useMovieReleaseDates<
  * Get the user reviews for a movie.
  * @summary Reviews
  */
-export type movieReviewsResponse200 = {
-  data: MovieReviews200;
-  status: 200;
-};
-
-export type movieReviewsResponseSuccess = movieReviewsResponse200 & {
-  headers: Headers;
-};
-export type movieReviewsResponse = movieReviewsResponseSuccess;
-
-export const getMovieReviewsUrl = (
-  movieId: number,
-  params?: MovieReviewsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/reviews?${stringifiedParams}`
-    : `/3/movie/${movieId}/reviews`;
-};
-
-export const movieReviews = async (
+export const movieReviews = (
   movieId: number,
   params?: MovieReviewsParams,
-  options?: RequestInit
-): Promise<movieReviewsResponse> => {
-  const res = await fetch(getMovieReviewsUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieReviewsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieReviewsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieReviews200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/reviews`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieReviewsQueryKey = (
   movieId?: number,
   params?: MovieReviewsParams
 ) => {
-  return [`/3/movie/${movieId}/reviews`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/reviews`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieReviewsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieReviewsParams,
@@ -13202,17 +11323,17 @@ export const getMovieReviewsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieReviews>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieReviewsQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieReviews>>> = ({
     signal,
-  }) => movieReviews(movieId, params, { signal, ...fetchOptions });
+  }) => movieReviews(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -13229,11 +11350,11 @@ export const getMovieReviewsQueryOptions = <
 export type MovieReviewsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieReviews>>
 >;
-export type MovieReviewsQueryError = unknown;
+export type MovieReviewsQueryError = ErrorType<unknown>;
 
 export function useMovieReviews<
   TData = Awaited<ReturnType<typeof movieReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieReviewsParams,
@@ -13249,7 +11370,7 @@ export function useMovieReviews<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -13257,7 +11378,7 @@ export function useMovieReviews<
 };
 export function useMovieReviews<
   TData = Awaited<ReturnType<typeof movieReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieReviewsParams,
@@ -13273,7 +11394,7 @@ export function useMovieReviews<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13281,7 +11402,7 @@ export function useMovieReviews<
 };
 export function useMovieReviews<
   TData = Awaited<ReturnType<typeof movieReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieReviewsParams,
@@ -13289,7 +11410,7 @@ export function useMovieReviews<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieReviews>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13301,7 +11422,7 @@ export function useMovieReviews<
 
 export function useMovieReviews<
   TData = Awaited<ReturnType<typeof movieReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieReviewsParams,
@@ -13309,7 +11430,7 @@ export function useMovieReviews<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieReviews>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13331,65 +11452,36 @@ export function useMovieReviews<
  * Get the similar movies based on genres and keywords.
  * @summary Similar
  */
-export type movieSimilarResponse200 = {
-  data: MovieSimilar200;
-  status: 200;
-};
-
-export type movieSimilarResponseSuccess = movieSimilarResponse200 & {
-  headers: Headers;
-};
-export type movieSimilarResponse = movieSimilarResponseSuccess;
-
-export const getMovieSimilarUrl = (
-  movieId: number,
-  params?: MovieSimilarParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/similar?${stringifiedParams}`
-    : `/3/movie/${movieId}/similar`;
-};
-
-export const movieSimilar = async (
+export const movieSimilar = (
   movieId: number,
   params?: MovieSimilarParams,
-  options?: RequestInit
-): Promise<movieSimilarResponse> => {
-  const res = await fetch(getMovieSimilarUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieSimilarResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieSimilarResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieSimilar200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/similar`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieSimilarQueryKey = (
   movieId?: number,
   params?: MovieSimilarParams
 ) => {
-  return [`/3/movie/${movieId}/similar`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/similar`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieSimilarQueryOptions = <
   TData = Awaited<ReturnType<typeof movieSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieSimilarParams,
@@ -13397,17 +11489,17 @@ export const getMovieSimilarQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieSimilar>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieSimilarQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieSimilar>>> = ({
     signal,
-  }) => movieSimilar(movieId, params, { signal, ...fetchOptions });
+  }) => movieSimilar(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -13424,11 +11516,11 @@ export const getMovieSimilarQueryOptions = <
 export type MovieSimilarQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieSimilar>>
 >;
-export type MovieSimilarQueryError = unknown;
+export type MovieSimilarQueryError = ErrorType<unknown>;
 
 export function useMovieSimilar<
   TData = Awaited<ReturnType<typeof movieSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieSimilarParams,
@@ -13444,7 +11536,7 @@ export function useMovieSimilar<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -13452,7 +11544,7 @@ export function useMovieSimilar<
 };
 export function useMovieSimilar<
   TData = Awaited<ReturnType<typeof movieSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieSimilarParams,
@@ -13468,7 +11560,7 @@ export function useMovieSimilar<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13476,7 +11568,7 @@ export function useMovieSimilar<
 };
 export function useMovieSimilar<
   TData = Awaited<ReturnType<typeof movieSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieSimilarParams,
@@ -13484,7 +11576,7 @@ export function useMovieSimilar<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieSimilar>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13496,7 +11588,7 @@ export function useMovieSimilar<
 
 export function useMovieSimilar<
   TData = Awaited<ReturnType<typeof movieSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieSimilarParams,
@@ -13504,7 +11596,7 @@ export function useMovieSimilar<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieSimilar>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13526,46 +11618,30 @@ export function useMovieSimilar<
  * Get the translations for a movie.
  * @summary Translations
  */
-export type movieTranslationsResponse200 = {
-  data: MovieTranslations200;
-  status: 200;
-};
-
-export type movieTranslationsResponseSuccess = movieTranslationsResponse200 & {
-  headers: Headers;
-};
-export type movieTranslationsResponse = movieTranslationsResponseSuccess;
-
-export const getMovieTranslationsUrl = (movieId: number) => {
-  return `/3/movie/${movieId}/translations`;
-};
-
-export const movieTranslations = async (
+export const movieTranslations = (
   movieId: number,
-  options?: RequestInit
-): Promise<movieTranslationsResponse> => {
-  const res = await fetch(getMovieTranslationsUrl(movieId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieTranslationsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieTranslationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieTranslations200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieTranslationsQueryKey = (movieId?: number) => {
-  return [`/3/movie/${movieId}/translations`] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/translations`,
+  ] as const;
 };
 
 export const getMovieTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13576,17 +11652,17 @@ export const getMovieTranslationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieTranslationsQueryKey(movieId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieTranslations>>
-  > = ({ signal }) => movieTranslations(movieId, { signal, ...fetchOptions });
+  > = ({ signal }) => movieTranslations(movieId, requestOptions, signal);
 
   return {
     queryKey,
@@ -13603,11 +11679,11 @@ export const getMovieTranslationsQueryOptions = <
 export type MovieTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieTranslations>>
 >;
-export type MovieTranslationsQueryError = unknown;
+export type MovieTranslationsQueryError = ErrorType<unknown>;
 
 export function useMovieTranslations<
   TData = Awaited<ReturnType<typeof movieTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options: {
@@ -13626,7 +11702,7 @@ export function useMovieTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -13634,7 +11710,7 @@ export function useMovieTranslations<
 };
 export function useMovieTranslations<
   TData = Awaited<ReturnType<typeof movieTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13653,7 +11729,7 @@ export function useMovieTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13661,7 +11737,7 @@ export function useMovieTranslations<
 };
 export function useMovieTranslations<
   TData = Awaited<ReturnType<typeof movieTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13672,7 +11748,7 @@ export function useMovieTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13684,7 +11760,7 @@ export function useMovieTranslations<
 
 export function useMovieTranslations<
   TData = Awaited<ReturnType<typeof movieTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13695,7 +11771,7 @@ export function useMovieTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13716,65 +11792,36 @@ export function useMovieTranslations<
 /**
  * @summary Videos
  */
-export type movieVideosResponse200 = {
-  data: MovieVideos200;
-  status: 200;
-};
-
-export type movieVideosResponseSuccess = movieVideosResponse200 & {
-  headers: Headers;
-};
-export type movieVideosResponse = movieVideosResponseSuccess;
-
-export const getMovieVideosUrl = (
-  movieId: number,
-  params?: MovieVideosParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/videos?${stringifiedParams}`
-    : `/3/movie/${movieId}/videos`;
-};
-
-export const movieVideos = async (
+export const movieVideos = (
   movieId: number,
   params?: MovieVideosParams,
-  options?: RequestInit
-): Promise<movieVideosResponse> => {
-  const res = await fetch(getMovieVideosUrl(movieId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieVideosResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieVideosResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieVideos200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieVideosQueryKey = (
   movieId?: number,
   params?: MovieVideosParams
 ) => {
-  return [`/3/movie/${movieId}/videos`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getMovieVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof movieVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieVideosParams,
@@ -13782,17 +11829,17 @@ export const getMovieVideosQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieVideosQueryKey(movieId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof movieVideos>>> = ({
     signal,
-  }) => movieVideos(movieId, params, { signal, ...fetchOptions });
+  }) => movieVideos(movieId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -13809,11 +11856,11 @@ export const getMovieVideosQueryOptions = <
 export type MovieVideosQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieVideos>>
 >;
-export type MovieVideosQueryError = unknown;
+export type MovieVideosQueryError = ErrorType<unknown>;
 
 export function useMovieVideos<
   TData = Awaited<ReturnType<typeof movieVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params: undefined | MovieVideosParams,
@@ -13829,7 +11876,7 @@ export function useMovieVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -13837,7 +11884,7 @@ export function useMovieVideos<
 };
 export function useMovieVideos<
   TData = Awaited<ReturnType<typeof movieVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieVideosParams,
@@ -13853,7 +11900,7 @@ export function useMovieVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13861,7 +11908,7 @@ export function useMovieVideos<
 };
 export function useMovieVideos<
   TData = Awaited<ReturnType<typeof movieVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieVideosParams,
@@ -13869,7 +11916,7 @@ export function useMovieVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13881,7 +11928,7 @@ export function useMovieVideos<
 
 export function useMovieVideos<
   TData = Awaited<ReturnType<typeof movieVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   params?: MovieVideosParams,
@@ -13889,7 +11936,7 @@ export function useMovieVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof movieVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -13911,49 +11958,30 @@ export function useMovieVideos<
  * Get the list of streaming providers we have for a movie.
  * @summary Watch Providers
  */
-export type movieWatchProvidersResponse200 = {
-  data: MovieWatchProviders200;
-  status: 200;
-};
-
-export type movieWatchProvidersResponseSuccess =
-  movieWatchProvidersResponse200 & {
-    headers: Headers;
-  };
-export type movieWatchProvidersResponse = movieWatchProvidersResponseSuccess;
-
-export const getMovieWatchProvidersUrl = (movieId: number) => {
-  return `/3/movie/${movieId}/watch/providers`;
-};
-
-export const movieWatchProviders = async (
+export const movieWatchProviders = (
   movieId: number,
-  options?: RequestInit
-): Promise<movieWatchProvidersResponse> => {
-  const res = await fetch(getMovieWatchProvidersUrl(movieId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieWatchProvidersResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieWatchProvidersResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieWatchProviders200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieWatchProvidersQueryKey = (movieId?: number) => {
-  return [`/3/movie/${movieId}/watch/providers`] as const;
+  return [
+    `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`,
+  ] as const;
 };
 
 export const getMovieWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -13964,17 +11992,17 @@ export const getMovieWatchProvidersQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getMovieWatchProvidersQueryKey(movieId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof movieWatchProviders>>
-  > = ({ signal }) => movieWatchProviders(movieId, { signal, ...fetchOptions });
+  > = ({ signal }) => movieWatchProviders(movieId, requestOptions, signal);
 
   return {
     queryKey,
@@ -13991,11 +12019,11 @@ export const getMovieWatchProvidersQueryOptions = <
 export type MovieWatchProvidersQueryResult = NonNullable<
   Awaited<ReturnType<typeof movieWatchProviders>>
 >;
-export type MovieWatchProvidersQueryError = unknown;
+export type MovieWatchProvidersQueryError = ErrorType<unknown>;
 
 export function useMovieWatchProviders<
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options: {
@@ -14014,7 +12042,7 @@ export function useMovieWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -14022,7 +12050,7 @@ export function useMovieWatchProviders<
 };
 export function useMovieWatchProviders<
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -14041,7 +12069,7 @@ export function useMovieWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14049,7 +12077,7 @@ export function useMovieWatchProviders<
 };
 export function useMovieWatchProviders<
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -14060,7 +12088,7 @@ export function useMovieWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14072,7 +12100,7 @@ export function useMovieWatchProviders<
 
 export function useMovieWatchProviders<
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   movieId: number,
   options?: {
@@ -14083,7 +12111,7 @@ export function useMovieWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14105,60 +12133,28 @@ export function useMovieWatchProviders<
  * Rate a movie and save it to your rated list.
  * @summary Add Rating
  */
-export type movieAddRatingResponse200 = {
-  data: MovieAddRating200;
-  status: 200;
-};
-
-export type movieAddRatingResponseSuccess = movieAddRatingResponse200 & {
-  headers: Headers;
-};
-export type movieAddRatingResponse = movieAddRatingResponseSuccess;
-
-export const getMovieAddRatingUrl = (
+export const movieAddRating = (
   movieId: number,
-  params?: MovieAddRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/rating?${stringifiedParams}`
-    : `/3/movie/${movieId}/rating`;
-};
-
-export const movieAddRating = async (
-  movieId: number,
-  movieAddRatingBody: MovieAddRatingBody,
+  movieAddRatingBody: BodyType<MovieAddRatingBody>,
   params?: MovieAddRatingParams,
-  options?: RequestInit
-): Promise<movieAddRatingResponse> => {
-  const res = await fetch(getMovieAddRatingUrl(movieId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(movieAddRatingBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieAddRatingResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieAddRatingResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<MovieAddRating200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/rating`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: movieAddRatingBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getMovieAddRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -14166,34 +12162,42 @@ export const getMovieAddRatingMutationOptions = <
     TError,
     {
       movieId: number;
-      data: MovieAddRatingBody;
+      data: BodyType<MovieAddRatingBody>;
       params?: MovieAddRatingParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof movieAddRating>>,
   TError,
-  { movieId: number; data: MovieAddRatingBody; params?: MovieAddRatingParams },
+  {
+    movieId: number;
+    data: BodyType<MovieAddRatingBody>;
+    params?: MovieAddRatingParams;
+  },
   TContext
 > => {
   const mutationKey = ['movieAddRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof movieAddRating>>,
-    { movieId: number; data: MovieAddRatingBody; params?: MovieAddRatingParams }
+    {
+      movieId: number;
+      data: BodyType<MovieAddRatingBody>;
+      params?: MovieAddRatingParams;
+    }
   > = (props) => {
     const { movieId, data, params } = props ?? {};
 
-    return movieAddRating(movieId, data, params, fetchOptions);
+    return movieAddRating(movieId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -14202,31 +12206,38 @@ export const getMovieAddRatingMutationOptions = <
 export type MovieAddRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof movieAddRating>>
 >;
-export type MovieAddRatingMutationBody = MovieAddRatingBody;
-export type MovieAddRatingMutationError = unknown;
+export type MovieAddRatingMutationBody = BodyType<MovieAddRatingBody>;
+export type MovieAddRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add Rating
  */
-export const useMovieAddRating = <TError = unknown, TContext = unknown>(
+export const useMovieAddRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof movieAddRating>>,
       TError,
       {
         movieId: number;
-        data: MovieAddRatingBody;
+        data: BodyType<MovieAddRatingBody>;
         params?: MovieAddRatingParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
   Awaited<ReturnType<typeof movieAddRating>>,
   TError,
-  { movieId: number; data: MovieAddRatingBody; params?: MovieAddRatingParams },
+  {
+    movieId: number;
+    data: BodyType<MovieAddRatingBody>;
+    params?: MovieAddRatingParams;
+  },
   TContext
 > => {
   const mutationOptions = getMovieAddRatingMutationOptions(options);
@@ -14237,57 +12248,23 @@ export const useMovieAddRating = <TError = unknown, TContext = unknown>(
  * Delete a user rating.
  * @summary Delete Rating
  */
-export type movieDeleteRatingResponse200 = {
-  data: MovieDeleteRating200;
-  status: 200;
-};
-
-export type movieDeleteRatingResponseSuccess = movieDeleteRatingResponse200 & {
-  headers: Headers;
-};
-export type movieDeleteRatingResponse = movieDeleteRatingResponseSuccess;
-
-export const getMovieDeleteRatingUrl = (
-  movieId: number,
-  params?: MovieDeleteRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/movie/${movieId}/rating?${stringifiedParams}`
-    : `/3/movie/${movieId}/rating`;
-};
-
-export const movieDeleteRating = async (
+export const movieDeleteRating = (
   movieId: number,
   params?: MovieDeleteRatingParams,
-  options?: RequestInit
-): Promise<movieDeleteRatingResponse> => {
-  const res = await fetch(getMovieDeleteRatingUrl(movieId, params), {
-    ...options,
-    method: 'DELETE',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: movieDeleteRatingResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as movieDeleteRatingResponse;
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<MovieDeleteRating200>(
+    {
+      url: `https://api.themoviedb.org/3/movie/${movieId}/rating`,
+      method: 'DELETE',
+      params,
+    },
+    options
+  );
 };
 
 export const getMovieDeleteRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -14296,7 +12273,7 @@ export const getMovieDeleteRatingMutationOptions = <
     { movieId: number; params?: MovieDeleteRatingParams },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof movieDeleteRating>>,
   TError,
@@ -14304,13 +12281,13 @@ export const getMovieDeleteRatingMutationOptions = <
   TContext
 > => {
   const mutationKey = ['movieDeleteRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof movieDeleteRating>>,
@@ -14318,7 +12295,7 @@ export const getMovieDeleteRatingMutationOptions = <
   > = (props) => {
     const { movieId, params } = props ?? {};
 
-    return movieDeleteRating(movieId, params, fetchOptions);
+    return movieDeleteRating(movieId, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -14328,12 +12305,15 @@ export type MovieDeleteRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof movieDeleteRating>>
 >;
 
-export type MovieDeleteRatingMutationError = unknown;
+export type MovieDeleteRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Delete Rating
  */
-export const useMovieDeleteRating = <TError = unknown, TContext = unknown>(
+export const useMovieDeleteRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof movieDeleteRating>>,
@@ -14341,7 +12321,7 @@ export const useMovieDeleteRating = <TError = unknown, TContext = unknown>(
       { movieId: number; params?: MovieDeleteRatingParams },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -14357,63 +12337,45 @@ export const useMovieDeleteRating = <TError = unknown, TContext = unknown>(
 /**
  * @summary Details
  */
-export type networkDetailsResponse200 = {
-  data: NetworkDetails200;
-  status: 200;
-};
-
-export type networkDetailsResponseSuccess = networkDetailsResponse200 & {
-  headers: Headers;
-};
-export type networkDetailsResponse = networkDetailsResponseSuccess;
-
-export const getNetworkDetailsUrl = (networkId: number) => {
-  return `/3/network/${networkId}`;
-};
-
-export const networkDetails = async (
+export const networkDetails = (
   networkId: number,
-  options?: RequestInit
-): Promise<networkDetailsResponse> => {
-  const res = await fetch(getNetworkDetailsUrl(networkId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: networkDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as networkDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<NetworkDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/network/${networkId}`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getNetworkDetailsQueryKey = (networkId?: number) => {
-  return [`/3/network/${networkId}`] as const;
+  return [`https://api.themoviedb.org/3/network/${networkId}`] as const;
 };
 
 export const getNetworkDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof networkDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof networkDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getNetworkDetailsQueryKey(networkId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof networkDetails>>> = ({
     signal,
-  }) => networkDetails(networkId, { signal, ...fetchOptions });
+  }) => networkDetails(networkId, requestOptions, signal);
 
   return {
     queryKey,
@@ -14430,11 +12392,11 @@ export const getNetworkDetailsQueryOptions = <
 export type NetworkDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof networkDetails>>
 >;
-export type NetworkDetailsQueryError = unknown;
+export type NetworkDetailsQueryError = ErrorType<unknown>;
 
 export function useNetworkDetails<
   TData = Awaited<ReturnType<typeof networkDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options: {
@@ -14449,7 +12411,7 @@ export function useNetworkDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -14457,7 +12419,7 @@ export function useNetworkDetails<
 };
 export function useNetworkDetails<
   TData = Awaited<ReturnType<typeof networkDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14472,7 +12434,7 @@ export function useNetworkDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14480,14 +12442,14 @@ export function useNetworkDetails<
 };
 export function useNetworkDetails<
   TData = Awaited<ReturnType<typeof networkDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof networkDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14499,14 +12461,14 @@ export function useNetworkDetails<
 
 export function useNetworkDetails<
   TData = Awaited<ReturnType<typeof networkDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof networkDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14528,62 +12490,46 @@ export function useNetworkDetails<
  * Get the alternative names of a network.
  * @summary Alternative Names
  */
-export type detailsCopyResponse200 = {
-  data: DetailsCopy200;
-  status: 200;
-};
-
-export type detailsCopyResponseSuccess = detailsCopyResponse200 & {
-  headers: Headers;
-};
-export type detailsCopyResponse = detailsCopyResponseSuccess;
-
-export const getDetailsCopyUrl = (networkId: number) => {
-  return `/3/network/${networkId}/alternative_names`;
-};
-
-export const detailsCopy = async (
+export const detailsCopy = (
   networkId: number,
-  options?: RequestInit
-): Promise<detailsCopyResponse> => {
-  const res = await fetch(getDetailsCopyUrl(networkId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: detailsCopyResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as detailsCopyResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<DetailsCopy200>(
+    {
+      url: `https://api.themoviedb.org/3/network/${networkId}/alternative_names`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getDetailsCopyQueryKey = (networkId?: number) => {
-  return [`/3/network/${networkId}/alternative_names`] as const;
+  return [
+    `https://api.themoviedb.org/3/network/${networkId}/alternative_names`,
+  ] as const;
 };
 
 export const getDetailsCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof detailsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof detailsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getDetailsCopyQueryKey(networkId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof detailsCopy>>> = ({
     signal,
-  }) => detailsCopy(networkId, { signal, ...fetchOptions });
+  }) => detailsCopy(networkId, requestOptions, signal);
 
   return {
     queryKey,
@@ -14600,11 +12546,11 @@ export const getDetailsCopyQueryOptions = <
 export type DetailsCopyQueryResult = NonNullable<
   Awaited<ReturnType<typeof detailsCopy>>
 >;
-export type DetailsCopyQueryError = unknown;
+export type DetailsCopyQueryError = ErrorType<unknown>;
 
 export function useDetailsCopy<
   TData = Awaited<ReturnType<typeof detailsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options: {
@@ -14619,7 +12565,7 @@ export function useDetailsCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -14627,7 +12573,7 @@ export function useDetailsCopy<
 };
 export function useDetailsCopy<
   TData = Awaited<ReturnType<typeof detailsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14642,7 +12588,7 @@ export function useDetailsCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14650,14 +12596,14 @@ export function useDetailsCopy<
 };
 export function useDetailsCopy<
   TData = Awaited<ReturnType<typeof detailsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof detailsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14669,14 +12615,14 @@ export function useDetailsCopy<
 
 export function useDetailsCopy<
   TData = Awaited<ReturnType<typeof detailsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof detailsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14698,49 +12644,28 @@ export function useDetailsCopy<
  * Get the TV network logos by id.
  * @summary Images
  */
-export type alternativeNamesCopyResponse200 = {
-  data: AlternativeNamesCopy200;
-  status: 200;
-};
-
-export type alternativeNamesCopyResponseSuccess =
-  alternativeNamesCopyResponse200 & {
-    headers: Headers;
-  };
-export type alternativeNamesCopyResponse = alternativeNamesCopyResponseSuccess;
-
-export const getAlternativeNamesCopyUrl = (networkId: number) => {
-  return `/3/network/${networkId}/images`;
-};
-
-export const alternativeNamesCopy = async (
+export const alternativeNamesCopy = (
   networkId: number,
-  options?: RequestInit
-): Promise<alternativeNamesCopyResponse> => {
-  const res = await fetch(getAlternativeNamesCopyUrl(networkId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: alternativeNamesCopyResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as alternativeNamesCopyResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<AlternativeNamesCopy200>(
+    {
+      url: `https://api.themoviedb.org/3/network/${networkId}/images`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getAlternativeNamesCopyQueryKey = (networkId?: number) => {
-  return [`/3/network/${networkId}/images`] as const;
+  return [`https://api.themoviedb.org/3/network/${networkId}/images`] as const;
 };
 
 export const getAlternativeNamesCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14751,18 +12676,17 @@ export const getAlternativeNamesCopyQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getAlternativeNamesCopyQueryKey(networkId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof alternativeNamesCopy>>
-  > = ({ signal }) =>
-    alternativeNamesCopy(networkId, { signal, ...fetchOptions });
+  > = ({ signal }) => alternativeNamesCopy(networkId, requestOptions, signal);
 
   return {
     queryKey,
@@ -14779,11 +12703,11 @@ export const getAlternativeNamesCopyQueryOptions = <
 export type AlternativeNamesCopyQueryResult = NonNullable<
   Awaited<ReturnType<typeof alternativeNamesCopy>>
 >;
-export type AlternativeNamesCopyQueryError = unknown;
+export type AlternativeNamesCopyQueryError = ErrorType<unknown>;
 
 export function useAlternativeNamesCopy<
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options: {
@@ -14802,7 +12726,7 @@ export function useAlternativeNamesCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -14810,7 +12734,7 @@ export function useAlternativeNamesCopy<
 };
 export function useAlternativeNamesCopy<
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14829,7 +12753,7 @@ export function useAlternativeNamesCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14837,7 +12761,7 @@ export function useAlternativeNamesCopy<
 };
 export function useAlternativeNamesCopy<
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14848,7 +12772,7 @@ export function useAlternativeNamesCopy<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14860,7 +12784,7 @@ export function useAlternativeNamesCopy<
 
 export function useAlternativeNamesCopy<
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   networkId: number,
   options?: {
@@ -14871,7 +12795,7 @@ export function useAlternativeNamesCopy<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -14893,60 +12817,34 @@ export function useAlternativeNamesCopy<
  * Get a list of people ordered by popularity.
  * @summary Popular
  */
-export type personPopularListResponse200 = {
-  data: PersonPopularList200;
-  status: 200;
-};
-
-export type personPopularListResponseSuccess = personPopularListResponse200 & {
-  headers: Headers;
-};
-export type personPopularListResponse = personPopularListResponseSuccess;
-
-export const getPersonPopularListUrl = (params?: PersonPopularListParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/popular?${stringifiedParams}`
-    : `/3/person/popular`;
-};
-
-export const personPopularList = async (
+export const personPopularList = (
   params?: PersonPopularListParams,
-  options?: RequestInit
-): Promise<personPopularListResponse> => {
-  const res = await fetch(getPersonPopularListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personPopularListResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personPopularListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonPopularList200>(
+    {
+      url: `https://api.themoviedb.org/3/person/popular`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonPopularListQueryKey = (
   params?: PersonPopularListParams
 ) => {
-  return [`/3/person/popular`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/person/popular`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getPersonPopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof personPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: PersonPopularListParams,
   options?: {
@@ -14957,17 +12855,17 @@ export const getPersonPopularListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonPopularListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof personPopularList>>
-  > = ({ signal }) => personPopularList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => personPopularList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof personPopularList>>,
@@ -14979,11 +12877,11 @@ export const getPersonPopularListQueryOptions = <
 export type PersonPopularListQueryResult = NonNullable<
   Awaited<ReturnType<typeof personPopularList>>
 >;
-export type PersonPopularListQueryError = unknown;
+export type PersonPopularListQueryError = ErrorType<unknown>;
 
 export function usePersonPopularList<
   TData = Awaited<ReturnType<typeof personPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | PersonPopularListParams,
   options: {
@@ -15002,7 +12900,7 @@ export function usePersonPopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -15010,7 +12908,7 @@ export function usePersonPopularList<
 };
 export function usePersonPopularList<
   TData = Awaited<ReturnType<typeof personPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: PersonPopularListParams,
   options?: {
@@ -15029,7 +12927,7 @@ export function usePersonPopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15037,7 +12935,7 @@ export function usePersonPopularList<
 };
 export function usePersonPopularList<
   TData = Awaited<ReturnType<typeof personPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: PersonPopularListParams,
   options?: {
@@ -15048,7 +12946,7 @@ export function usePersonPopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15060,7 +12958,7 @@ export function usePersonPopularList<
 
 export function usePersonPopularList<
   TData = Awaited<ReturnType<typeof personPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: PersonPopularListParams,
   options?: {
@@ -15071,7 +12969,7 @@ export function usePersonPopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15093,65 +12991,36 @@ export function usePersonPopularList<
  * Query the top level details of a person.
  * @summary Details
  */
-export type personDetailsResponse200 = {
-  data: PersonDetails200;
-  status: 200;
-};
-
-export type personDetailsResponseSuccess = personDetailsResponse200 & {
-  headers: Headers;
-};
-export type personDetailsResponse = personDetailsResponseSuccess;
-
-export const getPersonDetailsUrl = (
-  personId: number,
-  params?: PersonDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}?${stringifiedParams}`
-    : `/3/person/${personId}`;
-};
-
-export const personDetails = async (
+export const personDetails = (
   personId: number,
   params?: PersonDetailsParams,
-  options?: RequestInit
-): Promise<personDetailsResponse> => {
-  const res = await fetch(getPersonDetailsUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonDetailsQueryKey = (
   personId?: number,
   params?: PersonDetailsParams
 ) => {
-  return [`/3/person/${personId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/person/${personId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getPersonDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof personDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonDetailsParams,
@@ -15159,17 +13028,17 @@ export const getPersonDetailsQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonDetailsQueryKey(personId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof personDetails>>> = ({
     signal,
-  }) => personDetails(personId, params, { signal, ...fetchOptions });
+  }) => personDetails(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -15186,11 +13055,11 @@ export const getPersonDetailsQueryOptions = <
 export type PersonDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof personDetails>>
 >;
-export type PersonDetailsQueryError = unknown;
+export type PersonDetailsQueryError = ErrorType<unknown>;
 
 export function usePersonDetails<
   TData = Awaited<ReturnType<typeof personDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params: undefined | PersonDetailsParams,
@@ -15206,7 +13075,7 @@ export function usePersonDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -15214,7 +13083,7 @@ export function usePersonDetails<
 };
 export function usePersonDetails<
   TData = Awaited<ReturnType<typeof personDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonDetailsParams,
@@ -15230,7 +13099,7 @@ export function usePersonDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15238,7 +13107,7 @@ export function usePersonDetails<
 };
 export function usePersonDetails<
   TData = Awaited<ReturnType<typeof personDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonDetailsParams,
@@ -15246,7 +13115,7 @@ export function usePersonDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15258,7 +13127,7 @@ export function usePersonDetails<
 
 export function usePersonDetails<
   TData = Awaited<ReturnType<typeof personDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonDetailsParams,
@@ -15266,7 +13135,7 @@ export function usePersonDetails<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15288,53 +13157,21 @@ export function usePersonDetails<
  * Get the recent changes for a person.
  * @summary Changes
  */
-export type personChangesResponse200 = {
-  data: PersonChanges200;
-  status: 200;
-};
-
-export type personChangesResponseSuccess = personChangesResponse200 & {
-  headers: Headers;
-};
-export type personChangesResponse = personChangesResponseSuccess;
-
-export const getPersonChangesUrl = (
-  personId: number,
-  params?: PersonChangesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}/changes?${stringifiedParams}`
-    : `/3/person/${personId}/changes`;
-};
-
-export const personChanges = async (
+export const personChanges = (
   personId: number,
   params?: PersonChangesParams,
-  options?: RequestInit
-): Promise<personChangesResponse> => {
-  const res = await fetch(getPersonChangesUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personChangesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personChangesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonChanges200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonChangesQueryKey = (
@@ -15342,14 +13179,14 @@ export const getPersonChangesQueryKey = (
   params?: PersonChangesParams
 ) => {
   return [
-    `/3/person/${personId}/changes`,
+    `https://api.themoviedb.org/3/person/${personId}/changes`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getPersonChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof personChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonChangesParams,
@@ -15357,17 +13194,17 @@ export const getPersonChangesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonChangesQueryKey(personId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof personChanges>>> = ({
     signal,
-  }) => personChanges(personId, params, { signal, ...fetchOptions });
+  }) => personChanges(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -15384,11 +13221,11 @@ export const getPersonChangesQueryOptions = <
 export type PersonChangesQueryResult = NonNullable<
   Awaited<ReturnType<typeof personChanges>>
 >;
-export type PersonChangesQueryError = unknown;
+export type PersonChangesQueryError = ErrorType<unknown>;
 
 export function usePersonChanges<
   TData = Awaited<ReturnType<typeof personChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params: undefined | PersonChangesParams,
@@ -15404,7 +13241,7 @@ export function usePersonChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -15412,7 +13249,7 @@ export function usePersonChanges<
 };
 export function usePersonChanges<
   TData = Awaited<ReturnType<typeof personChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonChangesParams,
@@ -15428,7 +13265,7 @@ export function usePersonChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15436,7 +13273,7 @@ export function usePersonChanges<
 };
 export function usePersonChanges<
   TData = Awaited<ReturnType<typeof personChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonChangesParams,
@@ -15444,7 +13281,7 @@ export function usePersonChanges<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15456,7 +13293,7 @@ export function usePersonChanges<
 
 export function usePersonChanges<
   TData = Awaited<ReturnType<typeof personChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonChangesParams,
@@ -15464,7 +13301,7 @@ export function usePersonChanges<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personChanges>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15486,57 +13323,21 @@ export function usePersonChanges<
  * Get the combined movie and TV credits that belong to a person.
  * @summary Combined Credits
  */
-export type personCombinedCreditsResponse200 = {
-  data: PersonCombinedCredits200;
-  status: 200;
-};
-
-export type personCombinedCreditsResponseSuccess =
-  personCombinedCreditsResponse200 & {
-    headers: Headers;
-  };
-export type personCombinedCreditsResponse =
-  personCombinedCreditsResponseSuccess;
-
-export const getPersonCombinedCreditsUrl = (
-  personId: string,
-  params?: PersonCombinedCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}/combined_credits?${stringifiedParams}`
-    : `/3/person/${personId}/combined_credits`;
-};
-
-export const personCombinedCredits = async (
+export const personCombinedCredits = (
   personId: string,
   params?: PersonCombinedCreditsParams,
-  options?: RequestInit
-): Promise<personCombinedCreditsResponse> => {
-  const res = await fetch(getPersonCombinedCreditsUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personCombinedCreditsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personCombinedCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonCombinedCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/combined_credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonCombinedCreditsQueryKey = (
@@ -15544,14 +13345,14 @@ export const getPersonCombinedCreditsQueryKey = (
   params?: PersonCombinedCreditsParams
 ) => {
   return [
-    `/3/person/${personId}/combined_credits`,
+    `https://api.themoviedb.org/3/person/${personId}/combined_credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getPersonCombinedCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: string,
   params?: PersonCombinedCreditsParams,
@@ -15563,10 +13364,10 @@ export const getPersonCombinedCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -15575,7 +13376,7 @@ export const getPersonCombinedCreditsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof personCombinedCredits>>
   > = ({ signal }) =>
-    personCombinedCredits(personId, params, { signal, ...fetchOptions });
+    personCombinedCredits(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -15592,11 +13393,11 @@ export const getPersonCombinedCreditsQueryOptions = <
 export type PersonCombinedCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof personCombinedCredits>>
 >;
-export type PersonCombinedCreditsQueryError = unknown;
+export type PersonCombinedCreditsQueryError = ErrorType<unknown>;
 
 export function usePersonCombinedCredits<
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: string,
   params: undefined | PersonCombinedCreditsParams,
@@ -15616,7 +13417,7 @@ export function usePersonCombinedCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -15624,7 +13425,7 @@ export function usePersonCombinedCredits<
 };
 export function usePersonCombinedCredits<
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: string,
   params?: PersonCombinedCreditsParams,
@@ -15644,7 +13445,7 @@ export function usePersonCombinedCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15652,7 +13453,7 @@ export function usePersonCombinedCredits<
 };
 export function usePersonCombinedCredits<
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: string,
   params?: PersonCombinedCreditsParams,
@@ -15664,7 +13465,7 @@ export function usePersonCombinedCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15676,7 +13477,7 @@ export function usePersonCombinedCredits<
 
 export function usePersonCombinedCredits<
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: string,
   params?: PersonCombinedCreditsParams,
@@ -15688,7 +13489,7 @@ export function usePersonCombinedCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15714,46 +13515,30 @@ export function usePersonCombinedCredits<
  * Get the external ID's that belong to a person.
  * @summary External IDs
  */
-export type personExternalIdsResponse200 = {
-  data: PersonExternalIds200;
-  status: 200;
-};
-
-export type personExternalIdsResponseSuccess = personExternalIdsResponse200 & {
-  headers: Headers;
-};
-export type personExternalIdsResponse = personExternalIdsResponseSuccess;
-
-export const getPersonExternalIdsUrl = (personId: number) => {
-  return `/3/person/${personId}/external_ids`;
-};
-
-export const personExternalIds = async (
+export const personExternalIds = (
   personId: number,
-  options?: RequestInit
-): Promise<personExternalIdsResponse> => {
-  const res = await fetch(getPersonExternalIdsUrl(personId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personExternalIdsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personExternalIdsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonExternalIds200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/external_ids`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonExternalIdsQueryKey = (personId?: number) => {
-  return [`/3/person/${personId}/external_ids`] as const;
+  return [
+    `https://api.themoviedb.org/3/person/${personId}/external_ids`,
+  ] as const;
 };
 
 export const getPersonExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof personExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -15764,17 +13549,17 @@ export const getPersonExternalIdsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonExternalIdsQueryKey(personId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof personExternalIds>>
-  > = ({ signal }) => personExternalIds(personId, { signal, ...fetchOptions });
+  > = ({ signal }) => personExternalIds(personId, requestOptions, signal);
 
   return {
     queryKey,
@@ -15791,11 +13576,11 @@ export const getPersonExternalIdsQueryOptions = <
 export type PersonExternalIdsQueryResult = NonNullable<
   Awaited<ReturnType<typeof personExternalIds>>
 >;
-export type PersonExternalIdsQueryError = unknown;
+export type PersonExternalIdsQueryError = ErrorType<unknown>;
 
 export function usePersonExternalIds<
   TData = Awaited<ReturnType<typeof personExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options: {
@@ -15814,7 +13599,7 @@ export function usePersonExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -15822,7 +13607,7 @@ export function usePersonExternalIds<
 };
 export function usePersonExternalIds<
   TData = Awaited<ReturnType<typeof personExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -15841,7 +13626,7 @@ export function usePersonExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15849,7 +13634,7 @@ export function usePersonExternalIds<
 };
 export function usePersonExternalIds<
   TData = Awaited<ReturnType<typeof personExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -15860,7 +13645,7 @@ export function usePersonExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15872,7 +13657,7 @@ export function usePersonExternalIds<
 
 export function usePersonExternalIds<
   TData = Awaited<ReturnType<typeof personExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -15883,7 +13668,7 @@ export function usePersonExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -15905,62 +13690,44 @@ export function usePersonExternalIds<
  * Get the profile images that belong to a person.
  * @summary Images
  */
-export type personImagesResponse200 = {
-  data: PersonImages200;
-  status: 200;
-};
-
-export type personImagesResponseSuccess = personImagesResponse200 & {
-  headers: Headers;
-};
-export type personImagesResponse = personImagesResponseSuccess;
-
-export const getPersonImagesUrl = (personId: number) => {
-  return `/3/person/${personId}/images`;
-};
-
-export const personImages = async (
+export const personImages = (
   personId: number,
-  options?: RequestInit
-): Promise<personImagesResponse> => {
-  const res = await fetch(getPersonImagesUrl(personId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonImages200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/images`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonImagesQueryKey = (personId?: number) => {
-  return [`/3/person/${personId}/images`] as const;
+  return [`https://api.themoviedb.org/3/person/${personId}/images`] as const;
 };
 
 export const getPersonImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof personImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPersonImagesQueryKey(personId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof personImages>>> = ({
     signal,
-  }) => personImages(personId, { signal, ...fetchOptions });
+  }) => personImages(personId, requestOptions, signal);
 
   return {
     queryKey,
@@ -15977,11 +13744,11 @@ export const getPersonImagesQueryOptions = <
 export type PersonImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof personImages>>
 >;
-export type PersonImagesQueryError = unknown;
+export type PersonImagesQueryError = ErrorType<unknown>;
 
 export function usePersonImages<
   TData = Awaited<ReturnType<typeof personImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options: {
@@ -15996,7 +13763,7 @@ export function usePersonImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -16004,7 +13771,7 @@ export function usePersonImages<
 };
 export function usePersonImages<
   TData = Awaited<ReturnType<typeof personImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -16019,7 +13786,7 @@ export function usePersonImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16027,14 +13794,14 @@ export function usePersonImages<
 };
 export function usePersonImages<
   TData = Awaited<ReturnType<typeof personImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16046,14 +13813,14 @@ export function usePersonImages<
 
 export function usePersonImages<
   TData = Awaited<ReturnType<typeof personImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16075,58 +13842,40 @@ export function usePersonImages<
  * Get the newest created person. This is a live response and will continuously change.
  * @summary Latest
  */
-export type personLatestIdResponse200 = {
-  data: PersonLatestId200;
-  status: 200;
-};
-
-export type personLatestIdResponseSuccess = personLatestIdResponse200 & {
-  headers: Headers;
-};
-export type personLatestIdResponse = personLatestIdResponseSuccess;
-
-export const getPersonLatestIdUrl = () => {
-  return `/3/person/latest`;
-};
-
-export const personLatestId = async (
-  options?: RequestInit
-): Promise<personLatestIdResponse> => {
-  const res = await fetch(getPersonLatestIdUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personLatestIdResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personLatestIdResponse;
+export const personLatestId = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonLatestId200>(
+    {
+      url: `https://api.themoviedb.org/3/person/latest`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonLatestIdQueryKey = () => {
-  return [`/3/person/latest`] as const;
+  return [`https://api.themoviedb.org/3/person/latest`] as const;
 };
 
 export const getPersonLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof personLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof personLatestId>>, TError, TData>
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getPersonLatestIdQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof personLatestId>>> = ({
     signal,
-  }) => personLatestId({ signal, ...fetchOptions });
+  }) => personLatestId(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof personLatestId>>,
@@ -16138,11 +13887,11 @@ export const getPersonLatestIdQueryOptions = <
 export type PersonLatestIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof personLatestId>>
 >;
-export type PersonLatestIdQueryError = unknown;
+export type PersonLatestIdQueryError = ErrorType<unknown>;
 
 export function usePersonLatestId<
   TData = Awaited<ReturnType<typeof personLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -16156,7 +13905,7 @@ export function usePersonLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -16164,7 +13913,7 @@ export function usePersonLatestId<
 };
 export function usePersonLatestId<
   TData = Awaited<ReturnType<typeof personLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -16178,7 +13927,7 @@ export function usePersonLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16186,13 +13935,13 @@ export function usePersonLatestId<
 };
 export function usePersonLatestId<
   TData = Awaited<ReturnType<typeof personLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personLatestId>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16204,13 +13953,13 @@ export function usePersonLatestId<
 
 export function usePersonLatestId<
   TData = Awaited<ReturnType<typeof personLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof personLatestId>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16232,54 +13981,21 @@ export function usePersonLatestId<
  * Get the movie credits for a person.
  * @summary Movie Credits
  */
-export type personMovieCreditsResponse200 = {
-  data: PersonMovieCredits200;
-  status: 200;
-};
-
-export type personMovieCreditsResponseSuccess =
-  personMovieCreditsResponse200 & {
-    headers: Headers;
-  };
-export type personMovieCreditsResponse = personMovieCreditsResponseSuccess;
-
-export const getPersonMovieCreditsUrl = (
-  personId: number,
-  params?: PersonMovieCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}/movie_credits?${stringifiedParams}`
-    : `/3/person/${personId}/movie_credits`;
-};
-
-export const personMovieCredits = async (
+export const personMovieCredits = (
   personId: number,
   params?: PersonMovieCreditsParams,
-  options?: RequestInit
-): Promise<personMovieCreditsResponse> => {
-  const res = await fetch(getPersonMovieCreditsUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personMovieCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personMovieCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonMovieCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/movie_credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonMovieCreditsQueryKey = (
@@ -16287,14 +14003,14 @@ export const getPersonMovieCreditsQueryKey = (
   params?: PersonMovieCreditsParams
 ) => {
   return [
-    `/3/person/${personId}/movie_credits`,
+    `https://api.themoviedb.org/3/person/${personId}/movie_credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getPersonMovieCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonMovieCreditsParams,
@@ -16306,10 +14022,10 @@ export const getPersonMovieCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonMovieCreditsQueryKey(personId, params);
@@ -16317,7 +14033,7 @@ export const getPersonMovieCreditsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof personMovieCredits>>
   > = ({ signal }) =>
-    personMovieCredits(personId, params, { signal, ...fetchOptions });
+    personMovieCredits(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -16334,11 +14050,11 @@ export const getPersonMovieCreditsQueryOptions = <
 export type PersonMovieCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof personMovieCredits>>
 >;
-export type PersonMovieCreditsQueryError = unknown;
+export type PersonMovieCreditsQueryError = ErrorType<unknown>;
 
 export function usePersonMovieCredits<
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params: undefined | PersonMovieCreditsParams,
@@ -16358,7 +14074,7 @@ export function usePersonMovieCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -16366,7 +14082,7 @@ export function usePersonMovieCredits<
 };
 export function usePersonMovieCredits<
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonMovieCreditsParams,
@@ -16386,7 +14102,7 @@ export function usePersonMovieCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16394,7 +14110,7 @@ export function usePersonMovieCredits<
 };
 export function usePersonMovieCredits<
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonMovieCreditsParams,
@@ -16406,7 +14122,7 @@ export function usePersonMovieCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16418,7 +14134,7 @@ export function usePersonMovieCredits<
 
 export function usePersonMovieCredits<
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonMovieCreditsParams,
@@ -16430,7 +14146,7 @@ export function usePersonMovieCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16456,53 +14172,21 @@ export function usePersonMovieCredits<
  * Get the TV credits that belong to a person.
  * @summary TV Credits
  */
-export type personTvCreditsResponse200 = {
-  data: PersonTvCredits200;
-  status: 200;
-};
-
-export type personTvCreditsResponseSuccess = personTvCreditsResponse200 & {
-  headers: Headers;
-};
-export type personTvCreditsResponse = personTvCreditsResponseSuccess;
-
-export const getPersonTvCreditsUrl = (
-  personId: number,
-  params?: PersonTvCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}/tv_credits?${stringifiedParams}`
-    : `/3/person/${personId}/tv_credits`;
-};
-
-export const personTvCredits = async (
+export const personTvCredits = (
   personId: number,
   params?: PersonTvCreditsParams,
-  options?: RequestInit
-): Promise<personTvCreditsResponse> => {
-  const res = await fetch(getPersonTvCreditsUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personTvCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personTvCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonTvCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/tv_credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonTvCreditsQueryKey = (
@@ -16510,14 +14194,14 @@ export const getPersonTvCreditsQueryKey = (
   params?: PersonTvCreditsParams
 ) => {
   return [
-    `/3/person/${personId}/tv_credits`,
+    `https://api.themoviedb.org/3/person/${personId}/tv_credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getPersonTvCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personTvCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTvCreditsParams,
@@ -16529,17 +14213,17 @@ export const getPersonTvCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonTvCreditsQueryKey(personId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof personTvCredits>>> = ({
     signal,
-  }) => personTvCredits(personId, params, { signal, ...fetchOptions });
+  }) => personTvCredits(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -16556,11 +14240,11 @@ export const getPersonTvCreditsQueryOptions = <
 export type PersonTvCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof personTvCredits>>
 >;
-export type PersonTvCreditsQueryError = unknown;
+export type PersonTvCreditsQueryError = ErrorType<unknown>;
 
 export function usePersonTvCredits<
   TData = Awaited<ReturnType<typeof personTvCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params: undefined | PersonTvCreditsParams,
@@ -16580,7 +14264,7 @@ export function usePersonTvCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -16588,7 +14272,7 @@ export function usePersonTvCredits<
 };
 export function usePersonTvCredits<
   TData = Awaited<ReturnType<typeof personTvCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTvCreditsParams,
@@ -16608,7 +14292,7 @@ export function usePersonTvCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16616,7 +14300,7 @@ export function usePersonTvCredits<
 };
 export function usePersonTvCredits<
   TData = Awaited<ReturnType<typeof personTvCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTvCreditsParams,
@@ -16628,7 +14312,7 @@ export function usePersonTvCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16640,7 +14324,7 @@ export function usePersonTvCredits<
 
 export function usePersonTvCredits<
   TData = Awaited<ReturnType<typeof personTvCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTvCreditsParams,
@@ -16652,7 +14336,7 @@ export function usePersonTvCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16678,54 +14362,21 @@ export function usePersonTvCredits<
  * Get the tagged images for a person.
  * @summary Tagged Images
  */
-export type personTaggedImagesResponse200 = {
-  data: PersonTaggedImages200;
-  status: 200;
-};
-
-export type personTaggedImagesResponseSuccess =
-  personTaggedImagesResponse200 & {
-    headers: Headers;
-  };
-export type personTaggedImagesResponse = personTaggedImagesResponseSuccess;
-
-export const getPersonTaggedImagesUrl = (
-  personId: number,
-  params?: PersonTaggedImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/person/${personId}/tagged_images?${stringifiedParams}`
-    : `/3/person/${personId}/tagged_images`;
-};
-
-export const personTaggedImages = async (
+export const personTaggedImages = (
   personId: number,
   params?: PersonTaggedImagesParams,
-  options?: RequestInit
-): Promise<personTaggedImagesResponse> => {
-  const res = await fetch(getPersonTaggedImagesUrl(personId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: personTaggedImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as personTaggedImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<PersonTaggedImages200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/tagged_images`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getPersonTaggedImagesQueryKey = (
@@ -16733,14 +14384,14 @@ export const getPersonTaggedImagesQueryKey = (
   params?: PersonTaggedImagesParams
 ) => {
   return [
-    `/3/person/${personId}/tagged_images`,
+    `https://api.themoviedb.org/3/person/${personId}/tagged_images`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getPersonTaggedImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTaggedImagesParams,
@@ -16752,10 +14403,10 @@ export const getPersonTaggedImagesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getPersonTaggedImagesQueryKey(personId, params);
@@ -16763,7 +14414,7 @@ export const getPersonTaggedImagesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof personTaggedImages>>
   > = ({ signal }) =>
-    personTaggedImages(personId, params, { signal, ...fetchOptions });
+    personTaggedImages(personId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -16780,11 +14431,11 @@ export const getPersonTaggedImagesQueryOptions = <
 export type PersonTaggedImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof personTaggedImages>>
 >;
-export type PersonTaggedImagesQueryError = unknown;
+export type PersonTaggedImagesQueryError = ErrorType<unknown>;
 
 export function usePersonTaggedImages<
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params: undefined | PersonTaggedImagesParams,
@@ -16804,7 +14455,7 @@ export function usePersonTaggedImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -16812,7 +14463,7 @@ export function usePersonTaggedImages<
 };
 export function usePersonTaggedImages<
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTaggedImagesParams,
@@ -16832,7 +14483,7 @@ export function usePersonTaggedImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16840,7 +14491,7 @@ export function usePersonTaggedImages<
 };
 export function usePersonTaggedImages<
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTaggedImagesParams,
@@ -16852,7 +14503,7 @@ export function usePersonTaggedImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16864,7 +14515,7 @@ export function usePersonTaggedImages<
 
 export function usePersonTaggedImages<
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   params?: PersonTaggedImagesParams,
@@ -16876,7 +14527,7 @@ export function usePersonTaggedImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -16902,62 +14553,46 @@ export function usePersonTaggedImages<
  * Get the translations that belong to a person.
  * @summary Translations
  */
-export type translationsResponse200 = {
-  data: Translations200;
-  status: 200;
-};
-
-export type translationsResponseSuccess = translationsResponse200 & {
-  headers: Headers;
-};
-export type translationsResponse = translationsResponseSuccess;
-
-export const getTranslationsUrl = (personId: number) => {
-  return `/3/person/${personId}/translations`;
-};
-
-export const translations = async (
+export const translations = (
   personId: number,
-  options?: RequestInit
-): Promise<translationsResponse> => {
-  const res = await fetch(getTranslationsUrl(personId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: translationsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as translationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<Translations200>(
+    {
+      url: `https://api.themoviedb.org/3/person/${personId}/translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTranslationsQueryKey = (personId?: number) => {
-  return [`/3/person/${personId}/translations`] as const;
+  return [
+    `https://api.themoviedb.org/3/person/${personId}/translations`,
+  ] as const;
 };
 
 export const getTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof translations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof translations>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getTranslationsQueryKey(personId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof translations>>> = ({
     signal,
-  }) => translations(personId, { signal, ...fetchOptions });
+  }) => translations(personId, requestOptions, signal);
 
   return {
     queryKey,
@@ -16974,11 +14609,11 @@ export const getTranslationsQueryOptions = <
 export type TranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof translations>>
 >;
-export type TranslationsQueryError = unknown;
+export type TranslationsQueryError = ErrorType<unknown>;
 
 export function useTranslations<
   TData = Awaited<ReturnType<typeof translations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options: {
@@ -16993,7 +14628,7 @@ export function useTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17001,7 +14636,7 @@ export function useTranslations<
 };
 export function useTranslations<
   TData = Awaited<ReturnType<typeof translations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
@@ -17016,7 +14651,7 @@ export function useTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17024,14 +14659,14 @@ export function useTranslations<
 };
 export function useTranslations<
   TData = Awaited<ReturnType<typeof translations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof translations>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17043,14 +14678,14 @@ export function useTranslations<
 
 export function useTranslations<
   TData = Awaited<ReturnType<typeof translations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   personId: number,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof translations>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17072,62 +14707,44 @@ export function useTranslations<
  * Retrieve the details of a movie or TV show review.
  * @summary Details
  */
-export type reviewDetailsResponse200 = {
-  data: ReviewDetails200;
-  status: 200;
-};
-
-export type reviewDetailsResponseSuccess = reviewDetailsResponse200 & {
-  headers: Headers;
-};
-export type reviewDetailsResponse = reviewDetailsResponseSuccess;
-
-export const getReviewDetailsUrl = (reviewId: string) => {
-  return `/3/review/${reviewId}`;
-};
-
-export const reviewDetails = async (
+export const reviewDetails = (
   reviewId: string,
-  options?: RequestInit
-): Promise<reviewDetailsResponse> => {
-  const res = await fetch(getReviewDetailsUrl(reviewId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: reviewDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as reviewDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ReviewDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/review/${reviewId}`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getReviewDetailsQueryKey = (reviewId?: string) => {
-  return [`/3/review/${reviewId}`] as const;
+  return [`https://api.themoviedb.org/3/review/${reviewId}`] as const;
 };
 
 export const getReviewDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof reviewDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   reviewId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof reviewDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getReviewDetailsQueryKey(reviewId);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof reviewDetails>>> = ({
     signal,
-  }) => reviewDetails(reviewId, { signal, ...fetchOptions });
+  }) => reviewDetails(reviewId, requestOptions, signal);
 
   return {
     queryKey,
@@ -17144,11 +14761,11 @@ export const getReviewDetailsQueryOptions = <
 export type ReviewDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof reviewDetails>>
 >;
-export type ReviewDetailsQueryError = unknown;
+export type ReviewDetailsQueryError = ErrorType<unknown>;
 
 export function useReviewDetails<
   TData = Awaited<ReturnType<typeof reviewDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   reviewId: string,
   options: {
@@ -17163,7 +14780,7 @@ export function useReviewDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17171,7 +14788,7 @@ export function useReviewDetails<
 };
 export function useReviewDetails<
   TData = Awaited<ReturnType<typeof reviewDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   reviewId: string,
   options?: {
@@ -17186,7 +14803,7 @@ export function useReviewDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17194,14 +14811,14 @@ export function useReviewDetails<
 };
 export function useReviewDetails<
   TData = Awaited<ReturnType<typeof reviewDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   reviewId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof reviewDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17213,14 +14830,14 @@ export function useReviewDetails<
 
 export function useReviewDetails<
   TData = Awaited<ReturnType<typeof reviewDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   reviewId: string,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof reviewDetails>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17242,60 +14859,34 @@ export function useReviewDetails<
  * Search for collections by their original, translated and alternative names.
  * @summary Collection
  */
-export type searchCollectionResponse200 = {
-  data: SearchCollection200;
-  status: 200;
-};
-
-export type searchCollectionResponseSuccess = searchCollectionResponse200 & {
-  headers: Headers;
-};
-export type searchCollectionResponse = searchCollectionResponseSuccess;
-
-export const getSearchCollectionUrl = (params: SearchCollectionParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/collection?${stringifiedParams}`
-    : `/3/search/collection`;
-};
-
-export const searchCollection = async (
+export const searchCollection = (
   params: SearchCollectionParams,
-  options?: RequestInit
-): Promise<searchCollectionResponse> => {
-  const res = await fetch(getSearchCollectionUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchCollectionResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchCollectionResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchCollection200>(
+    {
+      url: `https://api.themoviedb.org/3/search/collection`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchCollectionQueryKey = (
   params?: SearchCollectionParams
 ) => {
-  return [`/3/search/collection`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/collection`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchCollectionQueryOptions = <
   TData = Awaited<ReturnType<typeof searchCollection>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCollectionParams,
   options?: {
@@ -17306,17 +14897,17 @@ export const getSearchCollectionQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getSearchCollectionQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof searchCollection>>
-  > = ({ signal }) => searchCollection(params, { signal, ...fetchOptions });
+  > = ({ signal }) => searchCollection(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchCollection>>,
@@ -17328,11 +14919,11 @@ export const getSearchCollectionQueryOptions = <
 export type SearchCollectionQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchCollection>>
 >;
-export type SearchCollectionQueryError = unknown;
+export type SearchCollectionQueryError = ErrorType<unknown>;
 
 export function useSearchCollection<
   TData = Awaited<ReturnType<typeof searchCollection>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCollectionParams,
   options: {
@@ -17351,7 +14942,7 @@ export function useSearchCollection<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17359,7 +14950,7 @@ export function useSearchCollection<
 };
 export function useSearchCollection<
   TData = Awaited<ReturnType<typeof searchCollection>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCollectionParams,
   options?: {
@@ -17378,7 +14969,7 @@ export function useSearchCollection<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17386,7 +14977,7 @@ export function useSearchCollection<
 };
 export function useSearchCollection<
   TData = Awaited<ReturnType<typeof searchCollection>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCollectionParams,
   options?: {
@@ -17397,7 +14988,7 @@ export function useSearchCollection<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17409,7 +15000,7 @@ export function useSearchCollection<
 
 export function useSearchCollection<
   TData = Awaited<ReturnType<typeof searchCollection>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCollectionParams,
   options?: {
@@ -17420,7 +15011,7 @@ export function useSearchCollection<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17442,74 +15033,48 @@ export function useSearchCollection<
  * Search for companies by their original and alternative names.
  * @summary Company
  */
-export type searchCompanyResponse200 = {
-  data: SearchCompany200;
-  status: 200;
-};
-
-export type searchCompanyResponseSuccess = searchCompanyResponse200 & {
-  headers: Headers;
-};
-export type searchCompanyResponse = searchCompanyResponseSuccess;
-
-export const getSearchCompanyUrl = (params: SearchCompanyParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/company?${stringifiedParams}`
-    : `/3/search/company`;
-};
-
-export const searchCompany = async (
+export const searchCompany = (
   params: SearchCompanyParams,
-  options?: RequestInit
-): Promise<searchCompanyResponse> => {
-  const res = await fetch(getSearchCompanyUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchCompanyResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchCompanyResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchCompany200>(
+    {
+      url: `https://api.themoviedb.org/3/search/company`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchCompanyQueryKey = (params?: SearchCompanyParams) => {
-  return [`/3/search/company`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/company`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchCompanyQueryOptions = <
   TData = Awaited<ReturnType<typeof searchCompany>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCompanyParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchCompany>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchCompanyQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchCompany>>> = ({
     signal,
-  }) => searchCompany(params, { signal, ...fetchOptions });
+  }) => searchCompany(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchCompany>>,
@@ -17521,11 +15086,11 @@ export const getSearchCompanyQueryOptions = <
 export type SearchCompanyQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchCompany>>
 >;
-export type SearchCompanyQueryError = unknown;
+export type SearchCompanyQueryError = ErrorType<unknown>;
 
 export function useSearchCompany<
   TData = Awaited<ReturnType<typeof searchCompany>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCompanyParams,
   options: {
@@ -17540,7 +15105,7 @@ export function useSearchCompany<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17548,7 +15113,7 @@ export function useSearchCompany<
 };
 export function useSearchCompany<
   TData = Awaited<ReturnType<typeof searchCompany>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCompanyParams,
   options?: {
@@ -17563,7 +15128,7 @@ export function useSearchCompany<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17571,14 +15136,14 @@ export function useSearchCompany<
 };
 export function useSearchCompany<
   TData = Awaited<ReturnType<typeof searchCompany>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCompanyParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchCompany>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17590,14 +15155,14 @@ export function useSearchCompany<
 
 export function useSearchCompany<
   TData = Awaited<ReturnType<typeof searchCompany>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchCompanyParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchCompany>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17619,74 +15184,48 @@ export function useSearchCompany<
  * Search for keywords by their name.
  * @summary Keyword
  */
-export type searchKeywordResponse200 = {
-  data: SearchKeyword200;
-  status: 200;
-};
-
-export type searchKeywordResponseSuccess = searchKeywordResponse200 & {
-  headers: Headers;
-};
-export type searchKeywordResponse = searchKeywordResponseSuccess;
-
-export const getSearchKeywordUrl = (params: SearchKeywordParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/keyword?${stringifiedParams}`
-    : `/3/search/keyword`;
-};
-
-export const searchKeyword = async (
+export const searchKeyword = (
   params: SearchKeywordParams,
-  options?: RequestInit
-): Promise<searchKeywordResponse> => {
-  const res = await fetch(getSearchKeywordUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchKeywordResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchKeywordResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchKeyword200>(
+    {
+      url: `https://api.themoviedb.org/3/search/keyword`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchKeywordQueryKey = (params?: SearchKeywordParams) => {
-  return [`/3/search/keyword`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/keyword`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchKeywordQueryOptions = <
   TData = Awaited<ReturnType<typeof searchKeyword>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchKeywordParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchKeyword>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchKeywordQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchKeyword>>> = ({
     signal,
-  }) => searchKeyword(params, { signal, ...fetchOptions });
+  }) => searchKeyword(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchKeyword>>,
@@ -17698,11 +15237,11 @@ export const getSearchKeywordQueryOptions = <
 export type SearchKeywordQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchKeyword>>
 >;
-export type SearchKeywordQueryError = unknown;
+export type SearchKeywordQueryError = ErrorType<unknown>;
 
 export function useSearchKeyword<
   TData = Awaited<ReturnType<typeof searchKeyword>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchKeywordParams,
   options: {
@@ -17717,7 +15256,7 @@ export function useSearchKeyword<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17725,7 +15264,7 @@ export function useSearchKeyword<
 };
 export function useSearchKeyword<
   TData = Awaited<ReturnType<typeof searchKeyword>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchKeywordParams,
   options?: {
@@ -17740,7 +15279,7 @@ export function useSearchKeyword<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17748,14 +15287,14 @@ export function useSearchKeyword<
 };
 export function useSearchKeyword<
   TData = Awaited<ReturnType<typeof searchKeyword>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchKeywordParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchKeyword>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17767,14 +15306,14 @@ export function useSearchKeyword<
 
 export function useSearchKeyword<
   TData = Awaited<ReturnType<typeof searchKeyword>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchKeywordParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchKeyword>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17796,74 +15335,48 @@ export function useSearchKeyword<
  * Search for movies by their original, translated and alternative titles.
  * @summary Movie
  */
-export type searchMovieResponse200 = {
-  data: SearchMovie200;
-  status: 200;
-};
-
-export type searchMovieResponseSuccess = searchMovieResponse200 & {
-  headers: Headers;
-};
-export type searchMovieResponse = searchMovieResponseSuccess;
-
-export const getSearchMovieUrl = (params: SearchMovieParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/movie?${stringifiedParams}`
-    : `/3/search/movie`;
-};
-
-export const searchMovie = async (
+export const searchMovie = (
   params: SearchMovieParams,
-  options?: RequestInit
-): Promise<searchMovieResponse> => {
-  const res = await fetch(getSearchMovieUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchMovieResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchMovieResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchMovie200>(
+    {
+      url: `https://api.themoviedb.org/3/search/movie`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchMovieQueryKey = (params?: SearchMovieParams) => {
-  return [`/3/search/movie`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/movie`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchMovieQueryOptions = <
   TData = Awaited<ReturnType<typeof searchMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchMovieQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchMovie>>> = ({
     signal,
-  }) => searchMovie(params, { signal, ...fetchOptions });
+  }) => searchMovie(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchMovie>>,
@@ -17875,11 +15388,11 @@ export const getSearchMovieQueryOptions = <
 export type SearchMovieQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchMovie>>
 >;
-export type SearchMovieQueryError = unknown;
+export type SearchMovieQueryError = ErrorType<unknown>;
 
 export function useSearchMovie<
   TData = Awaited<ReturnType<typeof searchMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMovieParams,
   options: {
@@ -17894,7 +15407,7 @@ export function useSearchMovie<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -17902,7 +15415,7 @@ export function useSearchMovie<
 };
 export function useSearchMovie<
   TData = Awaited<ReturnType<typeof searchMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMovieParams,
   options?: {
@@ -17917,7 +15430,7 @@ export function useSearchMovie<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17925,14 +15438,14 @@ export function useSearchMovie<
 };
 export function useSearchMovie<
   TData = Awaited<ReturnType<typeof searchMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17944,14 +15457,14 @@ export function useSearchMovie<
 
 export function useSearchMovie<
   TData = Awaited<ReturnType<typeof searchMovie>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMovieParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMovie>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -17973,74 +15486,48 @@ export function useSearchMovie<
  * Use multi search when you want to search for movies, TV shows and people in a single request.
  * @summary Multi
  */
-export type searchMultiResponse200 = {
-  data: SearchMulti200;
-  status: 200;
-};
-
-export type searchMultiResponseSuccess = searchMultiResponse200 & {
-  headers: Headers;
-};
-export type searchMultiResponse = searchMultiResponseSuccess;
-
-export const getSearchMultiUrl = (params: SearchMultiParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/multi?${stringifiedParams}`
-    : `/3/search/multi`;
-};
-
-export const searchMulti = async (
+export const searchMulti = (
   params: SearchMultiParams,
-  options?: RequestInit
-): Promise<searchMultiResponse> => {
-  const res = await fetch(getSearchMultiUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchMultiResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchMultiResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchMulti200>(
+    {
+      url: `https://api.themoviedb.org/3/search/multi`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchMultiQueryKey = (params?: SearchMultiParams) => {
-  return [`/3/search/multi`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/multi`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchMultiQueryOptions = <
   TData = Awaited<ReturnType<typeof searchMulti>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMultiParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMulti>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchMultiQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchMulti>>> = ({
     signal,
-  }) => searchMulti(params, { signal, ...fetchOptions });
+  }) => searchMulti(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchMulti>>,
@@ -18052,11 +15539,11 @@ export const getSearchMultiQueryOptions = <
 export type SearchMultiQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchMulti>>
 >;
-export type SearchMultiQueryError = unknown;
+export type SearchMultiQueryError = ErrorType<unknown>;
 
 export function useSearchMulti<
   TData = Awaited<ReturnType<typeof searchMulti>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMultiParams,
   options: {
@@ -18071,7 +15558,7 @@ export function useSearchMulti<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -18079,7 +15566,7 @@ export function useSearchMulti<
 };
 export function useSearchMulti<
   TData = Awaited<ReturnType<typeof searchMulti>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMultiParams,
   options?: {
@@ -18094,7 +15581,7 @@ export function useSearchMulti<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18102,14 +15589,14 @@ export function useSearchMulti<
 };
 export function useSearchMulti<
   TData = Awaited<ReturnType<typeof searchMulti>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMultiParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMulti>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18121,14 +15608,14 @@ export function useSearchMulti<
 
 export function useSearchMulti<
   TData = Awaited<ReturnType<typeof searchMulti>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchMultiParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchMulti>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18150,74 +15637,48 @@ export function useSearchMulti<
  * Search for people by their name and also known as names.
  * @summary Person
  */
-export type searchPersonResponse200 = {
-  data: SearchPerson200;
-  status: 200;
-};
-
-export type searchPersonResponseSuccess = searchPersonResponse200 & {
-  headers: Headers;
-};
-export type searchPersonResponse = searchPersonResponseSuccess;
-
-export const getSearchPersonUrl = (params: SearchPersonParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/person?${stringifiedParams}`
-    : `/3/search/person`;
-};
-
-export const searchPerson = async (
+export const searchPerson = (
   params: SearchPersonParams,
-  options?: RequestInit
-): Promise<searchPersonResponse> => {
-  const res = await fetch(getSearchPersonUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchPersonResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as searchPersonResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchPerson200>(
+    {
+      url: `https://api.themoviedb.org/3/search/person`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchPersonQueryKey = (params?: SearchPersonParams) => {
-  return [`/3/search/person`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/person`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchPersonQueryOptions = <
   TData = Awaited<ReturnType<typeof searchPerson>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchPersonParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchPerson>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchPersonQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPerson>>> = ({
     signal,
-  }) => searchPerson(params, { signal, ...fetchOptions });
+  }) => searchPerson(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchPerson>>,
@@ -18229,11 +15690,11 @@ export const getSearchPersonQueryOptions = <
 export type SearchPersonQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchPerson>>
 >;
-export type SearchPersonQueryError = unknown;
+export type SearchPersonQueryError = ErrorType<unknown>;
 
 export function useSearchPerson<
   TData = Awaited<ReturnType<typeof searchPerson>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchPersonParams,
   options: {
@@ -18248,7 +15709,7 @@ export function useSearchPerson<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -18256,7 +15717,7 @@ export function useSearchPerson<
 };
 export function useSearchPerson<
   TData = Awaited<ReturnType<typeof searchPerson>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchPersonParams,
   options?: {
@@ -18271,7 +15732,7 @@ export function useSearchPerson<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18279,14 +15740,14 @@ export function useSearchPerson<
 };
 export function useSearchPerson<
   TData = Awaited<ReturnType<typeof searchPerson>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchPersonParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchPerson>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18298,14 +15759,14 @@ export function useSearchPerson<
 
 export function useSearchPerson<
   TData = Awaited<ReturnType<typeof searchPerson>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchPersonParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchPerson>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18327,70 +15788,48 @@ export function useSearchPerson<
  * Search for TV shows by their original, translated and also known as names.
  * @summary TV
  */
-export type searchTvResponse200 = {
-  data: SearchTv200;
-  status: 200;
-};
-
-export type searchTvResponseSuccess = searchTvResponse200 & {
-  headers: Headers;
-};
-export type searchTvResponse = searchTvResponseSuccess;
-
-export const getSearchTvUrl = (params: SearchTvParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/search/tv?${stringifiedParams}`
-    : `/3/search/tv`;
-};
-
-export const searchTv = async (
+export const searchTv = (
   params: SearchTvParams,
-  options?: RequestInit
-): Promise<searchTvResponse> => {
-  const res = await fetch(getSearchTvUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: searchTvResponse['data'] = body ? JSON.parse(body) : {};
-  return { data, status: res.status, headers: res.headers } as searchTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<SearchTv200>(
+    {
+      url: `https://api.themoviedb.org/3/search/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getSearchTvQueryKey = (params?: SearchTvParams) => {
-  return [`/3/search/tv`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/search/tv`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getSearchTvQueryOptions = <
   TData = Awaited<ReturnType<typeof searchTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getSearchTvQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof searchTv>>> = ({
     signal,
-  }) => searchTv(params, { signal, ...fetchOptions });
+  }) => searchTv(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof searchTv>>,
@@ -18402,11 +15841,11 @@ export const getSearchTvQueryOptions = <
 export type SearchTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof searchTv>>
 >;
-export type SearchTvQueryError = unknown;
+export type SearchTvQueryError = ErrorType<unknown>;
 
 export function useSearchTv<
   TData = Awaited<ReturnType<typeof searchTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchTvParams,
   options: {
@@ -18421,7 +15860,7 @@ export function useSearchTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -18429,7 +15868,7 @@ export function useSearchTv<
 };
 export function useSearchTv<
   TData = Awaited<ReturnType<typeof searchTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchTvParams,
   options?: {
@@ -18444,7 +15883,7 @@ export function useSearchTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18452,14 +15891,14 @@ export function useSearchTv<
 };
 export function useSearchTv<
   TData = Awaited<ReturnType<typeof searchTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18471,14 +15910,14 @@ export function useSearchTv<
 
 export function useSearchTv<
   TData = Awaited<ReturnType<typeof searchTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: SearchTvParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof searchTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18500,53 +15939,21 @@ export function useSearchTv<
  * Get the trending movies, TV shows and people.
  * @summary All
  */
-export type trendingAllResponse200 = {
-  data: TrendingAll200;
-  status: 200;
-};
-
-export type trendingAllResponseSuccess = trendingAllResponse200 & {
-  headers: Headers;
-};
-export type trendingAllResponse = trendingAllResponseSuccess;
-
-export const getTrendingAllUrl = (
-  params?: TrendingAllParams,
-  timeWindow: 'day' | 'week' = 'day'
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/trending/all/${timeWindow}?${stringifiedParams}`
-    : `/3/trending/all/${timeWindow}`;
-};
-
-export const trendingAll = async (
+export const trendingAll = (
   params?: TrendingAllParams,
   timeWindow: 'day' | 'week' = 'day',
-  options?: RequestInit
-): Promise<trendingAllResponse> => {
-  const res = await fetch(getTrendingAllUrl(params, timeWindow), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: trendingAllResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as trendingAllResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TrendingAll200>(
+    {
+      url: `https://api.themoviedb.org/3/trending/all/${timeWindow}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTrendingAllQueryKey = (
@@ -18554,14 +15961,14 @@ export const getTrendingAllQueryKey = (
   timeWindow: 'day' | 'week' = 'day'
 ) => {
   return [
-    `/3/trending/all/${timeWindow}`,
+    `https://api.themoviedb.org/3/trending/all/${timeWindow}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTrendingAllQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingAll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingAllParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -18569,17 +15976,17 @@ export const getTrendingAllQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingAll>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTrendingAllQueryKey(params, timeWindow);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingAll>>> = ({
     signal,
-  }) => trendingAll(params, timeWindow, { signal, ...fetchOptions });
+  }) => trendingAll(params, timeWindow, requestOptions, signal);
 
   return {
     queryKey,
@@ -18596,11 +16003,11 @@ export const getTrendingAllQueryOptions = <
 export type TrendingAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof trendingAll>>
 >;
-export type TrendingAllQueryError = unknown;
+export type TrendingAllQueryError = ErrorType<unknown>;
 
 export function useTrendingAll<
   TData = Awaited<ReturnType<typeof trendingAll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TrendingAllParams,
   timeWindow: undefined | 'day' | 'week',
@@ -18616,7 +16023,7 @@ export function useTrendingAll<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -18624,7 +16031,7 @@ export function useTrendingAll<
 };
 export function useTrendingAll<
   TData = Awaited<ReturnType<typeof trendingAll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingAllParams,
   timeWindow?: 'day' | 'week',
@@ -18640,7 +16047,7 @@ export function useTrendingAll<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18648,7 +16055,7 @@ export function useTrendingAll<
 };
 export function useTrendingAll<
   TData = Awaited<ReturnType<typeof trendingAll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingAllParams,
   timeWindow?: 'day' | 'week',
@@ -18656,7 +16063,7 @@ export function useTrendingAll<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingAll>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18668,7 +16075,7 @@ export function useTrendingAll<
 
 export function useTrendingAll<
   TData = Awaited<ReturnType<typeof trendingAll>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingAllParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -18676,7 +16083,7 @@ export function useTrendingAll<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingAll>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18698,53 +16105,21 @@ export function useTrendingAll<
  * Get the trending movies on TMDB.
  * @summary Movies
  */
-export type trendingMoviesResponse200 = {
-  data: TrendingMovies200;
-  status: 200;
-};
-
-export type trendingMoviesResponseSuccess = trendingMoviesResponse200 & {
-  headers: Headers;
-};
-export type trendingMoviesResponse = trendingMoviesResponseSuccess;
-
-export const getTrendingMoviesUrl = (
-  params?: TrendingMoviesParams,
-  timeWindow: 'day' | 'week' = 'day'
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/trending/movie/${timeWindow}?${stringifiedParams}`
-    : `/3/trending/movie/${timeWindow}`;
-};
-
-export const trendingMovies = async (
+export const trendingMovies = (
   params?: TrendingMoviesParams,
   timeWindow: 'day' | 'week' = 'day',
-  options?: RequestInit
-): Promise<trendingMoviesResponse> => {
-  const res = await fetch(getTrendingMoviesUrl(params, timeWindow), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: trendingMoviesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as trendingMoviesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TrendingMovies200>(
+    {
+      url: `https://api.themoviedb.org/3/trending/movie/${timeWindow}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTrendingMoviesQueryKey = (
@@ -18752,14 +16127,14 @@ export const getTrendingMoviesQueryKey = (
   timeWindow: 'day' | 'week' = 'day'
 ) => {
   return [
-    `/3/trending/movie/${timeWindow}`,
+    `https://api.themoviedb.org/3/trending/movie/${timeWindow}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTrendingMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingMoviesParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -18767,17 +16142,17 @@ export const getTrendingMoviesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTrendingMoviesQueryKey(params, timeWindow);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingMovies>>> = ({
     signal,
-  }) => trendingMovies(params, timeWindow, { signal, ...fetchOptions });
+  }) => trendingMovies(params, timeWindow, requestOptions, signal);
 
   return {
     queryKey,
@@ -18794,11 +16169,11 @@ export const getTrendingMoviesQueryOptions = <
 export type TrendingMoviesQueryResult = NonNullable<
   Awaited<ReturnType<typeof trendingMovies>>
 >;
-export type TrendingMoviesQueryError = unknown;
+export type TrendingMoviesQueryError = ErrorType<unknown>;
 
 export function useTrendingMovies<
   TData = Awaited<ReturnType<typeof trendingMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TrendingMoviesParams,
   timeWindow: undefined | 'day' | 'week',
@@ -18814,7 +16189,7 @@ export function useTrendingMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -18822,7 +16197,7 @@ export function useTrendingMovies<
 };
 export function useTrendingMovies<
   TData = Awaited<ReturnType<typeof trendingMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingMoviesParams,
   timeWindow?: 'day' | 'week',
@@ -18838,7 +16213,7 @@ export function useTrendingMovies<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18846,7 +16221,7 @@ export function useTrendingMovies<
 };
 export function useTrendingMovies<
   TData = Awaited<ReturnType<typeof trendingMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingMoviesParams,
   timeWindow?: 'day' | 'week',
@@ -18854,7 +16229,7 @@ export function useTrendingMovies<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18866,7 +16241,7 @@ export function useTrendingMovies<
 
 export function useTrendingMovies<
   TData = Awaited<ReturnType<typeof trendingMovies>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingMoviesParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -18874,7 +16249,7 @@ export function useTrendingMovies<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingMovies>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -18900,53 +16275,21 @@ export function useTrendingMovies<
  * Get the trending people on TMDB.
  * @summary People
  */
-export type trendingPeopleResponse200 = {
-  data: TrendingPeople200;
-  status: 200;
-};
-
-export type trendingPeopleResponseSuccess = trendingPeopleResponse200 & {
-  headers: Headers;
-};
-export type trendingPeopleResponse = trendingPeopleResponseSuccess;
-
-export const getTrendingPeopleUrl = (
-  params?: TrendingPeopleParams,
-  timeWindow: 'day' | 'week' = 'day'
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/trending/person/${timeWindow}?${stringifiedParams}`
-    : `/3/trending/person/${timeWindow}`;
-};
-
-export const trendingPeople = async (
+export const trendingPeople = (
   params?: TrendingPeopleParams,
   timeWindow: 'day' | 'week' = 'day',
-  options?: RequestInit
-): Promise<trendingPeopleResponse> => {
-  const res = await fetch(getTrendingPeopleUrl(params, timeWindow), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: trendingPeopleResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as trendingPeopleResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TrendingPeople200>(
+    {
+      url: `https://api.themoviedb.org/3/trending/person/${timeWindow}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTrendingPeopleQueryKey = (
@@ -18954,14 +16297,14 @@ export const getTrendingPeopleQueryKey = (
   timeWindow: 'day' | 'week' = 'day'
 ) => {
   return [
-    `/3/trending/person/${timeWindow}`,
+    `https://api.themoviedb.org/3/trending/person/${timeWindow}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTrendingPeopleQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingPeople>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingPeopleParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -18969,17 +16312,17 @@ export const getTrendingPeopleQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingPeople>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTrendingPeopleQueryKey(params, timeWindow);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingPeople>>> = ({
     signal,
-  }) => trendingPeople(params, timeWindow, { signal, ...fetchOptions });
+  }) => trendingPeople(params, timeWindow, requestOptions, signal);
 
   return {
     queryKey,
@@ -18996,11 +16339,11 @@ export const getTrendingPeopleQueryOptions = <
 export type TrendingPeopleQueryResult = NonNullable<
   Awaited<ReturnType<typeof trendingPeople>>
 >;
-export type TrendingPeopleQueryError = unknown;
+export type TrendingPeopleQueryError = ErrorType<unknown>;
 
 export function useTrendingPeople<
   TData = Awaited<ReturnType<typeof trendingPeople>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TrendingPeopleParams,
   timeWindow: undefined | 'day' | 'week',
@@ -19016,7 +16359,7 @@ export function useTrendingPeople<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -19024,7 +16367,7 @@ export function useTrendingPeople<
 };
 export function useTrendingPeople<
   TData = Awaited<ReturnType<typeof trendingPeople>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingPeopleParams,
   timeWindow?: 'day' | 'week',
@@ -19040,7 +16383,7 @@ export function useTrendingPeople<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19048,7 +16391,7 @@ export function useTrendingPeople<
 };
 export function useTrendingPeople<
   TData = Awaited<ReturnType<typeof trendingPeople>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingPeopleParams,
   timeWindow?: 'day' | 'week',
@@ -19056,7 +16399,7 @@ export function useTrendingPeople<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingPeople>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19068,7 +16411,7 @@ export function useTrendingPeople<
 
 export function useTrendingPeople<
   TData = Awaited<ReturnType<typeof trendingPeople>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingPeopleParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -19076,7 +16419,7 @@ export function useTrendingPeople<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingPeople>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19102,65 +16445,36 @@ export function useTrendingPeople<
  * Get the trending TV shows on TMDB.
  * @summary TV
  */
-export type trendingTvResponse200 = {
-  data: TrendingTv200;
-  status: 200;
-};
-
-export type trendingTvResponseSuccess = trendingTvResponse200 & {
-  headers: Headers;
-};
-export type trendingTvResponse = trendingTvResponseSuccess;
-
-export const getTrendingTvUrl = (
-  params?: TrendingTvParams,
-  timeWindow: 'day' | 'week' = 'day'
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/trending/tv/${timeWindow}?${stringifiedParams}`
-    : `/3/trending/tv/${timeWindow}`;
-};
-
-export const trendingTv = async (
+export const trendingTv = (
   params?: TrendingTvParams,
   timeWindow: 'day' | 'week' = 'day',
-  options?: RequestInit
-): Promise<trendingTvResponse> => {
-  const res = await fetch(getTrendingTvUrl(params, timeWindow), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: trendingTvResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as trendingTvResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TrendingTv200>(
+    {
+      url: `https://api.themoviedb.org/3/trending/tv/${timeWindow}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTrendingTvQueryKey = (
   params?: TrendingTvParams,
   timeWindow: 'day' | 'week' = 'day'
 ) => {
-  return [`/3/trending/tv/${timeWindow}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/trending/tv/${timeWindow}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTrendingTvQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingTvParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -19168,17 +16482,17 @@ export const getTrendingTvQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTrendingTvQueryKey(params, timeWindow);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingTv>>> = ({
     signal,
-  }) => trendingTv(params, timeWindow, { signal, ...fetchOptions });
+  }) => trendingTv(params, timeWindow, requestOptions, signal);
 
   return {
     queryKey,
@@ -19195,11 +16509,11 @@ export const getTrendingTvQueryOptions = <
 export type TrendingTvQueryResult = NonNullable<
   Awaited<ReturnType<typeof trendingTv>>
 >;
-export type TrendingTvQueryError = unknown;
+export type TrendingTvQueryError = ErrorType<unknown>;
 
 export function useTrendingTv<
   TData = Awaited<ReturnType<typeof trendingTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TrendingTvParams,
   timeWindow: undefined | 'day' | 'week',
@@ -19215,7 +16529,7 @@ export function useTrendingTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -19223,7 +16537,7 @@ export function useTrendingTv<
 };
 export function useTrendingTv<
   TData = Awaited<ReturnType<typeof trendingTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingTvParams,
   timeWindow?: 'day' | 'week',
@@ -19239,7 +16553,7 @@ export function useTrendingTv<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19247,7 +16561,7 @@ export function useTrendingTv<
 };
 export function useTrendingTv<
   TData = Awaited<ReturnType<typeof trendingTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingTvParams,
   timeWindow?: 'day' | 'week',
@@ -19255,7 +16569,7 @@ export function useTrendingTv<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19267,7 +16581,7 @@ export function useTrendingTv<
 
 export function useTrendingTv<
   TData = Awaited<ReturnType<typeof trendingTv>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TrendingTvParams,
   timeWindow: 'day' | 'week' = 'day',
@@ -19275,7 +16589,7 @@ export function useTrendingTv<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof trendingTv>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19297,66 +16611,34 @@ export function useTrendingTv<
  * Get a list of TV shows airing today.
  * @summary Airing Today
  */
-export type tvSeriesAiringTodayListResponse200 = {
-  data: TvSeriesAiringTodayList200;
-  status: 200;
-};
-
-export type tvSeriesAiringTodayListResponseSuccess =
-  tvSeriesAiringTodayListResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesAiringTodayListResponse =
-  tvSeriesAiringTodayListResponseSuccess;
-
-export const getTvSeriesAiringTodayListUrl = (
-  params?: TvSeriesAiringTodayListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/airing_today?${stringifiedParams}`
-    : `/3/tv/airing_today`;
-};
-
-export const tvSeriesAiringTodayList = async (
+export const tvSeriesAiringTodayList = (
   params?: TvSeriesAiringTodayListParams,
-  options?: RequestInit
-): Promise<tvSeriesAiringTodayListResponse> => {
-  const res = await fetch(getTvSeriesAiringTodayListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesAiringTodayListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesAiringTodayListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesAiringTodayList200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/airing_today`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesAiringTodayListQueryKey = (
   params?: TvSeriesAiringTodayListParams
 ) => {
-  return [`/3/tv/airing_today`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/airing_today`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesAiringTodayListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesAiringTodayListParams,
   options?: {
@@ -19367,18 +16649,17 @@ export const getTvSeriesAiringTodayListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesAiringTodayListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
-  > = ({ signal }) =>
-    tvSeriesAiringTodayList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesAiringTodayList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
@@ -19390,11 +16671,11 @@ export const getTvSeriesAiringTodayListQueryOptions = <
 export type TvSeriesAiringTodayListQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
 >;
-export type TvSeriesAiringTodayListQueryError = unknown;
+export type TvSeriesAiringTodayListQueryError = ErrorType<unknown>;
 
 export function useTvSeriesAiringTodayList<
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TvSeriesAiringTodayListParams,
   options: {
@@ -19413,7 +16694,7 @@ export function useTvSeriesAiringTodayList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -19421,7 +16702,7 @@ export function useTvSeriesAiringTodayList<
 };
 export function useTvSeriesAiringTodayList<
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesAiringTodayListParams,
   options?: {
@@ -19440,7 +16721,7 @@ export function useTvSeriesAiringTodayList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19448,7 +16729,7 @@ export function useTvSeriesAiringTodayList<
 };
 export function useTvSeriesAiringTodayList<
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesAiringTodayListParams,
   options?: {
@@ -19459,7 +16740,7 @@ export function useTvSeriesAiringTodayList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19471,7 +16752,7 @@ export function useTvSeriesAiringTodayList<
 
 export function useTvSeriesAiringTodayList<
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesAiringTodayListParams,
   options?: {
@@ -19482,7 +16763,7 @@ export function useTvSeriesAiringTodayList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19504,65 +16785,34 @@ export function useTvSeriesAiringTodayList<
  * Get a list of TV shows that air in the next 7 days.
  * @summary On The Air
  */
-export type tvSeriesOnTheAirListResponse200 = {
-  data: TvSeriesOnTheAirList200;
-  status: 200;
-};
-
-export type tvSeriesOnTheAirListResponseSuccess =
-  tvSeriesOnTheAirListResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesOnTheAirListResponse = tvSeriesOnTheAirListResponseSuccess;
-
-export const getTvSeriesOnTheAirListUrl = (
-  params?: TvSeriesOnTheAirListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/on_the_air?${stringifiedParams}`
-    : `/3/tv/on_the_air`;
-};
-
-export const tvSeriesOnTheAirList = async (
+export const tvSeriesOnTheAirList = (
   params?: TvSeriesOnTheAirListParams,
-  options?: RequestInit
-): Promise<tvSeriesOnTheAirListResponse> => {
-  const res = await fetch(getTvSeriesOnTheAirListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesOnTheAirListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesOnTheAirListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesOnTheAirList200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/on_the_air`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesOnTheAirListQueryKey = (
   params?: TvSeriesOnTheAirListParams
 ) => {
-  return [`/3/tv/on_the_air`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/on_the_air`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesOnTheAirListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesOnTheAirListParams,
   options?: {
@@ -19573,17 +16823,17 @@ export const getTvSeriesOnTheAirListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesOnTheAirListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
-  > = ({ signal }) => tvSeriesOnTheAirList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesOnTheAirList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
@@ -19595,11 +16845,11 @@ export const getTvSeriesOnTheAirListQueryOptions = <
 export type TvSeriesOnTheAirListQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
 >;
-export type TvSeriesOnTheAirListQueryError = unknown;
+export type TvSeriesOnTheAirListQueryError = ErrorType<unknown>;
 
 export function useTvSeriesOnTheAirList<
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TvSeriesOnTheAirListParams,
   options: {
@@ -19618,7 +16868,7 @@ export function useTvSeriesOnTheAirList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -19626,7 +16876,7 @@ export function useTvSeriesOnTheAirList<
 };
 export function useTvSeriesOnTheAirList<
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesOnTheAirListParams,
   options?: {
@@ -19645,7 +16895,7 @@ export function useTvSeriesOnTheAirList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19653,7 +16903,7 @@ export function useTvSeriesOnTheAirList<
 };
 export function useTvSeriesOnTheAirList<
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesOnTheAirListParams,
   options?: {
@@ -19664,7 +16914,7 @@ export function useTvSeriesOnTheAirList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19676,7 +16926,7 @@ export function useTvSeriesOnTheAirList<
 
 export function useTvSeriesOnTheAirList<
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesOnTheAirListParams,
   options?: {
@@ -19687,7 +16937,7 @@ export function useTvSeriesOnTheAirList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19709,65 +16959,34 @@ export function useTvSeriesOnTheAirList<
  * Get a list of TV shows ordered by popularity.
  * @summary Popular
  */
-export type tvSeriesPopularListResponse200 = {
-  data: TvSeriesPopularList200;
-  status: 200;
-};
-
-export type tvSeriesPopularListResponseSuccess =
-  tvSeriesPopularListResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesPopularListResponse = tvSeriesPopularListResponseSuccess;
-
-export const getTvSeriesPopularListUrl = (
-  params?: TvSeriesPopularListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/popular?${stringifiedParams}`
-    : `/3/tv/popular`;
-};
-
-export const tvSeriesPopularList = async (
+export const tvSeriesPopularList = (
   params?: TvSeriesPopularListParams,
-  options?: RequestInit
-): Promise<tvSeriesPopularListResponse> => {
-  const res = await fetch(getTvSeriesPopularListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesPopularListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesPopularListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesPopularList200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/popular`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesPopularListQueryKey = (
   params?: TvSeriesPopularListParams
 ) => {
-  return [`/3/tv/popular`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/popular`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesPopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesPopularListParams,
   options?: {
@@ -19778,17 +16997,17 @@ export const getTvSeriesPopularListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesPopularListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesPopularList>>
-  > = ({ signal }) => tvSeriesPopularList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesPopularList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesPopularList>>,
@@ -19800,11 +17019,11 @@ export const getTvSeriesPopularListQueryOptions = <
 export type TvSeriesPopularListQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesPopularList>>
 >;
-export type TvSeriesPopularListQueryError = unknown;
+export type TvSeriesPopularListQueryError = ErrorType<unknown>;
 
 export function useTvSeriesPopularList<
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TvSeriesPopularListParams,
   options: {
@@ -19823,7 +17042,7 @@ export function useTvSeriesPopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -19831,7 +17050,7 @@ export function useTvSeriesPopularList<
 };
 export function useTvSeriesPopularList<
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesPopularListParams,
   options?: {
@@ -19850,7 +17069,7 @@ export function useTvSeriesPopularList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19858,7 +17077,7 @@ export function useTvSeriesPopularList<
 };
 export function useTvSeriesPopularList<
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesPopularListParams,
   options?: {
@@ -19869,7 +17088,7 @@ export function useTvSeriesPopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19881,7 +17100,7 @@ export function useTvSeriesPopularList<
 
 export function useTvSeriesPopularList<
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesPopularListParams,
   options?: {
@@ -19892,7 +17111,7 @@ export function useTvSeriesPopularList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -19914,65 +17133,34 @@ export function useTvSeriesPopularList<
  * Get a list of TV shows ordered by rating.
  * @summary Top Rated
  */
-export type tvSeriesTopRatedListResponse200 = {
-  data: TvSeriesTopRatedList200;
-  status: 200;
-};
-
-export type tvSeriesTopRatedListResponseSuccess =
-  tvSeriesTopRatedListResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesTopRatedListResponse = tvSeriesTopRatedListResponseSuccess;
-
-export const getTvSeriesTopRatedListUrl = (
-  params?: TvSeriesTopRatedListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/top_rated?${stringifiedParams}`
-    : `/3/tv/top_rated`;
-};
-
-export const tvSeriesTopRatedList = async (
+export const tvSeriesTopRatedList = (
   params?: TvSeriesTopRatedListParams,
-  options?: RequestInit
-): Promise<tvSeriesTopRatedListResponse> => {
-  const res = await fetch(getTvSeriesTopRatedListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesTopRatedListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesTopRatedListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesTopRatedList200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/top_rated`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesTopRatedListQueryKey = (
   params?: TvSeriesTopRatedListParams
 ) => {
-  return [`/3/tv/top_rated`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/top_rated`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesTopRatedListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesTopRatedListParams,
   options?: {
@@ -19983,17 +17171,17 @@ export const getTvSeriesTopRatedListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesTopRatedListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesTopRatedList>>
-  > = ({ signal }) => tvSeriesTopRatedList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesTopRatedList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
@@ -20005,11 +17193,11 @@ export const getTvSeriesTopRatedListQueryOptions = <
 export type TvSeriesTopRatedListQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesTopRatedList>>
 >;
-export type TvSeriesTopRatedListQueryError = unknown;
+export type TvSeriesTopRatedListQueryError = ErrorType<unknown>;
 
 export function useTvSeriesTopRatedList<
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | TvSeriesTopRatedListParams,
   options: {
@@ -20028,7 +17216,7 @@ export function useTvSeriesTopRatedList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -20036,7 +17224,7 @@ export function useTvSeriesTopRatedList<
 };
 export function useTvSeriesTopRatedList<
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesTopRatedListParams,
   options?: {
@@ -20055,7 +17243,7 @@ export function useTvSeriesTopRatedList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20063,7 +17251,7 @@ export function useTvSeriesTopRatedList<
 };
 export function useTvSeriesTopRatedList<
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesTopRatedListParams,
   options?: {
@@ -20074,7 +17262,7 @@ export function useTvSeriesTopRatedList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20086,7 +17274,7 @@ export function useTvSeriesTopRatedList<
 
 export function useTvSeriesTopRatedList<
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: TvSeriesTopRatedListParams,
   options?: {
@@ -20097,7 +17285,7 @@ export function useTvSeriesTopRatedList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20119,65 +17307,36 @@ export function useTvSeriesTopRatedList<
  * Get the details of a TV show.
  * @summary Details
  */
-export type tvSeriesDetailsResponse200 = {
-  data: TvSeriesDetails200;
-  status: 200;
-};
-
-export type tvSeriesDetailsResponseSuccess = tvSeriesDetailsResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesDetailsResponse = tvSeriesDetailsResponseSuccess;
-
-export const getTvSeriesDetailsUrl = (
-  seriesId: number,
-  params?: TvSeriesDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}?${stringifiedParams}`
-    : `/3/tv/${seriesId}`;
-};
-
-export const tvSeriesDetails = async (
+export const tvSeriesDetails = (
   seriesId: number,
   params?: TvSeriesDetailsParams,
-  options?: RequestInit
-): Promise<tvSeriesDetailsResponse> => {
-  const res = await fetch(getTvSeriesDetailsUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesDetailsQueryKey = (
   seriesId?: number,
   params?: TvSeriesDetailsParams
 ) => {
-  return [`/3/tv/${seriesId}`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesDetailsParams,
@@ -20189,17 +17348,17 @@ export const getTvSeriesDetailsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesDetailsQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesDetails>>> = ({
     signal,
-  }) => tvSeriesDetails(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesDetails(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -20216,11 +17375,11 @@ export const getTvSeriesDetailsQueryOptions = <
 export type TvSeriesDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesDetails>>
 >;
-export type TvSeriesDetailsQueryError = unknown;
+export type TvSeriesDetailsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesDetails<
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesDetailsParams,
@@ -20240,7 +17399,7 @@ export function useTvSeriesDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -20248,7 +17407,7 @@ export function useTvSeriesDetails<
 };
 export function useTvSeriesDetails<
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesDetailsParams,
@@ -20268,7 +17427,7 @@ export function useTvSeriesDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20276,7 +17435,7 @@ export function useTvSeriesDetails<
 };
 export function useTvSeriesDetails<
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesDetailsParams,
@@ -20288,7 +17447,7 @@ export function useTvSeriesDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20300,7 +17459,7 @@ export function useTvSeriesDetails<
 
 export function useTvSeriesDetails<
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesDetailsParams,
@@ -20312,7 +17471,7 @@ export function useTvSeriesDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20338,57 +17497,21 @@ export function useTvSeriesDetails<
  * Get the rating, watchlist and favourite status.
  * @summary Account States
  */
-export type tvSeriesAccountStatesResponse200 = {
-  data: TvSeriesAccountStates200;
-  status: 200;
-};
-
-export type tvSeriesAccountStatesResponseSuccess =
-  tvSeriesAccountStatesResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesAccountStatesResponse =
-  tvSeriesAccountStatesResponseSuccess;
-
-export const getTvSeriesAccountStatesUrl = (
-  seriesId: number,
-  params?: TvSeriesAccountStatesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/account_states?${stringifiedParams}`
-    : `/3/tv/${seriesId}/account_states`;
-};
-
-export const tvSeriesAccountStates = async (
+export const tvSeriesAccountStates = (
   seriesId: number,
   params?: TvSeriesAccountStatesParams,
-  options?: RequestInit
-): Promise<tvSeriesAccountStatesResponse> => {
-  const res = await fetch(getTvSeriesAccountStatesUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesAccountStatesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesAccountStatesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesAccountStates200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/account_states`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesAccountStatesQueryKey = (
@@ -20396,14 +17519,14 @@ export const getTvSeriesAccountStatesQueryKey = (
   params?: TvSeriesAccountStatesParams
 ) => {
   return [
-    `/3/tv/${seriesId}/account_states`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/account_states`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeriesAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAccountStatesParams,
@@ -20415,10 +17538,10 @@ export const getTvSeriesAccountStatesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -20427,7 +17550,7 @@ export const getTvSeriesAccountStatesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesAccountStates>>
   > = ({ signal }) =>
-    tvSeriesAccountStates(seriesId, params, { signal, ...fetchOptions });
+    tvSeriesAccountStates(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -20444,11 +17567,11 @@ export const getTvSeriesAccountStatesQueryOptions = <
 export type TvSeriesAccountStatesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesAccountStates>>
 >;
-export type TvSeriesAccountStatesQueryError = unknown;
+export type TvSeriesAccountStatesQueryError = ErrorType<unknown>;
 
 export function useTvSeriesAccountStates<
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesAccountStatesParams,
@@ -20468,7 +17591,7 @@ export function useTvSeriesAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -20476,7 +17599,7 @@ export function useTvSeriesAccountStates<
 };
 export function useTvSeriesAccountStates<
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAccountStatesParams,
@@ -20496,7 +17619,7 @@ export function useTvSeriesAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20504,7 +17627,7 @@ export function useTvSeriesAccountStates<
 };
 export function useTvSeriesAccountStates<
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAccountStatesParams,
@@ -20516,7 +17639,7 @@ export function useTvSeriesAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20528,7 +17651,7 @@ export function useTvSeriesAccountStates<
 
 export function useTvSeriesAccountStates<
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAccountStatesParams,
@@ -20540,7 +17663,7 @@ export function useTvSeriesAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20566,57 +17689,21 @@ export function useTvSeriesAccountStates<
  * Get the aggregate credits (cast and crew) that have been added to a TV show.
  * @summary Aggregate Credits
  */
-export type tvSeriesAggregateCreditsResponse200 = {
-  data: TvSeriesAggregateCredits200;
-  status: 200;
-};
-
-export type tvSeriesAggregateCreditsResponseSuccess =
-  tvSeriesAggregateCreditsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesAggregateCreditsResponse =
-  tvSeriesAggregateCreditsResponseSuccess;
-
-export const getTvSeriesAggregateCreditsUrl = (
-  seriesId: number,
-  params?: TvSeriesAggregateCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/aggregate_credits?${stringifiedParams}`
-    : `/3/tv/${seriesId}/aggregate_credits`;
-};
-
-export const tvSeriesAggregateCredits = async (
+export const tvSeriesAggregateCredits = (
   seriesId: number,
   params?: TvSeriesAggregateCreditsParams,
-  options?: RequestInit
-): Promise<tvSeriesAggregateCreditsResponse> => {
-  const res = await fetch(getTvSeriesAggregateCreditsUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesAggregateCreditsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesAggregateCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesAggregateCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/aggregate_credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesAggregateCreditsQueryKey = (
@@ -20624,14 +17711,14 @@ export const getTvSeriesAggregateCreditsQueryKey = (
   params?: TvSeriesAggregateCreditsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/aggregate_credits`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/aggregate_credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeriesAggregateCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAggregateCreditsParams,
@@ -20643,10 +17730,10 @@ export const getTvSeriesAggregateCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -20655,7 +17742,7 @@ export const getTvSeriesAggregateCreditsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
   > = ({ signal }) =>
-    tvSeriesAggregateCredits(seriesId, params, { signal, ...fetchOptions });
+    tvSeriesAggregateCredits(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -20672,11 +17759,11 @@ export const getTvSeriesAggregateCreditsQueryOptions = <
 export type TvSeriesAggregateCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
 >;
-export type TvSeriesAggregateCreditsQueryError = unknown;
+export type TvSeriesAggregateCreditsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesAggregateCreditsParams,
@@ -20696,7 +17783,7 @@ export function useTvSeriesAggregateCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -20704,7 +17791,7 @@ export function useTvSeriesAggregateCredits<
 };
 export function useTvSeriesAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAggregateCreditsParams,
@@ -20724,7 +17811,7 @@ export function useTvSeriesAggregateCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20732,7 +17819,7 @@ export function useTvSeriesAggregateCredits<
 };
 export function useTvSeriesAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAggregateCreditsParams,
@@ -20744,7 +17831,7 @@ export function useTvSeriesAggregateCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20756,7 +17843,7 @@ export function useTvSeriesAggregateCredits<
 
 export function useTvSeriesAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesAggregateCreditsParams,
@@ -20768,7 +17855,7 @@ export function useTvSeriesAggregateCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20794,50 +17881,30 @@ export function useTvSeriesAggregateCredits<
  * Get the alternative titles that have been added to a TV show.
  * @summary Alternative Titles
  */
-export type tvSeriesAlternativeTitlesResponse200 = {
-  data: TvSeriesAlternativeTitles200;
-  status: 200;
-};
-
-export type tvSeriesAlternativeTitlesResponseSuccess =
-  tvSeriesAlternativeTitlesResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesAlternativeTitlesResponse =
-  tvSeriesAlternativeTitlesResponseSuccess;
-
-export const getTvSeriesAlternativeTitlesUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/alternative_titles`;
-};
-
-export const tvSeriesAlternativeTitles = async (
+export const tvSeriesAlternativeTitles = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesAlternativeTitlesResponse> => {
-  const res = await fetch(getTvSeriesAlternativeTitlesUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesAlternativeTitlesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesAlternativeTitlesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesAlternativeTitles200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/alternative_titles`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesAlternativeTitlesQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/alternative_titles`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/alternative_titles`,
+  ] as const;
 };
 
 export const getTvSeriesAlternativeTitlesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -20848,10 +17915,10 @@ export const getTvSeriesAlternativeTitlesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesAlternativeTitlesQueryKey(seriesId);
@@ -20859,7 +17926,7 @@ export const getTvSeriesAlternativeTitlesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
   > = ({ signal }) =>
-    tvSeriesAlternativeTitles(seriesId, { signal, ...fetchOptions });
+    tvSeriesAlternativeTitles(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -20876,11 +17943,11 @@ export const getTvSeriesAlternativeTitlesQueryOptions = <
 export type TvSeriesAlternativeTitlesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
 >;
-export type TvSeriesAlternativeTitlesQueryError = unknown;
+export type TvSeriesAlternativeTitlesQueryError = ErrorType<unknown>;
 
 export function useTvSeriesAlternativeTitles<
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -20899,7 +17966,7 @@ export function useTvSeriesAlternativeTitles<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -20907,7 +17974,7 @@ export function useTvSeriesAlternativeTitles<
 };
 export function useTvSeriesAlternativeTitles<
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -20926,7 +17993,7 @@ export function useTvSeriesAlternativeTitles<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20934,7 +18001,7 @@ export function useTvSeriesAlternativeTitles<
 };
 export function useTvSeriesAlternativeTitles<
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -20945,7 +18012,7 @@ export function useTvSeriesAlternativeTitles<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20957,7 +18024,7 @@ export function useTvSeriesAlternativeTitles<
 
 export function useTvSeriesAlternativeTitles<
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -20968,7 +18035,7 @@ export function useTvSeriesAlternativeTitles<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -20993,65 +18060,36 @@ export function useTvSeriesAlternativeTitles<
  * Get the recent changes for a TV show.
  * @summary Changes
  */
-export type tvSeriesChangesResponse200 = {
-  data: TvSeriesChanges200;
-  status: 200;
-};
-
-export type tvSeriesChangesResponseSuccess = tvSeriesChangesResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesChangesResponse = tvSeriesChangesResponseSuccess;
-
-export const getTvSeriesChangesUrl = (
-  seriesId: number,
-  params?: TvSeriesChangesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/changes?${stringifiedParams}`
-    : `/3/tv/${seriesId}/changes`;
-};
-
-export const tvSeriesChanges = async (
+export const tvSeriesChanges = (
   seriesId: number,
   params?: TvSeriesChangesParams,
-  options?: RequestInit
-): Promise<tvSeriesChangesResponse> => {
-  const res = await fetch(getTvSeriesChangesUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesChangesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesChangesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesChanges200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesChangesQueryKey = (
   seriesId?: number,
   params?: TvSeriesChangesParams
 ) => {
-  return [`/3/tv/${seriesId}/changes`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesChangesParams,
@@ -21063,17 +18101,17 @@ export const getTvSeriesChangesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesChangesQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesChanges>>> = ({
     signal,
-  }) => tvSeriesChanges(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesChanges(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -21090,11 +18128,11 @@ export const getTvSeriesChangesQueryOptions = <
 export type TvSeriesChangesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesChanges>>
 >;
-export type TvSeriesChangesQueryError = unknown;
+export type TvSeriesChangesQueryError = ErrorType<unknown>;
 
 export function useTvSeriesChanges<
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesChangesParams,
@@ -21114,7 +18152,7 @@ export function useTvSeriesChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -21122,7 +18160,7 @@ export function useTvSeriesChanges<
 };
 export function useTvSeriesChanges<
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesChangesParams,
@@ -21142,7 +18180,7 @@ export function useTvSeriesChanges<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21150,7 +18188,7 @@ export function useTvSeriesChanges<
 };
 export function useTvSeriesChanges<
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesChangesParams,
@@ -21162,7 +18200,7 @@ export function useTvSeriesChanges<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21174,7 +18212,7 @@ export function useTvSeriesChanges<
 
 export function useTvSeriesChanges<
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesChangesParams,
@@ -21186,7 +18224,7 @@ export function useTvSeriesChanges<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21212,50 +18250,30 @@ export function useTvSeriesChanges<
  * Get the content ratings that have been added to a TV show.
  * @summary Content Ratings
  */
-export type tvSeriesContentRatingsResponse200 = {
-  data: TvSeriesContentRatings200;
-  status: 200;
-};
-
-export type tvSeriesContentRatingsResponseSuccess =
-  tvSeriesContentRatingsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesContentRatingsResponse =
-  tvSeriesContentRatingsResponseSuccess;
-
-export const getTvSeriesContentRatingsUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/content_ratings`;
-};
-
-export const tvSeriesContentRatings = async (
+export const tvSeriesContentRatings = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesContentRatingsResponse> => {
-  const res = await fetch(getTvSeriesContentRatingsUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesContentRatingsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesContentRatingsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesContentRatings200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/content_ratings`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesContentRatingsQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/content_ratings`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/content_ratings`,
+  ] as const;
 };
 
 export const getTvSeriesContentRatingsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21266,18 +18284,17 @@ export const getTvSeriesContentRatingsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesContentRatingsQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesContentRatings>>
-  > = ({ signal }) =>
-    tvSeriesContentRatings(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesContentRatings(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -21294,11 +18311,11 @@ export const getTvSeriesContentRatingsQueryOptions = <
 export type TvSeriesContentRatingsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesContentRatings>>
 >;
-export type TvSeriesContentRatingsQueryError = unknown;
+export type TvSeriesContentRatingsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesContentRatings<
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -21317,7 +18334,7 @@ export function useTvSeriesContentRatings<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -21325,7 +18342,7 @@ export function useTvSeriesContentRatings<
 };
 export function useTvSeriesContentRatings<
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21344,7 +18361,7 @@ export function useTvSeriesContentRatings<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21352,7 +18369,7 @@ export function useTvSeriesContentRatings<
 };
 export function useTvSeriesContentRatings<
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21363,7 +18380,7 @@ export function useTvSeriesContentRatings<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21375,7 +18392,7 @@ export function useTvSeriesContentRatings<
 
 export function useTvSeriesContentRatings<
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21386,7 +18403,7 @@ export function useTvSeriesContentRatings<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21408,65 +18425,36 @@ export function useTvSeriesContentRatings<
  * Get the latest season credits of a TV show.
  * @summary Credits
  */
-export type tvSeriesCreditsResponse200 = {
-  data: TvSeriesCredits200;
-  status: 200;
-};
-
-export type tvSeriesCreditsResponseSuccess = tvSeriesCreditsResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesCreditsResponse = tvSeriesCreditsResponseSuccess;
-
-export const getTvSeriesCreditsUrl = (
-  seriesId: number,
-  params?: TvSeriesCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/credits?${stringifiedParams}`
-    : `/3/tv/${seriesId}/credits`;
-};
-
-export const tvSeriesCredits = async (
+export const tvSeriesCredits = (
   seriesId: number,
   params?: TvSeriesCreditsParams,
-  options?: RequestInit
-): Promise<tvSeriesCreditsResponse> => {
-  const res = await fetch(getTvSeriesCreditsUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesCreditsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesCredits200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/credits`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesCreditsQueryKey = (
   seriesId?: number,
   params?: TvSeriesCreditsParams
 ) => {
-  return [`/3/tv/${seriesId}/credits`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesCreditsParams,
@@ -21478,17 +18466,17 @@ export const getTvSeriesCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesCreditsQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesCredits>>> = ({
     signal,
-  }) => tvSeriesCredits(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesCredits(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -21505,11 +18493,11 @@ export const getTvSeriesCreditsQueryOptions = <
 export type TvSeriesCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesCredits>>
 >;
-export type TvSeriesCreditsQueryError = unknown;
+export type TvSeriesCreditsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesCredits<
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesCreditsParams,
@@ -21529,7 +18517,7 @@ export function useTvSeriesCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -21537,7 +18525,7 @@ export function useTvSeriesCredits<
 };
 export function useTvSeriesCredits<
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesCreditsParams,
@@ -21557,7 +18545,7 @@ export function useTvSeriesCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21565,7 +18553,7 @@ export function useTvSeriesCredits<
 };
 export function useTvSeriesCredits<
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesCreditsParams,
@@ -21577,7 +18565,7 @@ export function useTvSeriesCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21589,7 +18577,7 @@ export function useTvSeriesCredits<
 
 export function useTvSeriesCredits<
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesCreditsParams,
@@ -21601,7 +18589,7 @@ export function useTvSeriesCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21627,50 +18615,30 @@ export function useTvSeriesCredits<
  * Get the episode groups that have been added to a TV show.
  * @summary Episode Groups
  */
-export type tvSeriesEpisodeGroupsResponse200 = {
-  data: TvSeriesEpisodeGroups200;
-  status: 200;
-};
-
-export type tvSeriesEpisodeGroupsResponseSuccess =
-  tvSeriesEpisodeGroupsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesEpisodeGroupsResponse =
-  tvSeriesEpisodeGroupsResponseSuccess;
-
-export const getTvSeriesEpisodeGroupsUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/episode_groups`;
-};
-
-export const tvSeriesEpisodeGroups = async (
+export const tvSeriesEpisodeGroups = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesEpisodeGroupsResponse> => {
-  const res = await fetch(getTvSeriesEpisodeGroupsUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesEpisodeGroupsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesEpisodeGroupsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesEpisodeGroups200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/episode_groups`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesEpisodeGroupsQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/episode_groups`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/episode_groups`,
+  ] as const;
 };
 
 export const getTvSeriesEpisodeGroupsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21681,18 +18649,17 @@ export const getTvSeriesEpisodeGroupsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesEpisodeGroupsQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
-  > = ({ signal }) =>
-    tvSeriesEpisodeGroups(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesEpisodeGroups(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -21709,11 +18676,11 @@ export const getTvSeriesEpisodeGroupsQueryOptions = <
 export type TvSeriesEpisodeGroupsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
 >;
-export type TvSeriesEpisodeGroupsQueryError = unknown;
+export type TvSeriesEpisodeGroupsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesEpisodeGroups<
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -21732,7 +18699,7 @@ export function useTvSeriesEpisodeGroups<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -21740,7 +18707,7 @@ export function useTvSeriesEpisodeGroups<
 };
 export function useTvSeriesEpisodeGroups<
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21759,7 +18726,7 @@ export function useTvSeriesEpisodeGroups<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21767,7 +18734,7 @@ export function useTvSeriesEpisodeGroups<
 };
 export function useTvSeriesEpisodeGroups<
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21778,7 +18745,7 @@ export function useTvSeriesEpisodeGroups<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21790,7 +18757,7 @@ export function useTvSeriesEpisodeGroups<
 
 export function useTvSeriesEpisodeGroups<
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21801,7 +18768,7 @@ export function useTvSeriesEpisodeGroups<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21823,49 +18790,28 @@ export function useTvSeriesEpisodeGroups<
  * Get a list of external IDs that have been added to a TV show.
  * @summary External IDs
  */
-export type tvSeriesExternalIdsResponse200 = {
-  data: TvSeriesExternalIds200;
-  status: 200;
-};
-
-export type tvSeriesExternalIdsResponseSuccess =
-  tvSeriesExternalIdsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesExternalIdsResponse = tvSeriesExternalIdsResponseSuccess;
-
-export const getTvSeriesExternalIdsUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/external_ids`;
-};
-
-export const tvSeriesExternalIds = async (
+export const tvSeriesExternalIds = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesExternalIdsResponse> => {
-  const res = await fetch(getTvSeriesExternalIdsUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesExternalIdsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesExternalIdsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesExternalIds200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/external_ids`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesExternalIdsQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/external_ids`] as const;
+  return [`https://api.themoviedb.org/3/tv/${seriesId}/external_ids`] as const;
 };
 
 export const getTvSeriesExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21876,18 +18822,17 @@ export const getTvSeriesExternalIdsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesExternalIdsQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesExternalIds>>
-  > = ({ signal }) =>
-    tvSeriesExternalIds(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesExternalIds(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -21904,11 +18849,11 @@ export const getTvSeriesExternalIdsQueryOptions = <
 export type TvSeriesExternalIdsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesExternalIds>>
 >;
-export type TvSeriesExternalIdsQueryError = unknown;
+export type TvSeriesExternalIdsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesExternalIds<
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -21927,7 +18872,7 @@ export function useTvSeriesExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -21935,7 +18880,7 @@ export function useTvSeriesExternalIds<
 };
 export function useTvSeriesExternalIds<
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21954,7 +18899,7 @@ export function useTvSeriesExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21962,7 +18907,7 @@ export function useTvSeriesExternalIds<
 };
 export function useTvSeriesExternalIds<
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21973,7 +18918,7 @@ export function useTvSeriesExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -21985,7 +18930,7 @@ export function useTvSeriesExternalIds<
 
 export function useTvSeriesExternalIds<
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -21996,7 +18941,7 @@ export function useTvSeriesExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22018,65 +18963,36 @@ export function useTvSeriesExternalIds<
  * Get the images that belong to a TV series.
  * @summary Images
  */
-export type tvSeriesImagesResponse200 = {
-  data: TvSeriesImages200;
-  status: 200;
-};
-
-export type tvSeriesImagesResponseSuccess = tvSeriesImagesResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesImagesResponse = tvSeriesImagesResponseSuccess;
-
-export const getTvSeriesImagesUrl = (
-  seriesId: number,
-  params?: TvSeriesImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/images?${stringifiedParams}`
-    : `/3/tv/${seriesId}/images`;
-};
-
-export const tvSeriesImages = async (
+export const tvSeriesImages = (
   seriesId: number,
   params?: TvSeriesImagesParams,
-  options?: RequestInit
-): Promise<tvSeriesImagesResponse> => {
-  const res = await fetch(getTvSeriesImagesUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesImagesResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesImages200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/images`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesImagesQueryKey = (
   seriesId?: number,
   params?: TvSeriesImagesParams
 ) => {
-  return [`/3/tv/${seriesId}/images`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/images`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesImagesParams,
@@ -22084,17 +19000,17 @@ export const getTvSeriesImagesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesImagesQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesImages>>> = ({
     signal,
-  }) => tvSeriesImages(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesImages(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -22111,11 +19027,11 @@ export const getTvSeriesImagesQueryOptions = <
 export type TvSeriesImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesImages>>
 >;
-export type TvSeriesImagesQueryError = unknown;
+export type TvSeriesImagesQueryError = ErrorType<unknown>;
 
 export function useTvSeriesImages<
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesImagesParams,
@@ -22131,7 +19047,7 @@ export function useTvSeriesImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -22139,7 +19055,7 @@ export function useTvSeriesImages<
 };
 export function useTvSeriesImages<
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesImagesParams,
@@ -22155,7 +19071,7 @@ export function useTvSeriesImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22163,7 +19079,7 @@ export function useTvSeriesImages<
 };
 export function useTvSeriesImages<
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesImagesParams,
@@ -22171,7 +19087,7 @@ export function useTvSeriesImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22183,7 +19099,7 @@ export function useTvSeriesImages<
 
 export function useTvSeriesImages<
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesImagesParams,
@@ -22191,7 +19107,7 @@ export function useTvSeriesImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22213,46 +19129,28 @@ export function useTvSeriesImages<
  * Get a list of keywords that have been added to a TV show.
  * @summary Keywords
  */
-export type tvSeriesKeywordsResponse200 = {
-  data: TvSeriesKeywords200;
-  status: 200;
-};
-
-export type tvSeriesKeywordsResponseSuccess = tvSeriesKeywordsResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesKeywordsResponse = tvSeriesKeywordsResponseSuccess;
-
-export const getTvSeriesKeywordsUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/keywords`;
-};
-
-export const tvSeriesKeywords = async (
+export const tvSeriesKeywords = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesKeywordsResponse> => {
-  const res = await fetch(getTvSeriesKeywordsUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesKeywordsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesKeywordsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesKeywords200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/keywords`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesKeywordsQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/keywords`] as const;
+  return [`https://api.themoviedb.org/3/tv/${seriesId}/keywords`] as const;
 };
 
 export const getTvSeriesKeywordsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -22263,17 +19161,17 @@ export const getTvSeriesKeywordsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesKeywordsQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesKeywords>>
-  > = ({ signal }) => tvSeriesKeywords(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesKeywords(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -22290,11 +19188,11 @@ export const getTvSeriesKeywordsQueryOptions = <
 export type TvSeriesKeywordsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesKeywords>>
 >;
-export type TvSeriesKeywordsQueryError = unknown;
+export type TvSeriesKeywordsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesKeywords<
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -22313,7 +19211,7 @@ export function useTvSeriesKeywords<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -22321,7 +19219,7 @@ export function useTvSeriesKeywords<
 };
 export function useTvSeriesKeywords<
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -22340,7 +19238,7 @@ export function useTvSeriesKeywords<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22348,7 +19246,7 @@ export function useTvSeriesKeywords<
 };
 export function useTvSeriesKeywords<
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -22359,7 +19257,7 @@ export function useTvSeriesKeywords<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22371,7 +19269,7 @@ export function useTvSeriesKeywords<
 
 export function useTvSeriesKeywords<
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -22382,7 +19280,7 @@ export function useTvSeriesKeywords<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22404,58 +19302,36 @@ export function useTvSeriesKeywords<
  * Get the newest TV show ID.
  * @summary Latest
  */
-export type tvSeriesLatestIdResponse200 = {
-  data: TvSeriesLatestId200;
-  status: 200;
-};
-
-export type tvSeriesLatestIdResponseSuccess = tvSeriesLatestIdResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesLatestIdResponse = tvSeriesLatestIdResponseSuccess;
-
-export const getTvSeriesLatestIdUrl = () => {
-  return `/3/tv/latest`;
-};
-
-export const tvSeriesLatestId = async (
-  options?: RequestInit
-): Promise<tvSeriesLatestIdResponse> => {
-  const res = await fetch(getTvSeriesLatestIdUrl(), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesLatestIdResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesLatestIdResponse;
+export const tvSeriesLatestId = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesLatestId200>(
+    { url: `https://api.themoviedb.org/3/tv/latest`, method: 'GET', signal },
+    options
+  );
 };
 
 export const getTvSeriesLatestIdQueryKey = () => {
-  return [`/3/tv/latest`] as const;
+  return [`https://api.themoviedb.org/3/tv/latest`] as const;
 };
 
 export const getTvSeriesLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof tvSeriesLatestId>>, TError, TData>
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey = queryOptions?.queryKey ?? getTvSeriesLatestIdQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesLatestId>>
-  > = ({ signal }) => tvSeriesLatestId({ signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesLatestId(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesLatestId>>,
@@ -22467,11 +19343,11 @@ export const getTvSeriesLatestIdQueryOptions = <
 export type TvSeriesLatestIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesLatestId>>
 >;
-export type TvSeriesLatestIdQueryError = unknown;
+export type TvSeriesLatestIdQueryError = ErrorType<unknown>;
 
 export function useTvSeriesLatestId<
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options: {
     query: Partial<
@@ -22489,7 +19365,7 @@ export function useTvSeriesLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -22497,7 +19373,7 @@ export function useTvSeriesLatestId<
 };
 export function useTvSeriesLatestId<
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -22515,7 +19391,7 @@ export function useTvSeriesLatestId<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22523,7 +19399,7 @@ export function useTvSeriesLatestId<
 };
 export function useTvSeriesLatestId<
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -22533,7 +19409,7 @@ export function useTvSeriesLatestId<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22545,7 +19421,7 @@ export function useTvSeriesLatestId<
 
 export function useTvSeriesLatestId<
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   options?: {
     query?: Partial<
@@ -22555,7 +19431,7 @@ export function useTvSeriesLatestId<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22577,62 +19453,36 @@ export function useTvSeriesLatestId<
  * Get the lists that a TV series has been added to.
  * @summary Lists
  */
-export type listsCopyResponse200 = {
-  data: ListsCopy200;
-  status: 200;
-};
-
-export type listsCopyResponseSuccess = listsCopyResponse200 & {
-  headers: Headers;
-};
-export type listsCopyResponse = listsCopyResponseSuccess;
-
-export const getListsCopyUrl = (seriesId: number, params?: ListsCopyParams) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/lists?${stringifiedParams}`
-    : `/3/tv/${seriesId}/lists`;
-};
-
-export const listsCopy = async (
+export const listsCopy = (
   seriesId: number,
   params?: ListsCopyParams,
-  options?: RequestInit
-): Promise<listsCopyResponse> => {
-  const res = await fetch(getListsCopyUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: listsCopyResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as listsCopyResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<ListsCopy200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/lists`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getListsCopyQueryKey = (
   seriesId?: number,
   params?: ListsCopyParams
 ) => {
-  return [`/3/tv/${seriesId}/lists`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/lists`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getListsCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof listsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: ListsCopyParams,
@@ -22640,17 +19490,17 @@ export const getListsCopyQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getListsCopyQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof listsCopy>>> = ({
     signal,
-  }) => listsCopy(seriesId, params, { signal, ...fetchOptions });
+  }) => listsCopy(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -22665,11 +19515,11 @@ export const getListsCopyQueryOptions = <
 export type ListsCopyQueryResult = NonNullable<
   Awaited<ReturnType<typeof listsCopy>>
 >;
-export type ListsCopyQueryError = unknown;
+export type ListsCopyQueryError = ErrorType<unknown>;
 
 export function useListsCopy<
   TData = Awaited<ReturnType<typeof listsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | ListsCopyParams,
@@ -22685,7 +19535,7 @@ export function useListsCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -22693,7 +19543,7 @@ export function useListsCopy<
 };
 export function useListsCopy<
   TData = Awaited<ReturnType<typeof listsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: ListsCopyParams,
@@ -22709,7 +19559,7 @@ export function useListsCopy<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22717,7 +19567,7 @@ export function useListsCopy<
 };
 export function useListsCopy<
   TData = Awaited<ReturnType<typeof listsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: ListsCopyParams,
@@ -22725,7 +19575,7 @@ export function useListsCopy<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22737,7 +19587,7 @@ export function useListsCopy<
 
 export function useListsCopy<
   TData = Awaited<ReturnType<typeof listsCopy>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: ListsCopyParams,
@@ -22745,7 +19595,7 @@ export function useListsCopy<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof listsCopy>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22766,57 +19616,21 @@ export function useListsCopy<
 /**
  * @summary Recommendations
  */
-export type tvSeriesRecommendationsResponse200 = {
-  data: TvSeriesRecommendations200;
-  status: 200;
-};
-
-export type tvSeriesRecommendationsResponseSuccess =
-  tvSeriesRecommendationsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesRecommendationsResponse =
-  tvSeriesRecommendationsResponseSuccess;
-
-export const getTvSeriesRecommendationsUrl = (
-  seriesId: number,
-  params?: TvSeriesRecommendationsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/recommendations?${stringifiedParams}`
-    : `/3/tv/${seriesId}/recommendations`;
-};
-
-export const tvSeriesRecommendations = async (
+export const tvSeriesRecommendations = (
   seriesId: number,
   params?: TvSeriesRecommendationsParams,
-  options?: RequestInit
-): Promise<tvSeriesRecommendationsResponse> => {
-  const res = await fetch(getTvSeriesRecommendationsUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesRecommendationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesRecommendationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesRecommendations200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/recommendations`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesRecommendationsQueryKey = (
@@ -22824,14 +19638,14 @@ export const getTvSeriesRecommendationsQueryKey = (
   params?: TvSeriesRecommendationsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/recommendations`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/recommendations`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeriesRecommendationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesRecommendationsParams,
@@ -22843,10 +19657,10 @@ export const getTvSeriesRecommendationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -22855,7 +19669,7 @@ export const getTvSeriesRecommendationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesRecommendations>>
   > = ({ signal }) =>
-    tvSeriesRecommendations(seriesId, params, { signal, ...fetchOptions });
+    tvSeriesRecommendations(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -22872,11 +19686,11 @@ export const getTvSeriesRecommendationsQueryOptions = <
 export type TvSeriesRecommendationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesRecommendations>>
 >;
-export type TvSeriesRecommendationsQueryError = unknown;
+export type TvSeriesRecommendationsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesRecommendations<
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesRecommendationsParams,
@@ -22896,7 +19710,7 @@ export function useTvSeriesRecommendations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -22904,7 +19718,7 @@ export function useTvSeriesRecommendations<
 };
 export function useTvSeriesRecommendations<
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesRecommendationsParams,
@@ -22924,7 +19738,7 @@ export function useTvSeriesRecommendations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22932,7 +19746,7 @@ export function useTvSeriesRecommendations<
 };
 export function useTvSeriesRecommendations<
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesRecommendationsParams,
@@ -22944,7 +19758,7 @@ export function useTvSeriesRecommendations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22956,7 +19770,7 @@ export function useTvSeriesRecommendations<
 
 export function useTvSeriesRecommendations<
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesRecommendationsParams,
@@ -22968,7 +19782,7 @@ export function useTvSeriesRecommendations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -22994,65 +19808,36 @@ export function useTvSeriesRecommendations<
  * Get the reviews that have been added to a TV show.
  * @summary Reviews
  */
-export type tvSeriesReviewsResponse200 = {
-  data: TvSeriesReviews200;
-  status: 200;
-};
-
-export type tvSeriesReviewsResponseSuccess = tvSeriesReviewsResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesReviewsResponse = tvSeriesReviewsResponseSuccess;
-
-export const getTvSeriesReviewsUrl = (
-  seriesId: number,
-  params?: TvSeriesReviewsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/reviews?${stringifiedParams}`
-    : `/3/tv/${seriesId}/reviews`;
-};
-
-export const tvSeriesReviews = async (
+export const tvSeriesReviews = (
   seriesId: number,
   params?: TvSeriesReviewsParams,
-  options?: RequestInit
-): Promise<tvSeriesReviewsResponse> => {
-  const res = await fetch(getTvSeriesReviewsUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesReviewsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesReviewsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesReviews200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/reviews`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesReviewsQueryKey = (
   seriesId?: number,
   params?: TvSeriesReviewsParams
 ) => {
-  return [`/3/tv/${seriesId}/reviews`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/reviews`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesReviewsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesReviewsParams,
@@ -23064,17 +19849,17 @@ export const getTvSeriesReviewsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesReviewsQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesReviews>>> = ({
     signal,
-  }) => tvSeriesReviews(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesReviews(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -23091,11 +19876,11 @@ export const getTvSeriesReviewsQueryOptions = <
 export type TvSeriesReviewsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesReviews>>
 >;
-export type TvSeriesReviewsQueryError = unknown;
+export type TvSeriesReviewsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesReviews<
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesReviewsParams,
@@ -23115,7 +19900,7 @@ export function useTvSeriesReviews<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -23123,7 +19908,7 @@ export function useTvSeriesReviews<
 };
 export function useTvSeriesReviews<
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesReviewsParams,
@@ -23143,7 +19928,7 @@ export function useTvSeriesReviews<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23151,7 +19936,7 @@ export function useTvSeriesReviews<
 };
 export function useTvSeriesReviews<
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesReviewsParams,
@@ -23163,7 +19948,7 @@ export function useTvSeriesReviews<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23175,7 +19960,7 @@ export function useTvSeriesReviews<
 
 export function useTvSeriesReviews<
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesReviewsParams,
@@ -23187,7 +19972,7 @@ export function useTvSeriesReviews<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23213,50 +19998,30 @@ export function useTvSeriesReviews<
  * Get the seasons and episodes that have screened theatrically.
  * @summary Screened Theatrically
  */
-export type tvSeriesScreenedTheatricallyResponse200 = {
-  data: TvSeriesScreenedTheatrically200;
-  status: 200;
-};
-
-export type tvSeriesScreenedTheatricallyResponseSuccess =
-  tvSeriesScreenedTheatricallyResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesScreenedTheatricallyResponse =
-  tvSeriesScreenedTheatricallyResponseSuccess;
-
-export const getTvSeriesScreenedTheatricallyUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/screened_theatrically`;
-};
-
-export const tvSeriesScreenedTheatrically = async (
+export const tvSeriesScreenedTheatrically = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesScreenedTheatricallyResponse> => {
-  const res = await fetch(getTvSeriesScreenedTheatricallyUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesScreenedTheatricallyResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesScreenedTheatricallyResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesScreenedTheatrically200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/screened_theatrically`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesScreenedTheatricallyQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/screened_theatrically`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/screened_theatrically`,
+  ] as const;
 };
 
 export const getTvSeriesScreenedTheatricallyQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23267,10 +20032,10 @@ export const getTvSeriesScreenedTheatricallyQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesScreenedTheatricallyQueryKey(seriesId);
@@ -23278,7 +20043,7 @@ export const getTvSeriesScreenedTheatricallyQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
   > = ({ signal }) =>
-    tvSeriesScreenedTheatrically(seriesId, { signal, ...fetchOptions });
+    tvSeriesScreenedTheatrically(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -23295,11 +20060,11 @@ export const getTvSeriesScreenedTheatricallyQueryOptions = <
 export type TvSeriesScreenedTheatricallyQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
 >;
-export type TvSeriesScreenedTheatricallyQueryError = unknown;
+export type TvSeriesScreenedTheatricallyQueryError = ErrorType<unknown>;
 
 export function useTvSeriesScreenedTheatrically<
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -23318,7 +20083,7 @@ export function useTvSeriesScreenedTheatrically<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -23326,7 +20091,7 @@ export function useTvSeriesScreenedTheatrically<
 };
 export function useTvSeriesScreenedTheatrically<
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23345,7 +20110,7 @@ export function useTvSeriesScreenedTheatrically<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23353,7 +20118,7 @@ export function useTvSeriesScreenedTheatrically<
 };
 export function useTvSeriesScreenedTheatrically<
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23364,7 +20129,7 @@ export function useTvSeriesScreenedTheatrically<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23376,7 +20141,7 @@ export function useTvSeriesScreenedTheatrically<
 
 export function useTvSeriesScreenedTheatrically<
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23387,7 +20152,7 @@ export function useTvSeriesScreenedTheatrically<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23412,65 +20177,36 @@ export function useTvSeriesScreenedTheatrically<
  * Get the similar TV shows.
  * @summary Similar
  */
-export type tvSeriesSimilarResponse200 = {
-  data: TvSeriesSimilar200;
-  status: 200;
-};
-
-export type tvSeriesSimilarResponseSuccess = tvSeriesSimilarResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesSimilarResponse = tvSeriesSimilarResponseSuccess;
-
-export const getTvSeriesSimilarUrl = (
-  seriesId: string,
-  params?: TvSeriesSimilarParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/similar?${stringifiedParams}`
-    : `/3/tv/${seriesId}/similar`;
-};
-
-export const tvSeriesSimilar = async (
+export const tvSeriesSimilar = (
   seriesId: string,
   params?: TvSeriesSimilarParams,
-  options?: RequestInit
-): Promise<tvSeriesSimilarResponse> => {
-  const res = await fetch(getTvSeriesSimilarUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesSimilarResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesSimilarResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesSimilar200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/similar`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesSimilarQueryKey = (
   seriesId?: string,
   params?: TvSeriesSimilarParams
 ) => {
-  return [`/3/tv/${seriesId}/similar`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/similar`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesSimilarQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: string,
   params?: TvSeriesSimilarParams,
@@ -23482,17 +20218,17 @@ export const getTvSeriesSimilarQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesSimilarQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesSimilar>>> = ({
     signal,
-  }) => tvSeriesSimilar(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesSimilar(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -23509,11 +20245,11 @@ export const getTvSeriesSimilarQueryOptions = <
 export type TvSeriesSimilarQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesSimilar>>
 >;
-export type TvSeriesSimilarQueryError = unknown;
+export type TvSeriesSimilarQueryError = ErrorType<unknown>;
 
 export function useTvSeriesSimilar<
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: string,
   params: undefined | TvSeriesSimilarParams,
@@ -23533,7 +20269,7 @@ export function useTvSeriesSimilar<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -23541,7 +20277,7 @@ export function useTvSeriesSimilar<
 };
 export function useTvSeriesSimilar<
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: string,
   params?: TvSeriesSimilarParams,
@@ -23561,7 +20297,7 @@ export function useTvSeriesSimilar<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23569,7 +20305,7 @@ export function useTvSeriesSimilar<
 };
 export function useTvSeriesSimilar<
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: string,
   params?: TvSeriesSimilarParams,
@@ -23581,7 +20317,7 @@ export function useTvSeriesSimilar<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23593,7 +20329,7 @@ export function useTvSeriesSimilar<
 
 export function useTvSeriesSimilar<
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: string,
   params?: TvSeriesSimilarParams,
@@ -23605,7 +20341,7 @@ export function useTvSeriesSimilar<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23631,49 +20367,28 @@ export function useTvSeriesSimilar<
  * Get the translations that have been added to a TV show.
  * @summary Translations
  */
-export type tvSeriesTranslationsResponse200 = {
-  data: TvSeriesTranslations200;
-  status: 200;
-};
-
-export type tvSeriesTranslationsResponseSuccess =
-  tvSeriesTranslationsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesTranslationsResponse = tvSeriesTranslationsResponseSuccess;
-
-export const getTvSeriesTranslationsUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/translations`;
-};
-
-export const tvSeriesTranslations = async (
+export const tvSeriesTranslations = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesTranslationsResponse> => {
-  const res = await fetch(getTvSeriesTranslationsUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesTranslationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesTranslationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesTranslations200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesTranslationsQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/translations`] as const;
+  return [`https://api.themoviedb.org/3/tv/${seriesId}/translations`] as const;
 };
 
 export const getTvSeriesTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23684,18 +20399,17 @@ export const getTvSeriesTranslationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesTranslationsQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesTranslations>>
-  > = ({ signal }) =>
-    tvSeriesTranslations(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesTranslations(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -23712,11 +20426,11 @@ export const getTvSeriesTranslationsQueryOptions = <
 export type TvSeriesTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesTranslations>>
 >;
-export type TvSeriesTranslationsQueryError = unknown;
+export type TvSeriesTranslationsQueryError = ErrorType<unknown>;
 
 export function useTvSeriesTranslations<
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -23735,7 +20449,7 @@ export function useTvSeriesTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -23743,7 +20457,7 @@ export function useTvSeriesTranslations<
 };
 export function useTvSeriesTranslations<
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23762,7 +20476,7 @@ export function useTvSeriesTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23770,7 +20484,7 @@ export function useTvSeriesTranslations<
 };
 export function useTvSeriesTranslations<
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23781,7 +20495,7 @@ export function useTvSeriesTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23793,7 +20507,7 @@ export function useTvSeriesTranslations<
 
 export function useTvSeriesTranslations<
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -23804,7 +20518,7 @@ export function useTvSeriesTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23826,65 +20540,36 @@ export function useTvSeriesTranslations<
  * Get the videos that belong to a TV show.
  * @summary Videos
  */
-export type tvSeriesVideosResponse200 = {
-  data: TvSeriesVideos200;
-  status: 200;
-};
-
-export type tvSeriesVideosResponseSuccess = tvSeriesVideosResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesVideosResponse = tvSeriesVideosResponseSuccess;
-
-export const getTvSeriesVideosUrl = (
-  seriesId: number,
-  params?: TvSeriesVideosParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/videos?${stringifiedParams}`
-    : `/3/tv/${seriesId}/videos`;
-};
-
-export const tvSeriesVideos = async (
+export const tvSeriesVideos = (
   seriesId: number,
   params?: TvSeriesVideosParams,
-  options?: RequestInit
-): Promise<tvSeriesVideosResponse> => {
-  const res = await fetch(getTvSeriesVideosUrl(seriesId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesVideosResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesVideosResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesVideos200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/videos`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesVideosQueryKey = (
   seriesId?: number,
   params?: TvSeriesVideosParams
 ) => {
-  return [`/3/tv/${seriesId}/videos`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getTvSeriesVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesVideosParams,
@@ -23892,17 +20577,17 @@ export const getTvSeriesVideosQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesVideosQueryKey(seriesId, params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesVideos>>> = ({
     signal,
-  }) => tvSeriesVideos(seriesId, params, { signal, ...fetchOptions });
+  }) => tvSeriesVideos(seriesId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -23919,11 +20604,11 @@ export const getTvSeriesVideosQueryOptions = <
 export type TvSeriesVideosQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesVideos>>
 >;
-export type TvSeriesVideosQueryError = unknown;
+export type TvSeriesVideosQueryError = ErrorType<unknown>;
 
 export function useTvSeriesVideos<
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params: undefined | TvSeriesVideosParams,
@@ -23939,7 +20624,7 @@ export function useTvSeriesVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -23947,7 +20632,7 @@ export function useTvSeriesVideos<
 };
 export function useTvSeriesVideos<
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesVideosParams,
@@ -23963,7 +20648,7 @@ export function useTvSeriesVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23971,7 +20656,7 @@ export function useTvSeriesVideos<
 };
 export function useTvSeriesVideos<
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesVideosParams,
@@ -23979,7 +20664,7 @@ export function useTvSeriesVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -23991,7 +20676,7 @@ export function useTvSeriesVideos<
 
 export function useTvSeriesVideos<
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   params?: TvSeriesVideosParams,
@@ -23999,7 +20684,7 @@ export function useTvSeriesVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeriesVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24021,50 +20706,30 @@ export function useTvSeriesVideos<
  * Get the list of streaming providers we have for a TV show.
  * @summary Watch Providers
  */
-export type tvSeriesWatchProvidersResponse200 = {
-  data: TvSeriesWatchProviders200;
-  status: 200;
-};
-
-export type tvSeriesWatchProvidersResponseSuccess =
-  tvSeriesWatchProvidersResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesWatchProvidersResponse =
-  tvSeriesWatchProvidersResponseSuccess;
-
-export const getTvSeriesWatchProvidersUrl = (seriesId: number) => {
-  return `/3/tv/${seriesId}/watch/providers`;
-};
-
-export const tvSeriesWatchProviders = async (
+export const tvSeriesWatchProviders = (
   seriesId: number,
-  options?: RequestInit
-): Promise<tvSeriesWatchProvidersResponse> => {
-  const res = await fetch(getTvSeriesWatchProvidersUrl(seriesId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesWatchProvidersResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesWatchProvidersResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesWatchProviders200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/watch/providers`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesWatchProvidersQueryKey = (seriesId?: number) => {
-  return [`/3/tv/${seriesId}/watch/providers`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/watch/providers`,
+  ] as const;
 };
 
 export const getTvSeriesWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -24075,18 +20740,17 @@ export const getTvSeriesWatchProvidersQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeriesWatchProvidersQueryKey(seriesId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeriesWatchProviders>>
-  > = ({ signal }) =>
-    tvSeriesWatchProviders(seriesId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvSeriesWatchProviders(seriesId, requestOptions, signal);
 
   return {
     queryKey,
@@ -24103,11 +20767,11 @@ export const getTvSeriesWatchProvidersQueryOptions = <
 export type TvSeriesWatchProvidersQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesWatchProviders>>
 >;
-export type TvSeriesWatchProvidersQueryError = unknown;
+export type TvSeriesWatchProvidersQueryError = ErrorType<unknown>;
 
 export function useTvSeriesWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options: {
@@ -24126,7 +20790,7 @@ export function useTvSeriesWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -24134,7 +20798,7 @@ export function useTvSeriesWatchProviders<
 };
 export function useTvSeriesWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -24153,7 +20817,7 @@ export function useTvSeriesWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24161,7 +20825,7 @@ export function useTvSeriesWatchProviders<
 };
 export function useTvSeriesWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -24172,7 +20836,7 @@ export function useTvSeriesWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24184,7 +20848,7 @@ export function useTvSeriesWatchProviders<
 
 export function useTvSeriesWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   options?: {
@@ -24195,7 +20859,7 @@ export function useTvSeriesWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24217,60 +20881,28 @@ export function useTvSeriesWatchProviders<
  * Rate a TV show and save it to your rated list.
  * @summary Add Rating
  */
-export type tvSeriesAddRatingResponse200 = {
-  data: TvSeriesAddRating200;
-  status: 200;
-};
-
-export type tvSeriesAddRatingResponseSuccess = tvSeriesAddRatingResponse200 & {
-  headers: Headers;
-};
-export type tvSeriesAddRatingResponse = tvSeriesAddRatingResponseSuccess;
-
-export const getTvSeriesAddRatingUrl = (
+export const tvSeriesAddRating = (
   seriesId: number,
-  params?: TvSeriesAddRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/rating?${stringifiedParams}`
-    : `/3/tv/${seriesId}/rating`;
-};
-
-export const tvSeriesAddRating = async (
-  seriesId: number,
-  tvSeriesAddRatingBody: TvSeriesAddRatingBody,
+  tvSeriesAddRatingBody: BodyType<TvSeriesAddRatingBody>,
   params?: TvSeriesAddRatingParams,
-  options?: RequestInit
-): Promise<tvSeriesAddRatingResponse> => {
-  const res = await fetch(getTvSeriesAddRatingUrl(seriesId, params), {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(tvSeriesAddRatingBody),
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesAddRatingResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesAddRatingResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeriesAddRating200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/rating`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: tvSeriesAddRatingBody,
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeriesAddRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -24278,42 +20910,42 @@ export const getTvSeriesAddRatingMutationOptions = <
     TError,
     {
       seriesId: number;
-      data: TvSeriesAddRatingBody;
+      data: BodyType<TvSeriesAddRatingBody>;
       params?: TvSeriesAddRatingParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof tvSeriesAddRating>>,
   TError,
   {
     seriesId: number;
-    data: TvSeriesAddRatingBody;
+    data: BodyType<TvSeriesAddRatingBody>;
     params?: TvSeriesAddRatingParams;
   },
   TContext
 > => {
   const mutationKey = ['tvSeriesAddRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof tvSeriesAddRating>>,
     {
       seriesId: number;
-      data: TvSeriesAddRatingBody;
+      data: BodyType<TvSeriesAddRatingBody>;
       params?: TvSeriesAddRatingParams;
     }
   > = (props) => {
     const { seriesId, data, params } = props ?? {};
 
-    return tvSeriesAddRating(seriesId, data, params, fetchOptions);
+    return tvSeriesAddRating(seriesId, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -24322,25 +20954,28 @@ export const getTvSeriesAddRatingMutationOptions = <
 export type TvSeriesAddRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesAddRating>>
 >;
-export type TvSeriesAddRatingMutationBody = TvSeriesAddRatingBody;
-export type TvSeriesAddRatingMutationError = unknown;
+export type TvSeriesAddRatingMutationBody = BodyType<TvSeriesAddRatingBody>;
+export type TvSeriesAddRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add Rating
  */
-export const useTvSeriesAddRating = <TError = unknown, TContext = unknown>(
+export const useTvSeriesAddRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof tvSeriesAddRating>>,
       TError,
       {
         seriesId: number;
-        data: TvSeriesAddRatingBody;
+        data: BodyType<TvSeriesAddRatingBody>;
         params?: TvSeriesAddRatingParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -24348,7 +20983,7 @@ export const useTvSeriesAddRating = <TError = unknown, TContext = unknown>(
   TError,
   {
     seriesId: number;
-    data: TvSeriesAddRatingBody;
+    data: BodyType<TvSeriesAddRatingBody>;
     params?: TvSeriesAddRatingParams;
   },
   TContext
@@ -24360,60 +20995,23 @@ export const useTvSeriesAddRating = <TError = unknown, TContext = unknown>(
 /**
  * @summary Delete Rating
  */
-export type tvSeriesDeleteRatingResponse200 = {
-  data: TvSeriesDeleteRating200;
-  status: 200;
-};
-
-export type tvSeriesDeleteRatingResponseSuccess =
-  tvSeriesDeleteRatingResponse200 & {
-    headers: Headers;
-  };
-export type tvSeriesDeleteRatingResponse = tvSeriesDeleteRatingResponseSuccess;
-
-export const getTvSeriesDeleteRatingUrl = (
-  seriesId: number,
-  params?: TvSeriesDeleteRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/rating?${stringifiedParams}`
-    : `/3/tv/${seriesId}/rating`;
-};
-
-export const tvSeriesDeleteRating = async (
+export const tvSeriesDeleteRating = (
   seriesId: number,
   params?: TvSeriesDeleteRatingParams,
-  options?: RequestInit
-): Promise<tvSeriesDeleteRatingResponse> => {
-  const res = await fetch(getTvSeriesDeleteRatingUrl(seriesId, params), {
-    ...options,
-    method: 'DELETE',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeriesDeleteRatingResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeriesDeleteRatingResponse;
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<TvSeriesDeleteRating200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/rating`,
+      method: 'DELETE',
+      params,
+    },
+    options
+  );
 };
 
 export const getTvSeriesDeleteRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -24422,7 +21020,7 @@ export const getTvSeriesDeleteRatingMutationOptions = <
     { seriesId: number; params?: TvSeriesDeleteRatingParams },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof tvSeriesDeleteRating>>,
   TError,
@@ -24430,13 +21028,13 @@ export const getTvSeriesDeleteRatingMutationOptions = <
   TContext
 > => {
   const mutationKey = ['tvSeriesDeleteRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof tvSeriesDeleteRating>>,
@@ -24444,7 +21042,7 @@ export const getTvSeriesDeleteRatingMutationOptions = <
   > = (props) => {
     const { seriesId, params } = props ?? {};
 
-    return tvSeriesDeleteRating(seriesId, params, fetchOptions);
+    return tvSeriesDeleteRating(seriesId, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -24454,12 +21052,15 @@ export type TvSeriesDeleteRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof tvSeriesDeleteRating>>
 >;
 
-export type TvSeriesDeleteRatingMutationError = unknown;
+export type TvSeriesDeleteRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Delete Rating
  */
-export const useTvSeriesDeleteRating = <TError = unknown, TContext = unknown>(
+export const useTvSeriesDeleteRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof tvSeriesDeleteRating>>,
@@ -24467,7 +21068,7 @@ export const useTvSeriesDeleteRating = <TError = unknown, TContext = unknown>(
       { seriesId: number; params?: TvSeriesDeleteRatingParams },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -24484,58 +21085,22 @@ export const useTvSeriesDeleteRating = <TError = unknown, TContext = unknown>(
  * Query the details of a TV season.
  * @summary Details
  */
-export type tvSeasonDetailsResponse200 = {
-  data: TvSeasonDetails200;
-  status: 200;
-};
-
-export type tvSeasonDetailsResponseSuccess = tvSeasonDetailsResponse200 & {
-  headers: Headers;
-};
-export type tvSeasonDetailsResponse = tvSeasonDetailsResponseSuccess;
-
-export const getTvSeasonDetailsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}`;
-};
-
-export const tvSeasonDetails = async (
+export const tvSeasonDetails = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonDetailsParams,
-  options?: RequestInit
-): Promise<tvSeasonDetailsResponse> => {
-  const res = await fetch(
-    getTvSeasonDetailsUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonDetails200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonDetailsResponse;
 };
 
 export const getTvSeasonDetailsQueryKey = (
@@ -24544,14 +21109,14 @@ export const getTvSeasonDetailsQueryKey = (
   params?: TvSeasonDetailsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24564,10 +21129,10 @@ export const getTvSeasonDetailsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -24575,11 +21140,7 @@ export const getTvSeasonDetailsQueryOptions = <
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonDetails>>> = ({
     signal,
-  }) =>
-    tvSeasonDetails(seriesId, seasonNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+  }) => tvSeasonDetails(seriesId, seasonNumber, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -24596,11 +21157,11 @@ export const getTvSeasonDetailsQueryOptions = <
 export type TvSeasonDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonDetails>>
 >;
-export type TvSeasonDetailsQueryError = unknown;
+export type TvSeasonDetailsQueryError = ErrorType<unknown>;
 
 export function useTvSeasonDetails<
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24621,7 +21182,7 @@ export function useTvSeasonDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -24629,7 +21190,7 @@ export function useTvSeasonDetails<
 };
 export function useTvSeasonDetails<
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24650,7 +21211,7 @@ export function useTvSeasonDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24658,7 +21219,7 @@ export function useTvSeasonDetails<
 };
 export function useTvSeasonDetails<
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24671,7 +21232,7 @@ export function useTvSeasonDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24683,7 +21244,7 @@ export function useTvSeasonDetails<
 
 export function useTvSeasonDetails<
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24696,7 +21257,7 @@ export function useTvSeasonDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24723,62 +21284,22 @@ export function useTvSeasonDetails<
  * Get the rating, watchlist and favourite status.
  * @summary Account States
  */
-export type tvSeasonAccountStatesResponse200 = {
-  data: TvSeasonAccountStates200;
-  status: 200;
-};
-
-export type tvSeasonAccountStatesResponseSuccess =
-  tvSeasonAccountStatesResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonAccountStatesResponse =
-  tvSeasonAccountStatesResponseSuccess;
-
-export const getTvSeasonAccountStatesUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonAccountStatesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/account_states?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/account_states`;
-};
-
-export const tvSeasonAccountStates = async (
+export const tvSeasonAccountStates = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonAccountStatesParams,
-  options?: RequestInit
-): Promise<tvSeasonAccountStatesResponse> => {
-  const res = await fetch(
-    getTvSeasonAccountStatesUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonAccountStates200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/account_states`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonAccountStatesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonAccountStatesResponse;
 };
 
 export const getTvSeasonAccountStatesQueryKey = (
@@ -24787,14 +21308,14 @@ export const getTvSeasonAccountStatesQueryKey = (
   params?: TvSeasonAccountStatesParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/account_states`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/account_states`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24807,10 +21328,10 @@ export const getTvSeasonAccountStatesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -24819,10 +21340,13 @@ export const getTvSeasonAccountStatesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonAccountStates>>
   > = ({ signal }) =>
-    tvSeasonAccountStates(seriesId, seasonNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvSeasonAccountStates(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -24839,11 +21363,11 @@ export const getTvSeasonAccountStatesQueryOptions = <
 export type TvSeasonAccountStatesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonAccountStates>>
 >;
-export type TvSeasonAccountStatesQueryError = unknown;
+export type TvSeasonAccountStatesQueryError = ErrorType<unknown>;
 
 export function useTvSeasonAccountStates<
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24864,7 +21388,7 @@ export function useTvSeasonAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -24872,7 +21396,7 @@ export function useTvSeasonAccountStates<
 };
 export function useTvSeasonAccountStates<
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24893,7 +21417,7 @@ export function useTvSeasonAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24901,7 +21425,7 @@ export function useTvSeasonAccountStates<
 };
 export function useTvSeasonAccountStates<
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24914,7 +21438,7 @@ export function useTvSeasonAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24926,7 +21450,7 @@ export function useTvSeasonAccountStates<
 
 export function useTvSeasonAccountStates<
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -24939,7 +21463,7 @@ export function useTvSeasonAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -24966,62 +21490,22 @@ export function useTvSeasonAccountStates<
  * Get the aggregate credits (cast and crew) that have been added to a TV season.
  * @summary Aggregate Credits
  */
-export type tvSeasonAggregateCreditsResponse200 = {
-  data: TvSeasonAggregateCredits200;
-  status: 200;
-};
-
-export type tvSeasonAggregateCreditsResponseSuccess =
-  tvSeasonAggregateCreditsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonAggregateCreditsResponse =
-  tvSeasonAggregateCreditsResponseSuccess;
-
-export const getTvSeasonAggregateCreditsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonAggregateCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits`;
-};
-
-export const tvSeasonAggregateCredits = async (
+export const tvSeasonAggregateCredits = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonAggregateCreditsParams,
-  options?: RequestInit
-): Promise<tvSeasonAggregateCreditsResponse> => {
-  const res = await fetch(
-    getTvSeasonAggregateCreditsUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonAggregateCredits200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonAggregateCreditsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonAggregateCreditsResponse;
 };
 
 export const getTvSeasonAggregateCreditsQueryKey = (
@@ -25030,14 +21514,14 @@ export const getTvSeasonAggregateCreditsQueryKey = (
   params?: TvSeasonAggregateCreditsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonAggregateCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25050,10 +21534,10 @@ export const getTvSeasonAggregateCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -25062,10 +21546,13 @@ export const getTvSeasonAggregateCreditsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
   > = ({ signal }) =>
-    tvSeasonAggregateCredits(seriesId, seasonNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvSeasonAggregateCredits(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -25082,11 +21569,11 @@ export const getTvSeasonAggregateCreditsQueryOptions = <
 export type TvSeasonAggregateCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
 >;
-export type TvSeasonAggregateCreditsQueryError = unknown;
+export type TvSeasonAggregateCreditsQueryError = ErrorType<unknown>;
 
 export function useTvSeasonAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25107,7 +21594,7 @@ export function useTvSeasonAggregateCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -25115,7 +21602,7 @@ export function useTvSeasonAggregateCredits<
 };
 export function useTvSeasonAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25136,7 +21623,7 @@ export function useTvSeasonAggregateCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25144,7 +21631,7 @@ export function useTvSeasonAggregateCredits<
 };
 export function useTvSeasonAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25157,7 +21644,7 @@ export function useTvSeasonAggregateCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25169,7 +21656,7 @@ export function useTvSeasonAggregateCredits<
 
 export function useTvSeasonAggregateCredits<
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25182,7 +21669,7 @@ export function useTvSeasonAggregateCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25209,56 +21696,21 @@ export function useTvSeasonAggregateCredits<
  * Get the recent changes for a TV season.
  * @summary Changes
  */
-export type tvSeasonChangesByIdResponse200 = {
-  data: TvSeasonChangesById200;
-  status: 200;
-};
-
-export type tvSeasonChangesByIdResponseSuccess =
-  tvSeasonChangesByIdResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonChangesByIdResponse = tvSeasonChangesByIdResponseSuccess;
-
-export const getTvSeasonChangesByIdUrl = (
-  seasonId: number,
-  params?: TvSeasonChangesByIdParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/season/${seasonId}/changes?${stringifiedParams}`
-    : `/3/tv/season/${seasonId}/changes`;
-};
-
-export const tvSeasonChangesById = async (
+export const tvSeasonChangesById = (
   seasonId: number,
   params?: TvSeasonChangesByIdParams,
-  options?: RequestInit
-): Promise<tvSeasonChangesByIdResponse> => {
-  const res = await fetch(getTvSeasonChangesByIdUrl(seasonId, params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonChangesByIdResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonChangesByIdResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonChangesById200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/season/${seasonId}/changes`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeasonChangesByIdQueryKey = (
@@ -25266,14 +21718,14 @@ export const getTvSeasonChangesByIdQueryKey = (
   params?: TvSeasonChangesByIdParams
 ) => {
   return [
-    `/3/tv/season/${seasonId}/changes`,
+    `https://api.themoviedb.org/3/tv/season/${seasonId}/changes`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonChangesByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seasonId: number,
   params?: TvSeasonChangesByIdParams,
@@ -25285,10 +21737,10 @@ export const getTvSeasonChangesByIdQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvSeasonChangesByIdQueryKey(seasonId, params);
@@ -25296,7 +21748,7 @@ export const getTvSeasonChangesByIdQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonChangesById>>
   > = ({ signal }) =>
-    tvSeasonChangesById(seasonId, params, { signal, ...fetchOptions });
+    tvSeasonChangesById(seasonId, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -25313,11 +21765,11 @@ export const getTvSeasonChangesByIdQueryOptions = <
 export type TvSeasonChangesByIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonChangesById>>
 >;
-export type TvSeasonChangesByIdQueryError = unknown;
+export type TvSeasonChangesByIdQueryError = ErrorType<unknown>;
 
 export function useTvSeasonChangesById<
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seasonId: number,
   params: undefined | TvSeasonChangesByIdParams,
@@ -25337,7 +21789,7 @@ export function useTvSeasonChangesById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -25345,7 +21797,7 @@ export function useTvSeasonChangesById<
 };
 export function useTvSeasonChangesById<
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seasonId: number,
   params?: TvSeasonChangesByIdParams,
@@ -25365,7 +21817,7 @@ export function useTvSeasonChangesById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25373,7 +21825,7 @@ export function useTvSeasonChangesById<
 };
 export function useTvSeasonChangesById<
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seasonId: number,
   params?: TvSeasonChangesByIdParams,
@@ -25385,7 +21837,7 @@ export function useTvSeasonChangesById<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25397,7 +21849,7 @@ export function useTvSeasonChangesById<
 
 export function useTvSeasonChangesById<
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seasonId: number,
   params?: TvSeasonChangesByIdParams,
@@ -25409,7 +21861,7 @@ export function useTvSeasonChangesById<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25434,58 +21886,22 @@ export function useTvSeasonChangesById<
 /**
  * @summary Credits
  */
-export type tvSeasonCreditsResponse200 = {
-  data: TvSeasonCredits200;
-  status: 200;
-};
-
-export type tvSeasonCreditsResponseSuccess = tvSeasonCreditsResponse200 & {
-  headers: Headers;
-};
-export type tvSeasonCreditsResponse = tvSeasonCreditsResponseSuccess;
-
-export const getTvSeasonCreditsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/credits?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/credits`;
-};
-
-export const tvSeasonCredits = async (
+export const tvSeasonCredits = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonCreditsParams,
-  options?: RequestInit
-): Promise<tvSeasonCreditsResponse> => {
-  const res = await fetch(
-    getTvSeasonCreditsUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonCredits200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/credits`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonCreditsResponse;
 };
 
 export const getTvSeasonCreditsQueryKey = (
@@ -25494,14 +21910,14 @@ export const getTvSeasonCreditsQueryKey = (
   params?: TvSeasonCreditsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/credits`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25514,10 +21930,10 @@ export const getTvSeasonCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -25525,11 +21941,7 @@ export const getTvSeasonCreditsQueryOptions = <
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonCredits>>> = ({
     signal,
-  }) =>
-    tvSeasonCredits(seriesId, seasonNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+  }) => tvSeasonCredits(seriesId, seasonNumber, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -25546,11 +21958,11 @@ export const getTvSeasonCreditsQueryOptions = <
 export type TvSeasonCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonCredits>>
 >;
-export type TvSeasonCreditsQueryError = unknown;
+export type TvSeasonCreditsQueryError = ErrorType<unknown>;
 
 export function useTvSeasonCredits<
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25571,7 +21983,7 @@ export function useTvSeasonCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -25579,7 +21991,7 @@ export function useTvSeasonCredits<
 };
 export function useTvSeasonCredits<
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25600,7 +22012,7 @@ export function useTvSeasonCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25608,7 +22020,7 @@ export function useTvSeasonCredits<
 };
 export function useTvSeasonCredits<
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25621,7 +22033,7 @@ export function useTvSeasonCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25633,7 +22045,7 @@ export function useTvSeasonCredits<
 
 export function useTvSeasonCredits<
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25646,7 +22058,7 @@ export function useTvSeasonCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25673,56 +22085,34 @@ export function useTvSeasonCredits<
  * Get a list of external IDs that have been added to a TV season.
  * @summary External IDs
  */
-export type tvSeasonExternalIdsResponse200 = {
-  data: TvSeasonExternalIds200;
-  status: 200;
-};
-
-export type tvSeasonExternalIdsResponseSuccess =
-  tvSeasonExternalIdsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonExternalIdsResponse = tvSeasonExternalIdsResponseSuccess;
-
-export const getTvSeasonExternalIdsUrl = (
-  seriesId: number,
-  seasonNumber: number
-) => {
-  return `/3/tv/${seriesId}/season/${seasonNumber}/external_ids`;
-};
-
-export const tvSeasonExternalIds = async (
+export const tvSeasonExternalIds = (
   seriesId: number,
   seasonNumber: number,
-  options?: RequestInit
-): Promise<tvSeasonExternalIdsResponse> => {
-  const res = await fetch(getTvSeasonExternalIdsUrl(seriesId, seasonNumber), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonExternalIdsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonExternalIdsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonExternalIds200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/external_ids`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeasonExternalIdsQueryKey = (
   seriesId?: number,
   seasonNumber?: number
 ) => {
-  return [`/3/tv/${seriesId}/season/${seasonNumber}/external_ids`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/external_ids`,
+  ] as const;
 };
 
 export const getTvSeasonExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25734,10 +22124,10 @@ export const getTvSeasonExternalIdsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -25746,7 +22136,7 @@ export const getTvSeasonExternalIdsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonExternalIds>>
   > = ({ signal }) =>
-    tvSeasonExternalIds(seriesId, seasonNumber, { signal, ...fetchOptions });
+    tvSeasonExternalIds(seriesId, seasonNumber, requestOptions, signal);
 
   return {
     queryKey,
@@ -25763,11 +22153,11 @@ export const getTvSeasonExternalIdsQueryOptions = <
 export type TvSeasonExternalIdsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonExternalIds>>
 >;
-export type TvSeasonExternalIdsQueryError = unknown;
+export type TvSeasonExternalIdsQueryError = ErrorType<unknown>;
 
 export function useTvSeasonExternalIds<
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25787,7 +22177,7 @@ export function useTvSeasonExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -25795,7 +22185,7 @@ export function useTvSeasonExternalIds<
 };
 export function useTvSeasonExternalIds<
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25815,7 +22205,7 @@ export function useTvSeasonExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25823,7 +22213,7 @@ export function useTvSeasonExternalIds<
 };
 export function useTvSeasonExternalIds<
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25835,7 +22225,7 @@ export function useTvSeasonExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25847,7 +22237,7 @@ export function useTvSeasonExternalIds<
 
 export function useTvSeasonExternalIds<
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25859,7 +22249,7 @@ export function useTvSeasonExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -25885,58 +22275,22 @@ export function useTvSeasonExternalIds<
  * Get the images that belong to a TV season.
  * @summary Images
  */
-export type tvSeasonImagesResponse200 = {
-  data: TvSeasonImages200;
-  status: 200;
-};
-
-export type tvSeasonImagesResponseSuccess = tvSeasonImagesResponse200 & {
-  headers: Headers;
-};
-export type tvSeasonImagesResponse = tvSeasonImagesResponseSuccess;
-
-export const getTvSeasonImagesUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/images?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/images`;
-};
-
-export const tvSeasonImages = async (
+export const tvSeasonImages = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonImagesParams,
-  options?: RequestInit
-): Promise<tvSeasonImagesResponse> => {
-  const res = await fetch(
-    getTvSeasonImagesUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonImages200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/images`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonImagesResponse;
 };
 
 export const getTvSeasonImagesQueryKey = (
@@ -25945,14 +22299,14 @@ export const getTvSeasonImagesQueryKey = (
   params?: TvSeasonImagesParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/images`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/images`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -25961,10 +22315,10 @@ export const getTvSeasonImagesQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -25972,8 +22326,7 @@ export const getTvSeasonImagesQueryOptions = <
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonImages>>> = ({
     signal,
-  }) =>
-    tvSeasonImages(seriesId, seasonNumber, params, { signal, ...fetchOptions });
+  }) => tvSeasonImages(seriesId, seasonNumber, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -25990,11 +22343,11 @@ export const getTvSeasonImagesQueryOptions = <
 export type TvSeasonImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonImages>>
 >;
-export type TvSeasonImagesQueryError = unknown;
+export type TvSeasonImagesQueryError = ErrorType<unknown>;
 
 export function useTvSeasonImages<
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26011,7 +22364,7 @@ export function useTvSeasonImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -26019,7 +22372,7 @@ export function useTvSeasonImages<
 };
 export function useTvSeasonImages<
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26036,7 +22389,7 @@ export function useTvSeasonImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26044,7 +22397,7 @@ export function useTvSeasonImages<
 };
 export function useTvSeasonImages<
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26053,7 +22406,7 @@ export function useTvSeasonImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26065,7 +22418,7 @@ export function useTvSeasonImages<
 
 export function useTvSeasonImages<
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26074,7 +22427,7 @@ export function useTvSeasonImages<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonImages>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26101,56 +22454,34 @@ export function useTvSeasonImages<
  * Get the translations for a TV season.
  * @summary Translations
  */
-export type tvSeasonTranslationsResponse200 = {
-  data: TvSeasonTranslations200;
-  status: 200;
-};
-
-export type tvSeasonTranslationsResponseSuccess =
-  tvSeasonTranslationsResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonTranslationsResponse = tvSeasonTranslationsResponseSuccess;
-
-export const getTvSeasonTranslationsUrl = (
-  seriesId: number,
-  seasonNumber: number
-) => {
-  return `/3/tv/${seriesId}/season/${seasonNumber}/translations`;
-};
-
-export const tvSeasonTranslations = async (
+export const tvSeasonTranslations = (
   seriesId: number,
   seasonNumber: number,
-  options?: RequestInit
-): Promise<tvSeasonTranslationsResponse> => {
-  const res = await fetch(getTvSeasonTranslationsUrl(seriesId, seasonNumber), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonTranslationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonTranslationsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonTranslations200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/translations`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvSeasonTranslationsQueryKey = (
   seriesId?: number,
   seasonNumber?: number
 ) => {
-  return [`/3/tv/${seriesId}/season/${seasonNumber}/translations`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/translations`,
+  ] as const;
 };
 
 export const getTvSeasonTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26162,10 +22493,10 @@ export const getTvSeasonTranslationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -26174,7 +22505,7 @@ export const getTvSeasonTranslationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonTranslations>>
   > = ({ signal }) =>
-    tvSeasonTranslations(seriesId, seasonNumber, { signal, ...fetchOptions });
+    tvSeasonTranslations(seriesId, seasonNumber, requestOptions, signal);
 
   return {
     queryKey,
@@ -26191,11 +22522,11 @@ export const getTvSeasonTranslationsQueryOptions = <
 export type TvSeasonTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonTranslations>>
 >;
-export type TvSeasonTranslationsQueryError = unknown;
+export type TvSeasonTranslationsQueryError = ErrorType<unknown>;
 
 export function useTvSeasonTranslations<
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26215,7 +22546,7 @@ export function useTvSeasonTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -26223,7 +22554,7 @@ export function useTvSeasonTranslations<
 };
 export function useTvSeasonTranslations<
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26243,7 +22574,7 @@ export function useTvSeasonTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26251,7 +22582,7 @@ export function useTvSeasonTranslations<
 };
 export function useTvSeasonTranslations<
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26263,7 +22594,7 @@ export function useTvSeasonTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26275,7 +22606,7 @@ export function useTvSeasonTranslations<
 
 export function useTvSeasonTranslations<
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26287,7 +22618,7 @@ export function useTvSeasonTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26313,58 +22644,22 @@ export function useTvSeasonTranslations<
  * Get the videos that belong to a TV season.
  * @summary Videos
  */
-export type tvSeasonVideosResponse200 = {
-  data: TvSeasonVideos200;
-  status: 200;
-};
-
-export type tvSeasonVideosResponseSuccess = tvSeasonVideosResponse200 & {
-  headers: Headers;
-};
-export type tvSeasonVideosResponse = tvSeasonVideosResponseSuccess;
-
-export const getTvSeasonVideosUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonVideosParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/videos?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/videos`;
-};
-
-export const tvSeasonVideos = async (
+export const tvSeasonVideos = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonVideosParams,
-  options?: RequestInit
-): Promise<tvSeasonVideosResponse> => {
-  const res = await fetch(
-    getTvSeasonVideosUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonVideos200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/videos`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonVideosResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonVideosResponse;
 };
 
 export const getTvSeasonVideosQueryKey = (
@@ -26373,14 +22668,14 @@ export const getTvSeasonVideosQueryKey = (
   params?: TvSeasonVideosParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/videos`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/videos`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26389,10 +22684,10 @@ export const getTvSeasonVideosQueryOptions = <
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -26400,8 +22695,7 @@ export const getTvSeasonVideosQueryOptions = <
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonVideos>>> = ({
     signal,
-  }) =>
-    tvSeasonVideos(seriesId, seasonNumber, params, { signal, ...fetchOptions });
+  }) => tvSeasonVideos(seriesId, seasonNumber, params, requestOptions, signal);
 
   return {
     queryKey,
@@ -26418,11 +22712,11 @@ export const getTvSeasonVideosQueryOptions = <
 export type TvSeasonVideosQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonVideos>>
 >;
-export type TvSeasonVideosQueryError = unknown;
+export type TvSeasonVideosQueryError = ErrorType<unknown>;
 
 export function useTvSeasonVideos<
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26439,7 +22733,7 @@ export function useTvSeasonVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -26447,7 +22741,7 @@ export function useTvSeasonVideos<
 };
 export function useTvSeasonVideos<
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26464,7 +22758,7 @@ export function useTvSeasonVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26472,7 +22766,7 @@ export function useTvSeasonVideos<
 };
 export function useTvSeasonVideos<
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26481,7 +22775,7 @@ export function useTvSeasonVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26493,7 +22787,7 @@ export function useTvSeasonVideos<
 
 export function useTvSeasonVideos<
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26502,7 +22796,7 @@ export function useTvSeasonVideos<
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof tvSeasonVideos>>, TError, TData>
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26529,62 +22823,22 @@ export function useTvSeasonVideos<
  * Get the list of streaming providers we have for a TV season.
  * @summary Watch Providers
  */
-export type tvSeasonWatchProvidersResponse200 = {
-  data: TvSeasonWatchProviders200;
-  status: 200;
-};
-
-export type tvSeasonWatchProvidersResponseSuccess =
-  tvSeasonWatchProvidersResponse200 & {
-    headers: Headers;
-  };
-export type tvSeasonWatchProvidersResponse =
-  tvSeasonWatchProvidersResponseSuccess;
-
-export const getTvSeasonWatchProvidersUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  params?: TvSeasonWatchProvidersParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/watch/providers?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/watch/providers`;
-};
-
-export const tvSeasonWatchProviders = async (
+export const tvSeasonWatchProviders = (
   seriesId: number,
   seasonNumber: number,
   params?: TvSeasonWatchProvidersParams,
-  options?: RequestInit
-): Promise<tvSeasonWatchProvidersResponse> => {
-  const res = await fetch(
-    getTvSeasonWatchProvidersUrl(seriesId, seasonNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvSeasonWatchProviders200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/watch/providers`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvSeasonWatchProvidersResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvSeasonWatchProvidersResponse;
 };
 
 export const getTvSeasonWatchProvidersQueryKey = (
@@ -26593,14 +22847,14 @@ export const getTvSeasonWatchProvidersQueryKey = (
   params?: TvSeasonWatchProvidersParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/watch/providers`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/watch/providers`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvSeasonWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26613,10 +22867,10 @@ export const getTvSeasonWatchProvidersQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -26625,10 +22879,13 @@ export const getTvSeasonWatchProvidersQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvSeasonWatchProviders>>
   > = ({ signal }) =>
-    tvSeasonWatchProviders(seriesId, seasonNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvSeasonWatchProviders(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -26645,11 +22902,11 @@ export const getTvSeasonWatchProvidersQueryOptions = <
 export type TvSeasonWatchProvidersQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvSeasonWatchProviders>>
 >;
-export type TvSeasonWatchProvidersQueryError = unknown;
+export type TvSeasonWatchProvidersQueryError = ErrorType<unknown>;
 
 export function useTvSeasonWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26670,7 +22927,7 @@ export function useTvSeasonWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -26678,7 +22935,7 @@ export function useTvSeasonWatchProviders<
 };
 export function useTvSeasonWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26699,7 +22956,7 @@ export function useTvSeasonWatchProviders<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26707,7 +22964,7 @@ export function useTvSeasonWatchProviders<
 };
 export function useTvSeasonWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26720,7 +22977,7 @@ export function useTvSeasonWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26732,7 +22989,7 @@ export function useTvSeasonWatchProviders<
 
 export function useTvSeasonWatchProviders<
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26745,7 +23002,7 @@ export function useTvSeasonWatchProviders<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26772,60 +23029,23 @@ export function useTvSeasonWatchProviders<
  * Query the details of a TV episode.
  * @summary Details
  */
-export type tvEpisodeDetailsResponse200 = {
-  data: TvEpisodeDetails200;
-  status: 200;
-};
-
-export type tvEpisodeDetailsResponseSuccess = tvEpisodeDetailsResponse200 & {
-  headers: Headers;
-};
-export type tvEpisodeDetailsResponse = tvEpisodeDetailsResponseSuccess;
-
-export const getTvEpisodeDetailsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeDetailsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`;
-};
-
-export const tvEpisodeDetails = async (
+export const tvEpisodeDetails = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeDetailsParams,
-  options?: RequestInit
-): Promise<tvEpisodeDetailsResponse> => {
-  const res = await fetch(
-    getTvEpisodeDetailsUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeDetails200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeDetailsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeDetailsResponse;
 };
 
 export const getTvEpisodeDetailsQueryKey = (
@@ -26835,14 +23055,14 @@ export const getTvEpisodeDetailsQueryKey = (
   params?: TvEpisodeDetailsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvEpisodeDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26856,10 +23076,10 @@ export const getTvEpisodeDetailsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -26868,10 +23088,14 @@ export const getTvEpisodeDetailsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeDetails>>
   > = ({ signal }) =>
-    tvEpisodeDetails(seriesId, seasonNumber, episodeNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeDetails(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -26888,11 +23112,11 @@ export const getTvEpisodeDetailsQueryOptions = <
 export type TvEpisodeDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeDetails>>
 >;
-export type TvEpisodeDetailsQueryError = unknown;
+export type TvEpisodeDetailsQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26914,7 +23138,7 @@ export function useTvEpisodeDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -26922,7 +23146,7 @@ export function useTvEpisodeDetails<
 };
 export function useTvEpisodeDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26944,7 +23168,7 @@ export function useTvEpisodeDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26952,7 +23176,7 @@ export function useTvEpisodeDetails<
 };
 export function useTvEpisodeDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26966,7 +23190,7 @@ export function useTvEpisodeDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -26978,7 +23202,7 @@ export function useTvEpisodeDetails<
 
 export function useTvEpisodeDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -26992,7 +23216,7 @@ export function useTvEpisodeDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27020,64 +23244,23 @@ export function useTvEpisodeDetails<
  * Get the rating, watchlist and favourite status.
  * @summary Account States
  */
-export type tvEpisodeAccountStatesResponse200 = {
-  data: TvEpisodeAccountStates200;
-  status: 200;
-};
-
-export type tvEpisodeAccountStatesResponseSuccess =
-  tvEpisodeAccountStatesResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeAccountStatesResponse =
-  tvEpisodeAccountStatesResponseSuccess;
-
-export const getTvEpisodeAccountStatesUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeAccountStatesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states`;
-};
-
-export const tvEpisodeAccountStates = async (
+export const tvEpisodeAccountStates = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeAccountStatesParams,
-  options?: RequestInit
-): Promise<tvEpisodeAccountStatesResponse> => {
-  const res = await fetch(
-    getTvEpisodeAccountStatesUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeAccountStates200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeAccountStatesResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeAccountStatesResponse;
 };
 
 export const getTvEpisodeAccountStatesQueryKey = (
@@ -27087,14 +23270,14 @@ export const getTvEpisodeAccountStatesQueryKey = (
   params?: TvEpisodeAccountStatesParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvEpisodeAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27108,10 +23291,10 @@ export const getTvEpisodeAccountStatesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -27125,10 +23308,14 @@ export const getTvEpisodeAccountStatesQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeAccountStates>>
   > = ({ signal }) =>
-    tvEpisodeAccountStates(seriesId, seasonNumber, episodeNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeAccountStates(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -27145,11 +23332,11 @@ export const getTvEpisodeAccountStatesQueryOptions = <
 export type TvEpisodeAccountStatesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeAccountStates>>
 >;
-export type TvEpisodeAccountStatesQueryError = unknown;
+export type TvEpisodeAccountStatesQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeAccountStates<
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27171,7 +23358,7 @@ export function useTvEpisodeAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -27179,7 +23366,7 @@ export function useTvEpisodeAccountStates<
 };
 export function useTvEpisodeAccountStates<
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27201,7 +23388,7 @@ export function useTvEpisodeAccountStates<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27209,7 +23396,7 @@ export function useTvEpisodeAccountStates<
 };
 export function useTvEpisodeAccountStates<
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27223,7 +23410,7 @@ export function useTvEpisodeAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27235,7 +23422,7 @@ export function useTvEpisodeAccountStates<
 
 export function useTvEpisodeAccountStates<
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27249,7 +23436,7 @@ export function useTvEpisodeAccountStates<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27277,49 +23464,30 @@ export function useTvEpisodeAccountStates<
  * Get the recent changes for a TV episode.
  * @summary Changes
  */
-export type tvEpisodeChangesByIdResponse200 = {
-  data: TvEpisodeChangesById200;
-  status: 200;
-};
-
-export type tvEpisodeChangesByIdResponseSuccess =
-  tvEpisodeChangesByIdResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeChangesByIdResponse = tvEpisodeChangesByIdResponseSuccess;
-
-export const getTvEpisodeChangesByIdUrl = (episodeId: number) => {
-  return `/3/tv/episode/${episodeId}/changes`;
-};
-
-export const tvEpisodeChangesById = async (
+export const tvEpisodeChangesById = (
   episodeId: number,
-  options?: RequestInit
-): Promise<tvEpisodeChangesByIdResponse> => {
-  const res = await fetch(getTvEpisodeChangesByIdUrl(episodeId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeChangesByIdResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeChangesByIdResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeChangesById200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/episode/${episodeId}/changes`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvEpisodeChangesByIdQueryKey = (episodeId?: number) => {
-  return [`/3/tv/episode/${episodeId}/changes`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/episode/${episodeId}/changes`,
+  ] as const;
 };
 
 export const getTvEpisodeChangesByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   episodeId: number,
   options?: {
@@ -27330,18 +23498,17 @@ export const getTvEpisodeChangesByIdQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getTvEpisodeChangesByIdQueryKey(episodeId);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeChangesById>>
-  > = ({ signal }) =>
-    tvEpisodeChangesById(episodeId, { signal, ...fetchOptions });
+  > = ({ signal }) => tvEpisodeChangesById(episodeId, requestOptions, signal);
 
   return {
     queryKey,
@@ -27358,11 +23525,11 @@ export const getTvEpisodeChangesByIdQueryOptions = <
 export type TvEpisodeChangesByIdQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeChangesById>>
 >;
-export type TvEpisodeChangesByIdQueryError = unknown;
+export type TvEpisodeChangesByIdQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeChangesById<
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   episodeId: number,
   options: {
@@ -27381,7 +23548,7 @@ export function useTvEpisodeChangesById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -27389,7 +23556,7 @@ export function useTvEpisodeChangesById<
 };
 export function useTvEpisodeChangesById<
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   episodeId: number,
   options?: {
@@ -27408,7 +23575,7 @@ export function useTvEpisodeChangesById<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27416,7 +23583,7 @@ export function useTvEpisodeChangesById<
 };
 export function useTvEpisodeChangesById<
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   episodeId: number,
   options?: {
@@ -27427,7 +23594,7 @@ export function useTvEpisodeChangesById<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27439,7 +23606,7 @@ export function useTvEpisodeChangesById<
 
 export function useTvEpisodeChangesById<
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   episodeId: number,
   options?: {
@@ -27450,7 +23617,7 @@ export function useTvEpisodeChangesById<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27471,60 +23638,23 @@ export function useTvEpisodeChangesById<
 /**
  * @summary Credits
  */
-export type tvEpisodeCreditsResponse200 = {
-  data: TvEpisodeCredits200;
-  status: 200;
-};
-
-export type tvEpisodeCreditsResponseSuccess = tvEpisodeCreditsResponse200 & {
-  headers: Headers;
-};
-export type tvEpisodeCreditsResponse = tvEpisodeCreditsResponseSuccess;
-
-export const getTvEpisodeCreditsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeCreditsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits`;
-};
-
-export const tvEpisodeCredits = async (
+export const tvEpisodeCredits = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeCreditsParams,
-  options?: RequestInit
-): Promise<tvEpisodeCreditsResponse> => {
-  const res = await fetch(
-    getTvEpisodeCreditsUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeCredits200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeCreditsResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeCreditsResponse;
 };
 
 export const getTvEpisodeCreditsQueryKey = (
@@ -27534,14 +23664,14 @@ export const getTvEpisodeCreditsQueryKey = (
   params?: TvEpisodeCreditsParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvEpisodeCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27555,10 +23685,10 @@ export const getTvEpisodeCreditsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -27567,10 +23697,14 @@ export const getTvEpisodeCreditsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeCredits>>
   > = ({ signal }) =>
-    tvEpisodeCredits(seriesId, seasonNumber, episodeNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeCredits(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -27587,11 +23721,11 @@ export const getTvEpisodeCreditsQueryOptions = <
 export type TvEpisodeCreditsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeCredits>>
 >;
-export type TvEpisodeCreditsQueryError = unknown;
+export type TvEpisodeCreditsQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeCredits<
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27613,7 +23747,7 @@ export function useTvEpisodeCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -27621,7 +23755,7 @@ export function useTvEpisodeCredits<
 };
 export function useTvEpisodeCredits<
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27643,7 +23777,7 @@ export function useTvEpisodeCredits<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27651,7 +23785,7 @@ export function useTvEpisodeCredits<
 };
 export function useTvEpisodeCredits<
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27665,7 +23799,7 @@ export function useTvEpisodeCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27677,7 +23811,7 @@ export function useTvEpisodeCredits<
 
 export function useTvEpisodeCredits<
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27691,7 +23825,7 @@ export function useTvEpisodeCredits<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27719,49 +23853,21 @@ export function useTvEpisodeCredits<
  * Get a list of external IDs that have been added to a TV episode.
  * @summary External IDs
  */
-export type tvEpisodeExternalIdsResponse200 = {
-  data: TvEpisodeExternalIds200;
-  status: 200;
-};
-
-export type tvEpisodeExternalIdsResponseSuccess =
-  tvEpisodeExternalIdsResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeExternalIdsResponse = tvEpisodeExternalIdsResponseSuccess;
-
-export const getTvEpisodeExternalIdsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: string
-) => {
-  return `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`;
-};
-
-export const tvEpisodeExternalIds = async (
+export const tvEpisodeExternalIds = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: string,
-  options?: RequestInit
-): Promise<tvEpisodeExternalIdsResponse> => {
-  const res = await fetch(
-    getTvEpisodeExternalIdsUrl(seriesId, seasonNumber, episodeNumber),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeExternalIds200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`,
       method: 'GET',
-    }
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeExternalIdsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeExternalIdsResponse;
 };
 
 export const getTvEpisodeExternalIdsQueryKey = (
@@ -27770,13 +23876,13 @@ export const getTvEpisodeExternalIdsQueryKey = (
   episodeNumber?: string
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`,
   ] as const;
 };
 
 export const getTvEpisodeExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27789,10 +23895,10 @@ export const getTvEpisodeExternalIdsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -27801,10 +23907,13 @@ export const getTvEpisodeExternalIdsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeExternalIds>>
   > = ({ signal }) =>
-    tvEpisodeExternalIds(seriesId, seasonNumber, episodeNumber, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeExternalIds(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -27821,11 +23930,11 @@ export const getTvEpisodeExternalIdsQueryOptions = <
 export type TvEpisodeExternalIdsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeExternalIds>>
 >;
-export type TvEpisodeExternalIdsQueryError = unknown;
+export type TvEpisodeExternalIdsQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeExternalIds<
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27846,7 +23955,7 @@ export function useTvEpisodeExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -27854,7 +23963,7 @@ export function useTvEpisodeExternalIds<
 };
 export function useTvEpisodeExternalIds<
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27875,7 +23984,7 @@ export function useTvEpisodeExternalIds<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27883,7 +23992,7 @@ export function useTvEpisodeExternalIds<
 };
 export function useTvEpisodeExternalIds<
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27896,7 +24005,7 @@ export function useTvEpisodeExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27908,7 +24017,7 @@ export function useTvEpisodeExternalIds<
 
 export function useTvEpisodeExternalIds<
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -27921,7 +24030,7 @@ export function useTvEpisodeExternalIds<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -27948,60 +24057,23 @@ export function useTvEpisodeExternalIds<
  * Get the images that belong to a TV episode.
  * @summary Images
  */
-export type tvEpisodeImagesResponse200 = {
-  data: TvEpisodeImages200;
-  status: 200;
-};
-
-export type tvEpisodeImagesResponseSuccess = tvEpisodeImagesResponse200 & {
-  headers: Headers;
-};
-export type tvEpisodeImagesResponse = tvEpisodeImagesResponseSuccess;
-
-export const getTvEpisodeImagesUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeImagesParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images`;
-};
-
-export const tvEpisodeImages = async (
+export const tvEpisodeImages = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeImagesParams,
-  options?: RequestInit
-): Promise<tvEpisodeImagesResponse> => {
-  const res = await fetch(
-    getTvEpisodeImagesUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeImages200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeImagesResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeImagesResponse;
 };
 
 export const getTvEpisodeImagesQueryKey = (
@@ -28011,14 +24083,14 @@ export const getTvEpisodeImagesQueryKey = (
   params?: TvEpisodeImagesParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvEpisodeImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28032,10 +24104,10 @@ export const getTvEpisodeImagesQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -28044,10 +24116,14 @@ export const getTvEpisodeImagesQueryOptions = <
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvEpisodeImages>>> = ({
     signal,
   }) =>
-    tvEpisodeImages(seriesId, seasonNumber, episodeNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeImages(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -28064,11 +24140,11 @@ export const getTvEpisodeImagesQueryOptions = <
 export type TvEpisodeImagesQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeImages>>
 >;
-export type TvEpisodeImagesQueryError = unknown;
+export type TvEpisodeImagesQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeImages<
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28090,7 +24166,7 @@ export function useTvEpisodeImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -28098,7 +24174,7 @@ export function useTvEpisodeImages<
 };
 export function useTvEpisodeImages<
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28120,7 +24196,7 @@ export function useTvEpisodeImages<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28128,7 +24204,7 @@ export function useTvEpisodeImages<
 };
 export function useTvEpisodeImages<
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28142,7 +24218,7 @@ export function useTvEpisodeImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28154,7 +24230,7 @@ export function useTvEpisodeImages<
 
 export function useTvEpisodeImages<
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28168,7 +24244,7 @@ export function useTvEpisodeImages<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28196,50 +24272,21 @@ export function useTvEpisodeImages<
  * Get the translations that have been added to a TV episode.
  * @summary Translations
  */
-export type tvEpisodeTranslationsResponse200 = {
-  data: TvEpisodeTranslations200;
-  status: 200;
-};
-
-export type tvEpisodeTranslationsResponseSuccess =
-  tvEpisodeTranslationsResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeTranslationsResponse =
-  tvEpisodeTranslationsResponseSuccess;
-
-export const getTvEpisodeTranslationsUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number
-) => {
-  return `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`;
-};
-
-export const tvEpisodeTranslations = async (
+export const tvEpisodeTranslations = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
-  options?: RequestInit
-): Promise<tvEpisodeTranslationsResponse> => {
-  const res = await fetch(
-    getTvEpisodeTranslationsUrl(seriesId, seasonNumber, episodeNumber),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeTranslations200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`,
       method: 'GET',
-    }
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeTranslationsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeTranslationsResponse;
 };
 
 export const getTvEpisodeTranslationsQueryKey = (
@@ -28248,13 +24295,13 @@ export const getTvEpisodeTranslationsQueryKey = (
   episodeNumber?: number
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`,
   ] as const;
 };
 
 export const getTvEpisodeTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28267,10 +24314,10 @@ export const getTvEpisodeTranslationsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -28279,10 +24326,13 @@ export const getTvEpisodeTranslationsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeTranslations>>
   > = ({ signal }) =>
-    tvEpisodeTranslations(seriesId, seasonNumber, episodeNumber, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeTranslations(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -28299,11 +24349,11 @@ export const getTvEpisodeTranslationsQueryOptions = <
 export type TvEpisodeTranslationsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeTranslations>>
 >;
-export type TvEpisodeTranslationsQueryError = unknown;
+export type TvEpisodeTranslationsQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeTranslations<
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28324,7 +24374,7 @@ export function useTvEpisodeTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -28332,7 +24382,7 @@ export function useTvEpisodeTranslations<
 };
 export function useTvEpisodeTranslations<
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28353,7 +24403,7 @@ export function useTvEpisodeTranslations<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28361,7 +24411,7 @@ export function useTvEpisodeTranslations<
 };
 export function useTvEpisodeTranslations<
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28374,7 +24424,7 @@ export function useTvEpisodeTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28386,7 +24436,7 @@ export function useTvEpisodeTranslations<
 
 export function useTvEpisodeTranslations<
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28399,7 +24449,7 @@ export function useTvEpisodeTranslations<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28426,60 +24476,23 @@ export function useTvEpisodeTranslations<
  * Get the videos that belong to a TV episode.
  * @summary Videos
  */
-export type tvEpisodeVideosResponse200 = {
-  data: TvEpisodeVideos200;
-  status: 200;
-};
-
-export type tvEpisodeVideosResponseSuccess = tvEpisodeVideosResponse200 & {
-  headers: Headers;
-};
-export type tvEpisodeVideosResponse = tvEpisodeVideosResponseSuccess;
-
-export const getTvEpisodeVideosUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeVideosParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos`;
-};
-
-export const tvEpisodeVideos = async (
+export const tvEpisodeVideos = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeVideosParams,
-  options?: RequestInit
-): Promise<tvEpisodeVideosResponse> => {
-  const res = await fetch(
-    getTvEpisodeVideosUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeVideos200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos`,
       method: 'GET',
-    }
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeVideosResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeVideosResponse;
 };
 
 export const getTvEpisodeVideosQueryKey = (
@@ -28489,14 +24502,14 @@ export const getTvEpisodeVideosQueryKey = (
   params?: TvEpisodeVideosParams
 ) => {
   return [
-    `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos`,
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos`,
     ...(params ? [params] : []),
   ] as const;
 };
 
 export const getTvEpisodeVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28510,10 +24523,10 @@ export const getTvEpisodeVideosQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -28522,10 +24535,14 @@ export const getTvEpisodeVideosQueryOptions = <
   const queryFn: QueryFunction<Awaited<ReturnType<typeof tvEpisodeVideos>>> = ({
     signal,
   }) =>
-    tvEpisodeVideos(seriesId, seasonNumber, episodeNumber, params, {
-      signal,
-      ...fetchOptions,
-    });
+    tvEpisodeVideos(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
 
   return {
     queryKey,
@@ -28542,11 +24559,11 @@ export const getTvEpisodeVideosQueryOptions = <
 export type TvEpisodeVideosQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeVideos>>
 >;
-export type TvEpisodeVideosQueryError = unknown;
+export type TvEpisodeVideosQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeVideos<
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28568,7 +24585,7 @@ export function useTvEpisodeVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -28576,7 +24593,7 @@ export function useTvEpisodeVideos<
 };
 export function useTvEpisodeVideos<
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28598,7 +24615,7 @@ export function useTvEpisodeVideos<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28606,7 +24623,7 @@ export function useTvEpisodeVideos<
 };
 export function useTvEpisodeVideos<
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28620,7 +24637,7 @@ export function useTvEpisodeVideos<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28632,7 +24649,7 @@ export function useTvEpisodeVideos<
 
 export function useTvEpisodeVideos<
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   seriesId: number,
   seasonNumber: number,
@@ -28646,7 +24663,7 @@ export function useTvEpisodeVideos<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -28674,68 +24691,30 @@ export function useTvEpisodeVideos<
  * Rate a TV episode and save it to your rated list.
  * @summary Add Rating
  */
-export type tvEpisodeAddRatingResponse200 = {
-  data: TvEpisodeAddRating200;
-  status: 200;
-};
-
-export type tvEpisodeAddRatingResponseSuccess =
-  tvEpisodeAddRatingResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeAddRatingResponse = tvEpisodeAddRatingResponseSuccess;
-
-export const getTvEpisodeAddRatingUrl = (
+export const tvEpisodeAddRating = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
-  params?: TvEpisodeAddRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating`;
-};
-
-export const tvEpisodeAddRating = async (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  tvEpisodeAddRatingBody: TvEpisodeAddRatingBody,
+  tvEpisodeAddRatingBody: BodyType<TvEpisodeAddRatingBody>,
   params?: TvEpisodeAddRatingParams,
-  options?: RequestInit
-): Promise<tvEpisodeAddRatingResponse> => {
-  const res = await fetch(
-    getTvEpisodeAddRatingUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeAddRating200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...options?.headers },
-      body: JSON.stringify(tvEpisodeAddRatingBody),
-    }
+      headers: { 'Content-Type': 'application/json' },
+      data: tvEpisodeAddRatingBody,
+      params,
+      signal,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeAddRatingResponse['data'] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeAddRatingResponse;
 };
 
 export const getTvEpisodeAddRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -28745,12 +24724,12 @@ export const getTvEpisodeAddRatingMutationOptions = <
       seriesId: number;
       seasonNumber: number;
       episodeNumber: number;
-      data: TvEpisodeAddRatingBody;
+      data: BodyType<TvEpisodeAddRatingBody>;
       params?: TvEpisodeAddRatingParams;
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof tvEpisodeAddRating>>,
   TError,
@@ -28758,19 +24737,19 @@ export const getTvEpisodeAddRatingMutationOptions = <
     seriesId: number;
     seasonNumber: number;
     episodeNumber: number;
-    data: TvEpisodeAddRatingBody;
+    data: BodyType<TvEpisodeAddRatingBody>;
     params?: TvEpisodeAddRatingParams;
   },
   TContext
 > => {
   const mutationKey = ['tvEpisodeAddRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof tvEpisodeAddRating>>,
@@ -28778,7 +24757,7 @@ export const getTvEpisodeAddRatingMutationOptions = <
       seriesId: number;
       seasonNumber: number;
       episodeNumber: number;
-      data: TvEpisodeAddRatingBody;
+      data: BodyType<TvEpisodeAddRatingBody>;
       params?: TvEpisodeAddRatingParams;
     }
   > = (props) => {
@@ -28790,7 +24769,7 @@ export const getTvEpisodeAddRatingMutationOptions = <
       episodeNumber,
       data,
       params,
-      fetchOptions
+      requestOptions
     );
   };
 
@@ -28800,13 +24779,16 @@ export const getTvEpisodeAddRatingMutationOptions = <
 export type TvEpisodeAddRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeAddRating>>
 >;
-export type TvEpisodeAddRatingMutationBody = TvEpisodeAddRatingBody;
-export type TvEpisodeAddRatingMutationError = unknown;
+export type TvEpisodeAddRatingMutationBody = BodyType<TvEpisodeAddRatingBody>;
+export type TvEpisodeAddRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Add Rating
  */
-export const useTvEpisodeAddRating = <TError = unknown, TContext = unknown>(
+export const useTvEpisodeAddRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof tvEpisodeAddRating>>,
@@ -28815,12 +24797,12 @@ export const useTvEpisodeAddRating = <TError = unknown, TContext = unknown>(
         seriesId: number;
         seasonNumber: number;
         episodeNumber: number;
-        data: TvEpisodeAddRatingBody;
+        data: BodyType<TvEpisodeAddRatingBody>;
         params?: TvEpisodeAddRatingParams;
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -28830,7 +24812,7 @@ export const useTvEpisodeAddRating = <TError = unknown, TContext = unknown>(
     seriesId: number;
     seasonNumber: number;
     episodeNumber: number;
-    data: TvEpisodeAddRatingBody;
+    data: BodyType<TvEpisodeAddRatingBody>;
     params?: TvEpisodeAddRatingParams;
   },
   TContext
@@ -28843,68 +24825,25 @@ export const useTvEpisodeAddRating = <TError = unknown, TContext = unknown>(
  * Delete your rating on a TV episode.
  * @summary Delete Rating
  */
-export type tvEpisodeDeleteRatingResponse200 = {
-  data: TvEpisodeDeleteRating200;
-  status: 200;
-};
-
-export type tvEpisodeDeleteRatingResponseSuccess =
-  tvEpisodeDeleteRatingResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeDeleteRatingResponse =
-  tvEpisodeDeleteRatingResponseSuccess;
-
-export const getTvEpisodeDeleteRatingUrl = (
-  seriesId: number,
-  seasonNumber: number,
-  episodeNumber: number,
-  params?: TvEpisodeDeleteRatingParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating?${stringifiedParams}`
-    : `/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating`;
-};
-
-export const tvEpisodeDeleteRating = async (
+export const tvEpisodeDeleteRating = (
   seriesId: number,
   seasonNumber: number,
   episodeNumber: number,
   params?: TvEpisodeDeleteRatingParams,
-  options?: RequestInit
-): Promise<tvEpisodeDeleteRatingResponse> => {
-  const res = await fetch(
-    getTvEpisodeDeleteRatingUrl(seriesId, seasonNumber, episodeNumber, params),
+  options?: SecondParameter<typeof customInstance>
+) => {
+  return customInstance<TvEpisodeDeleteRating200>(
     {
-      ...options,
+      url: `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/rating`,
       method: 'DELETE',
-    }
+      params,
+    },
+    options
   );
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeDeleteRatingResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeDeleteRatingResponse;
 };
 
 export const getTvEpisodeDeleteRatingMutationOptions = <
-  TError = unknown,
+  TError = ErrorType<unknown>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -28918,7 +24857,7 @@ export const getTvEpisodeDeleteRatingMutationOptions = <
     },
     TContext
   >;
-  fetch?: RequestInit;
+  request?: SecondParameter<typeof customInstance>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof tvEpisodeDeleteRating>>,
   TError,
@@ -28931,13 +24870,13 @@ export const getTvEpisodeDeleteRatingMutationOptions = <
   TContext
 > => {
   const mutationKey = ['tvEpisodeDeleteRating'];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
+  const { mutation: mutationOptions, request: requestOptions } = options
     ? options.mutation &&
       'mutationKey' in options.mutation &&
       options.mutation.mutationKey
       ? options
       : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
+    : { mutation: { mutationKey }, request: undefined };
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof tvEpisodeDeleteRating>>,
@@ -28955,7 +24894,7 @@ export const getTvEpisodeDeleteRatingMutationOptions = <
       seasonNumber,
       episodeNumber,
       params,
-      fetchOptions
+      requestOptions
     );
   };
 
@@ -28966,12 +24905,15 @@ export type TvEpisodeDeleteRatingMutationResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeDeleteRating>>
 >;
 
-export type TvEpisodeDeleteRatingMutationError = unknown;
+export type TvEpisodeDeleteRatingMutationError = ErrorType<unknown>;
 
 /**
  * @summary Delete Rating
  */
-export const useTvEpisodeDeleteRating = <TError = unknown, TContext = unknown>(
+export const useTvEpisodeDeleteRating = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof tvEpisodeDeleteRating>>,
@@ -28984,7 +24926,7 @@ export const useTvEpisodeDeleteRating = <TError = unknown, TContext = unknown>(
       },
       TContext
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseMutationResult<
@@ -29006,50 +24948,30 @@ export const useTvEpisodeDeleteRating = <TError = unknown, TContext = unknown>(
  * Get the details of a TV episode group.
  * @summary Details
  */
-export type tvEpisodeGroupDetailsResponse200 = {
-  data: TvEpisodeGroupDetails200;
-  status: 200;
-};
-
-export type tvEpisodeGroupDetailsResponseSuccess =
-  tvEpisodeGroupDetailsResponse200 & {
-    headers: Headers;
-  };
-export type tvEpisodeGroupDetailsResponse =
-  tvEpisodeGroupDetailsResponseSuccess;
-
-export const getTvEpisodeGroupDetailsUrl = (tvEpisodeGroupId: string) => {
-  return `/3/tv/episode_group/${tvEpisodeGroupId}`;
-};
-
-export const tvEpisodeGroupDetails = async (
+export const tvEpisodeGroupDetails = (
   tvEpisodeGroupId: string,
-  options?: RequestInit
-): Promise<tvEpisodeGroupDetailsResponse> => {
-  const res = await fetch(getTvEpisodeGroupDetailsUrl(tvEpisodeGroupId), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: tvEpisodeGroupDetailsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as tvEpisodeGroupDetailsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<TvEpisodeGroupDetails200>(
+    {
+      url: `https://api.themoviedb.org/3/tv/episode_group/${tvEpisodeGroupId}`,
+      method: 'GET',
+      signal,
+    },
+    options
+  );
 };
 
 export const getTvEpisodeGroupDetailsQueryKey = (tvEpisodeGroupId?: string) => {
-  return [`/3/tv/episode_group/${tvEpisodeGroupId}`] as const;
+  return [
+    `https://api.themoviedb.org/3/tv/episode_group/${tvEpisodeGroupId}`,
+  ] as const;
 };
 
 export const getTvEpisodeGroupDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   tvEpisodeGroupId: string,
   options?: {
@@ -29060,10 +24982,10 @@ export const getTvEpisodeGroupDetailsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
@@ -29072,7 +24994,7 @@ export const getTvEpisodeGroupDetailsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
   > = ({ signal }) =>
-    tvEpisodeGroupDetails(tvEpisodeGroupId, { signal, ...fetchOptions });
+    tvEpisodeGroupDetails(tvEpisodeGroupId, requestOptions, signal);
 
   return {
     queryKey,
@@ -29089,11 +25011,11 @@ export const getTvEpisodeGroupDetailsQueryOptions = <
 export type TvEpisodeGroupDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
 >;
-export type TvEpisodeGroupDetailsQueryError = unknown;
+export type TvEpisodeGroupDetailsQueryError = ErrorType<unknown>;
 
 export function useTvEpisodeGroupDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   tvEpisodeGroupId: string,
   options: {
@@ -29112,7 +25034,7 @@ export function useTvEpisodeGroupDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -29120,7 +25042,7 @@ export function useTvEpisodeGroupDetails<
 };
 export function useTvEpisodeGroupDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   tvEpisodeGroupId: string,
   options?: {
@@ -29139,7 +25061,7 @@ export function useTvEpisodeGroupDetails<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29147,7 +25069,7 @@ export function useTvEpisodeGroupDetails<
 };
 export function useTvEpisodeGroupDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   tvEpisodeGroupId: string,
   options?: {
@@ -29158,7 +25080,7 @@ export function useTvEpisodeGroupDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29170,7 +25092,7 @@ export function useTvEpisodeGroupDetails<
 
 export function useTvEpisodeGroupDetails<
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   tvEpisodeGroupId: string,
   options?: {
@@ -29181,7 +25103,7 @@ export function useTvEpisodeGroupDetails<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29206,66 +25128,34 @@ export function useTvEpisodeGroupDetails<
  * Get the list of the countries we have watch provider (OTT/streaming) data for.
  * @summary Available Regions
  */
-export type watchProvidersAvailableRegionsResponse200 = {
-  data: WatchProvidersAvailableRegions200;
-  status: 200;
-};
-
-export type watchProvidersAvailableRegionsResponseSuccess =
-  watchProvidersAvailableRegionsResponse200 & {
-    headers: Headers;
-  };
-export type watchProvidersAvailableRegionsResponse =
-  watchProvidersAvailableRegionsResponseSuccess;
-
-export const getWatchProvidersAvailableRegionsUrl = (
-  params?: WatchProvidersAvailableRegionsParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/watch/providers/regions?${stringifiedParams}`
-    : `/3/watch/providers/regions`;
-};
-
-export const watchProvidersAvailableRegions = async (
+export const watchProvidersAvailableRegions = (
   params?: WatchProvidersAvailableRegionsParams,
-  options?: RequestInit
-): Promise<watchProvidersAvailableRegionsResponse> => {
-  const res = await fetch(getWatchProvidersAvailableRegionsUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: watchProvidersAvailableRegionsResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as watchProvidersAvailableRegionsResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<WatchProvidersAvailableRegions200>(
+    {
+      url: `https://api.themoviedb.org/3/watch/providers/regions`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getWatchProvidersAvailableRegionsQueryKey = (
   params?: WatchProvidersAvailableRegionsParams
 ) => {
-  return [`/3/watch/providers/regions`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/watch/providers/regions`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getWatchProvidersAvailableRegionsQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersAvailableRegionsParams,
   options?: {
@@ -29276,10 +25166,10 @@ export const getWatchProvidersAvailableRegionsQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getWatchProvidersAvailableRegionsQueryKey(params);
@@ -29287,7 +25177,7 @@ export const getWatchProvidersAvailableRegionsQueryOptions = <
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
   > = ({ signal }) =>
-    watchProvidersAvailableRegions(params, { signal, ...fetchOptions });
+    watchProvidersAvailableRegions(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
@@ -29299,11 +25189,11 @@ export const getWatchProvidersAvailableRegionsQueryOptions = <
 export type WatchProvidersAvailableRegionsQueryResult = NonNullable<
   Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
 >;
-export type WatchProvidersAvailableRegionsQueryError = unknown;
+export type WatchProvidersAvailableRegionsQueryError = ErrorType<unknown>;
 
 export function useWatchProvidersAvailableRegions<
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | WatchProvidersAvailableRegionsParams,
   options: {
@@ -29322,7 +25212,7 @@ export function useWatchProvidersAvailableRegions<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -29330,7 +25220,7 @@ export function useWatchProvidersAvailableRegions<
 };
 export function useWatchProvidersAvailableRegions<
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersAvailableRegionsParams,
   options?: {
@@ -29349,7 +25239,7 @@ export function useWatchProvidersAvailableRegions<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29357,7 +25247,7 @@ export function useWatchProvidersAvailableRegions<
 };
 export function useWatchProvidersAvailableRegions<
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersAvailableRegionsParams,
   options?: {
@@ -29368,7 +25258,7 @@ export function useWatchProvidersAvailableRegions<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29380,7 +25270,7 @@ export function useWatchProvidersAvailableRegions<
 
 export function useWatchProvidersAvailableRegions<
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersAvailableRegionsParams,
   options?: {
@@ -29391,7 +25281,7 @@ export function useWatchProvidersAvailableRegions<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29416,66 +25306,34 @@ export function useWatchProvidersAvailableRegions<
  * Get the list of streaming providers we have for movies.
  * @summary Movie Providers
  */
-export type watchProvidersMovieListResponse200 = {
-  data: WatchProvidersMovieList200;
-  status: 200;
-};
-
-export type watchProvidersMovieListResponseSuccess =
-  watchProvidersMovieListResponse200 & {
-    headers: Headers;
-  };
-export type watchProvidersMovieListResponse =
-  watchProvidersMovieListResponseSuccess;
-
-export const getWatchProvidersMovieListUrl = (
-  params?: WatchProvidersMovieListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/watch/providers/movie?${stringifiedParams}`
-    : `/3/watch/providers/movie`;
-};
-
-export const watchProvidersMovieList = async (
+export const watchProvidersMovieList = (
   params?: WatchProvidersMovieListParams,
-  options?: RequestInit
-): Promise<watchProvidersMovieListResponse> => {
-  const res = await fetch(getWatchProvidersMovieListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: watchProvidersMovieListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as watchProvidersMovieListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<WatchProvidersMovieList200>(
+    {
+      url: `https://api.themoviedb.org/3/watch/providers/movie`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getWatchProvidersMovieListQueryKey = (
   params?: WatchProvidersMovieListParams
 ) => {
-  return [`/3/watch/providers/movie`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/watch/providers/movie`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getWatchProvidersMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersMovieListParams,
   options?: {
@@ -29486,18 +25344,17 @@ export const getWatchProvidersMovieListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getWatchProvidersMovieListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof watchProvidersMovieList>>
-  > = ({ signal }) =>
-    watchProvidersMovieList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => watchProvidersMovieList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProvidersMovieList>>,
@@ -29509,11 +25366,11 @@ export const getWatchProvidersMovieListQueryOptions = <
 export type WatchProvidersMovieListQueryResult = NonNullable<
   Awaited<ReturnType<typeof watchProvidersMovieList>>
 >;
-export type WatchProvidersMovieListQueryError = unknown;
+export type WatchProvidersMovieListQueryError = ErrorType<unknown>;
 
 export function useWatchProvidersMovieList<
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | WatchProvidersMovieListParams,
   options: {
@@ -29532,7 +25389,7 @@ export function useWatchProvidersMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -29540,7 +25397,7 @@ export function useWatchProvidersMovieList<
 };
 export function useWatchProvidersMovieList<
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersMovieListParams,
   options?: {
@@ -29559,7 +25416,7 @@ export function useWatchProvidersMovieList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29567,7 +25424,7 @@ export function useWatchProvidersMovieList<
 };
 export function useWatchProvidersMovieList<
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersMovieListParams,
   options?: {
@@ -29578,7 +25435,7 @@ export function useWatchProvidersMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29590,7 +25447,7 @@ export function useWatchProvidersMovieList<
 
 export function useWatchProvidersMovieList<
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProvidersMovieListParams,
   options?: {
@@ -29601,7 +25458,7 @@ export function useWatchProvidersMovieList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29623,65 +25480,34 @@ export function useWatchProvidersMovieList<
  * Get the list of streaming providers we have for TV shows.
  * @summary TV Providers
  */
-export type watchProviderTvListResponse200 = {
-  data: WatchProviderTvList200;
-  status: 200;
-};
-
-export type watchProviderTvListResponseSuccess =
-  watchProviderTvListResponse200 & {
-    headers: Headers;
-  };
-export type watchProviderTvListResponse = watchProviderTvListResponseSuccess;
-
-export const getWatchProviderTvListUrl = (
-  params?: WatchProviderTvListParams
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString());
-    }
-  });
-
-  const stringifiedParams = normalizedParams.toString();
-
-  return stringifiedParams.length > 0
-    ? `/3/watch/providers/tv?${stringifiedParams}`
-    : `/3/watch/providers/tv`;
-};
-
-export const watchProviderTvList = async (
+export const watchProviderTvList = (
   params?: WatchProviderTvListParams,
-  options?: RequestInit
-): Promise<watchProviderTvListResponse> => {
-  const res = await fetch(getWatchProviderTvListUrl(params), {
-    ...options,
-    method: 'GET',
-  });
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: watchProviderTvListResponse['data'] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as watchProviderTvListResponse;
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal
+) => {
+  return customInstance<WatchProviderTvList200>(
+    {
+      url: `https://api.themoviedb.org/3/watch/providers/tv`,
+      method: 'GET',
+      params,
+      signal,
+    },
+    options
+  );
 };
 
 export const getWatchProviderTvListQueryKey = (
   params?: WatchProviderTvListParams
 ) => {
-  return [`/3/watch/providers/tv`, ...(params ? [params] : [])] as const;
+  return [
+    `https://api.themoviedb.org/3/watch/providers/tv`,
+    ...(params ? [params] : []),
+  ] as const;
 };
 
 export const getWatchProviderTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProviderTvListParams,
   options?: {
@@ -29692,17 +25518,17 @@ export const getWatchProviderTvListQueryOptions = <
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   }
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+  const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ?? getWatchProviderTvListQueryKey(params);
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof watchProviderTvList>>
-  > = ({ signal }) => watchProviderTvList(params, { signal, ...fetchOptions });
+  > = ({ signal }) => watchProviderTvList(params, requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProviderTvList>>,
@@ -29714,11 +25540,11 @@ export const getWatchProviderTvListQueryOptions = <
 export type WatchProviderTvListQueryResult = NonNullable<
   Awaited<ReturnType<typeof watchProviderTvList>>
 >;
-export type WatchProviderTvListQueryError = unknown;
+export type WatchProviderTvListQueryError = ErrorType<unknown>;
 
 export function useWatchProviderTvList<
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params: undefined | WatchProviderTvListParams,
   options: {
@@ -29737,7 +25563,7 @@ export function useWatchProviderTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): DefinedUseQueryResult<TData, TError> & {
@@ -29745,7 +25571,7 @@ export function useWatchProviderTvList<
 };
 export function useWatchProviderTvList<
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProviderTvListParams,
   options?: {
@@ -29764,7 +25590,7 @@ export function useWatchProviderTvList<
         >,
         'initialData'
       >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29772,7 +25598,7 @@ export function useWatchProviderTvList<
 };
 export function useWatchProviderTvList<
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProviderTvListParams,
   options?: {
@@ -29783,7 +25609,7 @@ export function useWatchProviderTvList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {
@@ -29795,7 +25621,7 @@ export function useWatchProviderTvList<
 
 export function useWatchProviderTvList<
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
-  TError = unknown,
+  TError = ErrorType<unknown>,
 >(
   params?: WatchProviderTvListParams,
   options?: {
@@ -29806,7 +25632,7 @@ export function useWatchProviderTvList<
         TData
       >
     >;
-    fetch?: RequestInit;
+    request?: SecondParameter<typeof customInstance>;
   },
   queryClient?: QueryClient
 ): UseQueryResult<TData, TError> & {

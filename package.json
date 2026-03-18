@@ -1,0 +1,30 @@
+{
+  "name": "tmdb-interview",
+  "version": "0.0.0",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "nx": "nx",
+    "serve:client-web": "nx serve client-web",
+    "build:client-web": "nx build client-web"
+  },
+  "devDependencies": {
+    "@nx/js": "^21.0.0",
+    "@nx/react": "^21.0.0",
+    "@nx/vite": "^21.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "nx": "^21.0.0",
+    "typescript": "^5.8.0",
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

@@ -11,8 +11,9 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "paths": {
+      "@tmdb-interview/components": ["libs/components/index.ts"],
       "@tmdb-interview/data-access": ["libs/data-access/index.ts"]
     },
     "resolveJsonModule": true,

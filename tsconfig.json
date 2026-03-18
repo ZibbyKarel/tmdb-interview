@@ -4,6 +4,9 @@
   "references": [
     {
       "path": "./apps/client-web"
+    },
+    {
+      "path": "./libs/components"
     }
   ]
 }

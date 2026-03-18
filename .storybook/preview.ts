@@ -1,0 +1,20 @@
+import type { Preview } from '@storybook/react-vite';
+import '../apps/client-web/src/styles.css';
+
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+    options: {
+      storySort: {
+        order: ['Components'],
+      },
+    },
+  },
+};
+
+export default preview;

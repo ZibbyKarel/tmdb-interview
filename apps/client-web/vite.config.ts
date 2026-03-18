@@ -14,6 +14,10 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
+        '@tmdb-interview/components': path.resolve(
+          __dirname,
+          '../../libs/components/index.ts'
+        ),
         '@tmdb-interview/data-access': path.resolve(
           __dirname,
           '../../libs/data-access/index.ts'

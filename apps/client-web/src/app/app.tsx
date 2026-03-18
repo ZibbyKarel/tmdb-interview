@@ -1,3 +1,4 @@
+import { PageShell, SurfaceCard } from '@tmdb-interview/components';
 import { useMovieTopRatedList } from '@tmdb-interview/data-access';
 
 export default function App() {
@@ -5,8 +6,8 @@ export default function App() {
   console.log('>>>', data);
 
   return (
-    <main className="grid min-h-screen place-items-center px-6 py-10">
-      <section className="w-full max-w-3xl rounded-[28px] border border-card-border bg-card-bg p-8 shadow-hero backdrop-blur-[18px] sm:p-12">
+    <PageShell>
+      <SurfaceCard>
         <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-page-accent">
           Nx Monorepo
         </p>
@@ -17,7 +18,7 @@ export default function App() {
           This React, TypeScript, Nx, and Tailwind app is now wired to TanStack
           Query and the generated TMDB client.
         </p>
-      </section>
-    </main>
+      </SurfaceCard>
+    </PageShell>
   );
 }

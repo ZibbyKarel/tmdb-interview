@@ -1,11 +1,12 @@
 import { useClasses } from '@ds';
-import type { FC, HTMLAttributes, ReactNode } from 'react';
+import type * as React from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 export interface SurfaceCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
 }
 
-export const SurfaceCard: FC<SurfaceCardProps> = ({
+export const SurfaceCard: React.FC<SurfaceCardProps> = ({
   children,
   className,
   ...props

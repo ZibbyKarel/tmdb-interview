@@ -1,4 +1,5 @@
-import type { FC, HTMLAttributes, ReactNode } from 'react';
+import type * as React from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { getSpacingInPx, useClasses } from '../../utils';
 import type { Spacing } from '../../types/spacing';
 
@@ -8,7 +9,7 @@ export interface StackProps extends HTMLAttributes<HTMLDivElement> {
   vertical?: boolean;
 }
 
-export const Stack: FC<StackProps> = ({
+export const Stack: React.FC<StackProps> = ({
   children,
   className,
   spacing,

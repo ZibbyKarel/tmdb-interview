@@ -1,5 +1,6 @@
 import { useClasses } from '@ds';
-import type { ElementType, FC, HTMLAttributes, ReactNode } from 'react';
+import type * as React from 'react';
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 
 export type TypographyType = 'pageTitle' | 'title' | 'subtitle' | 'text';
 
@@ -31,7 +32,7 @@ const variantToClassNameMap: Record<TypographyVariant, string> = {
   tertiary: 'text-page-accent',
 };
 
-export const Typography: FC<TypographyProps> = ({
+export const Typography: React.FC<TypographyProps> = ({
   children,
   className,
   type,

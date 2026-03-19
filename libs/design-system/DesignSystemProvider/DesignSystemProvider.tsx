@@ -1,6 +1,7 @@
 import '../styles.css';
 
-import type { FC, PropsWithChildren } from 'react';
+import type * as React from 'react';
+import type { PropsWithChildren } from 'react';
 import { useClasses, useTheme } from '../utils';
 import type { ProviderTheme } from '../utils';
 
@@ -8,7 +9,7 @@ export interface DesignSystemProviderProps extends PropsWithChildren {
   theme?: ProviderTheme;
 }
 
-export const DesignSystemProvider: FC<DesignSystemProviderProps> = ({
+export const DesignSystemProvider: React.FC<DesignSystemProviderProps> = ({
   children,
   theme = 'dark',
 }) => {

@@ -1,10 +1,10 @@
 import { Typography } from '@ds';
 import { useMovieTopRatedList } from '@data-access';
-import type { FC } from 'react';
+import type * as React from 'react';
 
 export interface IndexPageProps {}
 
-export const IndexPage: FC<IndexPageProps> = () => {
+export const IndexPage: React.FC<IndexPageProps> = () => {
   const { data } = useMovieTopRatedList();
   const movieCount = data?.results?.length ?? 0;
 

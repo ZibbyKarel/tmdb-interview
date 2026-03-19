@@ -1,11 +1,12 @@
 import { useClasses } from '@ds';
-import type { FC, HTMLAttributes, ReactNode } from 'react';
+import type * as React from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 export interface PageShellProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
 }
 
-export const PageShell: FC<PageShellProps> = ({
+export const PageShell: React.FC<PageShellProps> = ({
   children,
   className,
   ...props

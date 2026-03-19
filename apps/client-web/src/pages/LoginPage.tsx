@@ -1,8 +1,8 @@
-import type { FC } from 'react';
+import type * as React from 'react';
 
 export interface LoginPageProps {}
 
-export const LoginPage: FC<LoginPageProps> = () => {
+export const LoginPage: React.FC<LoginPageProps> = () => {
   return (
     <div>
       <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-page-accent">

@@ -1,14 +1,18 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { FC, HTMLAttributes, ReactNode } from 'react';
 
-type SurfaceCardProps = HTMLAttributes<HTMLElement> & {
+export enum SurfaceCardDataTestIds {
+  Wrapper = 'surface-card-wrapper',
+}
+
+export interface SurfaceCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
-};
+}
 
-export function SurfaceCard({
+export const SurfaceCard: FC<SurfaceCardProps> = ({
   children,
   className,
   ...props
-}: SurfaceCardProps) {
+}) => {
   const classes = [
     'w-full max-w-3xl rounded-[28px] border border-card-border bg-card-bg p-8 shadow-hero backdrop-blur-[18px] sm:p-12',
     className,
@@ -17,8 +21,12 @@ export function SurfaceCard({
     .join(' ');
 
   return (
-    <section className={classes} {...props}>
+    <section
+      className={classes}
+      data-testid={SurfaceCardDataTestIds.Wrapper}
+      {...props}
+    >
       {children}
     </section>
   );
-}
+};

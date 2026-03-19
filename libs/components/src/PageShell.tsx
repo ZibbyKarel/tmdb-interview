@@ -1,21 +1,29 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { FC, HTMLAttributes, ReactNode } from 'react';
 
-type PageShellProps = HTMLAttributes<HTMLElement> & {
+export enum PageShellDataTestIds {
+  Wrapper = 'page-shell-wrapper',
+}
+
+export interface PageShellProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
-};
+}
 
-export function PageShell({
+export const PageShell: FC<PageShellProps> = ({
   children,
   className,
   ...props
-}: PageShellProps) {
+}) => {
   const classes = ['grid min-h-screen place-items-center px-6 py-10', className]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <main className={classes} {...props}>
+    <main
+      className={classes}
+      data-testid={PageShellDataTestIds.Wrapper}
+      {...props}
+    >
       {children}
     </main>
   );
-}
+};

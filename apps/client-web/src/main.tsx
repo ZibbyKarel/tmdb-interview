@@ -2,9 +2,9 @@ import './styles.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ReactQueryProvider } from './app/react-query-provider';
 import { router } from './routing';
 import { RouterProvider } from '@tanstack/react-router';
+import { QueryProvider } from './app/QueryProvider';
 
 const rootElement = document.getElementById('root');
 
@@ -14,8 +14,8 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ReactQueryProvider>
-      <RouterProvider router={router} />;
-    </ReactQueryProvider>
+    <QueryProvider>
+      <RouterProvider router={router} />
+    </QueryProvider>
   </React.StrictMode>
 );

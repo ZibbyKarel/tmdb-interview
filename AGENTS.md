@@ -56,3 +56,14 @@ export const MyComponent: React.FC<MyComponentProps> = ({
 - each story should have Playground as default story
 - story that gathers component's variants on one page called Overview
 - and one story per each component variant
+
+### Unit testing
+
+- use Jest library with react-testing-library
+- prefer using data-testids as primary way how to get element.
+- do not use one describe block to wrap everything
+
+## Design system
+
+- stored in libs/design-system
+- for each component here generate stories and tests

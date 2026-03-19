@@ -5,6 +5,10 @@ export type TypographyType = 'pageTitle' | 'title' | 'subtitle' | 'text';
 
 export type TypographyVariant = 'primary' | 'secondary' | 'tertiary';
 
+export enum TypographyDataTestIds {
+  Wrapper = 'typography-wrapper',
+}
+
 export interface TypographyProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   type: TypographyType;
@@ -46,7 +50,11 @@ export const Typography: FC<TypographyProps> = ({
   );
 
   return (
-    <Component className={classes} {...props}>
+    <Component
+      className={classes}
+      data-testid={TypographyDataTestIds.Wrapper}
+      {...props}
+    >
       {children}
     </Component>
   );

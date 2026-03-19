@@ -1,3 +1,4 @@
+import { Typography } from '@ds';
 import { useMovieTopRatedList } from '@data-access';
 import type { FC } from 'react';
 
@@ -9,19 +10,17 @@ export const IndexPage: FC<IndexPageProps> = () => {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-page-accent">
+      <Typography type="text" variant="tertiary">
         Nx Monorepo
-      </p>
-      <h1 className="m-0 text-[clamp(2.5rem,8vw,4.5rem)] leading-[0.95]">
-        Hello world from client-web
-      </h1>
-      <p className="mt-5 max-w-[34rem] text-[1.05rem] leading-7 text-page-muted">
+      </Typography>
+      <Typography type="pageTitle">Hello world from client-web</Typography>
+      <Typography type="text" variant="secondary">
         This React, TypeScript, Nx, and Tailwind app is now wired to TanStack
         Query, the generated TMDB client, and TanStack Router.
-      </p>
-      <p className="mt-8 text-sm text-page-muted">
+      </Typography>
+      <Typography type="text" variant="secondary">
         Top rated movies loaded from TMDB: {movieCount}
-      </p>
+      </Typography>
     </div>
   );
 };

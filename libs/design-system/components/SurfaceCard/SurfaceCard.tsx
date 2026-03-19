@@ -1,6 +1,10 @@
 import { useClasses } from '@ds';
 import type { FC, HTMLAttributes, ReactNode } from 'react';
 
+export enum SurfaceCardDataTestIds {
+  Wrapper = 'surface-card-wrapper',
+}
+
 export interface SurfaceCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
 }
@@ -16,7 +20,11 @@ export const SurfaceCard: FC<SurfaceCardProps> = ({
   );
 
   return (
-    <section className={classes} {...props}>
+    <section
+      className={classes}
+      data-testid={SurfaceCardDataTestIds.Wrapper}
+      {...props}
+    >
       {children}
     </section>
   );

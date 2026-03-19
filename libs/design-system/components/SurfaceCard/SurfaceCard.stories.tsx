@@ -4,9 +4,7 @@ import { SurfaceCard, Typography } from '@ds';
 const meta = {
   title: 'Components/SurfaceCard',
   component: SurfaceCard,
-  parameters: {
-    layout: 'centered',
-  },
+  parameters: {},
   decorators: [
     (Story) => (
       <div className="w-full max-w-5xl px-6 py-10">

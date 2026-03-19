@@ -13,7 +13,7 @@ export const Stack: React.FC<StackProps> = ({
   children,
   className,
   spacing,
-  vertical = true,
+  vertical = false,
   style,
   ...props
 }) => {

@@ -4,9 +4,7 @@ import { PageShell, SurfaceCard, Typography } from '@ds';
 const meta = {
   title: 'Components/PageShell',
   component: PageShell,
-  parameters: {
-    layout: 'fullscreen',
-  },
+  parameters: {},
   args: {
     children: (
       <SurfaceCard>

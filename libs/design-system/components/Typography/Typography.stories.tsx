@@ -1,18 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SurfaceCard, Typography } from '@ds';
+import { Typography } from '@ds';
 
 const meta = {
   title: 'Components/Typography',
   component: Typography,
-  decorators: [
-    (Story) => (
-      <div className="w-full max-w-5xl px-6 py-10">
-        <SurfaceCard className="grid gap-4">
-          <Story />
-        </SurfaceCard>
-      </div>
-    ),
-  ],
   argTypes: {
     type: {
       control: 'select',

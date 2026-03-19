@@ -3,10 +3,5 @@
   "compilerOptions": {
     "types": ["node", "jest", "@testing-library/jest-dom"]
   },
-  "include": [
-    "index.ts",
-    "DesignSystemProvider.tsx",
-    "components/**/*.ts",
-    "components/**/*.tsx"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

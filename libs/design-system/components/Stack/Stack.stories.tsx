@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Stack, SurfaceCard, Typography } from '@ds';
+import { Stack, mockImage } from '@ds';
 
 const meta = {
   title: 'Components/Stack',
@@ -9,12 +9,11 @@ const meta = {
     vertical: true,
     children: (
       <>
-        <SurfaceCard className="max-w-sm">
-          <Typography type="title">First item</Typography>
-        </SurfaceCard>
-        <SurfaceCard className="max-w-sm">
-          <Typography type="title">Second item</Typography>
-        </SurfaceCard>
+        {<img src={mockImage()} width={100} height={100} />}
+        {<img src={mockImage()} width={100} height={100} />}
+        {<img src={mockImage()} width={100} height={100} />}
+        {<img src={mockImage()} width={100} height={100} />}
+        {<img src={mockImage()} width={100} height={100} />}
       </>
     ),
   },
@@ -27,27 +26,14 @@ type Story = StoryObj<typeof meta>;
 export const Playground: Story = {};
 
 export const Overview: Story = {
-  render: () => (
+  render: (args) => (
     <div className="grid gap-8">
-      <Stack spacing="100">
-        <SurfaceCard className="max-w-sm">
-          <Typography type="title">Vertical stack</Typography>
-        </SurfaceCard>
-        <SurfaceCard className="max-w-sm">
-          <Typography type="text" variant="secondary">
-            Default vertical layout with token-based spacing.
-          </Typography>
-        </SurfaceCard>
-      </Stack>
-      <Stack spacing="150" vertical={false}>
-        <SurfaceCard className="max-w-sm">
-          <Typography type="title">Horizontal stack</Typography>
-        </SurfaceCard>
-        <SurfaceCard className="max-w-sm">
-          <Typography type="text" variant="secondary">
-            Horizontal layout with larger spacing.
-          </Typography>
-        </SurfaceCard>
+      <strong>Horizontal</strong>
+      <Stack spacing={args.spacing}>{args.children}</Stack>
+
+      <strong>Vertical</strong>
+      <Stack spacing={args.spacing} vertical>
+        {args.children}
       </Stack>
     </div>
   ),

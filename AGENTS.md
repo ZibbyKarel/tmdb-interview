@@ -24,6 +24,7 @@
 - for testing purposes use data-testid attributes on the nested elements
 - values for data-testids are stored in enum with same name as component with suffix DataTestIds
 - generate data-testids only when tests exists
+- don't generate data-testids when there would be just "wrapper one"
 
 Example:
 

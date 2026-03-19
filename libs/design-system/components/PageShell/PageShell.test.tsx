@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import { PageShell, PageShellDataTestIds } from './PageShell';
+import { PageShell } from './PageShell';
 
 it('renders wrapper and children', () => {
-  render(
+  const { container } = render(
     <PageShell>
       <span>Content</span>
     </PageShell>
   );
 
-  expect(screen.getByTestId(PageShellDataTestIds.Wrapper)).toBeInTheDocument();
+  expect(container.querySelector('main')).toBeInTheDocument();
   expect(screen.getByText('Content')).toBeInTheDocument();
 });

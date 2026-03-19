@@ -80,3 +80,27 @@ export const Text: Story = {
     variant: 'secondary',
   },
 };
+
+export const Primary: Story = {
+  args: {
+    children: 'Primary text',
+    type: 'title',
+    variant: 'primary',
+  },
+};
+
+export const Secondary: Story = {
+  args: {
+    children: 'Secondary text',
+    type: 'title',
+    variant: 'secondary',
+  },
+};
+
+export const Tertiary: Story = {
+  args: {
+    children: 'Tertiary text',
+    type: 'title',
+    variant: 'tertiary',
+  },
+};

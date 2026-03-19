@@ -1,15 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import { SurfaceCard, SurfaceCardDataTestIds } from './SurfaceCard';
+import { SurfaceCard } from './SurfaceCard';
 
 it('renders wrapper and children', () => {
-  render(
+  const { container } = render(
     <SurfaceCard>
       <span>Card content</span>
     </SurfaceCard>
   );
 
-  expect(
-    screen.getByTestId(SurfaceCardDataTestIds.Wrapper)
-  ).toBeInTheDocument();
+  expect(container.querySelector('section')).toBeInTheDocument();
   expect(screen.getByText('Card content')).toBeInTheDocument();
 });

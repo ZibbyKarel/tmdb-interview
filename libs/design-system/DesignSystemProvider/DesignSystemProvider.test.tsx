@@ -1,18 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import {
-  DesignSystemProvider,
-  DesignSystemProviderDataTestIds,
-} from './DesignSystemProvider';
+import { DesignSystemProvider } from './DesignSystemProvider';
 
 it('renders children inside the provider wrapper', () => {
-  render(
+  const { container } = render(
     <DesignSystemProvider>
       <span>Content</span>
     </DesignSystemProvider>
   );
 
-  expect(
-    screen.getByTestId(DesignSystemProviderDataTestIds.Wrapper)
-  ).toBeInTheDocument();
+  expect(container.firstChild).toHaveClass('designSystemProvider');
   expect(screen.getByText('Content')).toBeInTheDocument();
 });

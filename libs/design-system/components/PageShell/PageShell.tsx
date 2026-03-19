@@ -1,10 +1,6 @@
 import { useClasses } from '@ds';
 import type { FC, HTMLAttributes, ReactNode } from 'react';
 
-export enum PageShellDataTestIds {
-  Wrapper = 'page-shell-wrapper',
-}
-
 export interface PageShellProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
 }
@@ -20,11 +16,7 @@ export const PageShell: FC<PageShellProps> = ({
   );
 
   return (
-    <main
-      className={classes}
-      data-testid={PageShellDataTestIds.Wrapper}
-      {...props}
-    >
+    <main className={classes} {...props}>
       {children}
     </main>
   );

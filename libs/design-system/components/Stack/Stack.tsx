@@ -1,10 +1,6 @@
 import type { FC, HTMLAttributes, ReactNode } from 'react';
 import { getSpacingInPx, useClasses } from '../../utils';
-import { Spacing } from '../../types/spacing';
-
-export enum StackDataTestIds {
-  Wrapper = 'stack-wrapper',
-}
+import type { Spacing } from '../../types/spacing';
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
@@ -29,7 +25,6 @@ export const Stack: FC<StackProps> = ({
   return (
     <div
       className={classes}
-      data-testid={StackDataTestIds.Wrapper}
       style={{ ...style, gap: getSpacingInPx(spacing) }}
       {...props}
     >

@@ -1,11 +1,10 @@
 import type { Preview } from '@storybook/react-vite';
-import React from 'react';
 import { DesignSystemProvider } from '@ds';
 
 const preview: Preview = {
   decorators: [
     (Story) => (
-      <DesignSystemProvider>
+      <DesignSystemProvider theme="system">
         <Story />
       </DesignSystemProvider>
     ),

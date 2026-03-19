@@ -3,11 +3,11 @@
 @theme {
   --font-sans: 'Avenir Next', 'Segoe UI', sans-serif;
   --shadow-hero: 0 24px 60px rgba(0, 0, 0, 0.35);
-  --color-page-text: #f5f7fb;
-  --color-page-muted: rgba(245, 247, 251, 0.8);
-  --color-page-accent: #8eb5ff;
-  --color-card-border: rgba(255, 255, 255, 0.12);
-  --color-card-bg: rgba(9, 17, 31, 0.72);
+  --color-page-text: #0f172a;
+  --color-page-muted: rgba(15, 23, 42, 0.72);
+  --color-page-accent: #2563eb;
+  --color-card-border: rgba(15, 23, 42, 0.08);
+  --color-card-bg: rgba(255, 255, 255, 0.72);
 }
 
 @layer base {
@@ -32,6 +32,25 @@
     min-height: 100vh;
     color: var(--color-page-text);
     font-family: var(--font-sans);
+  }
+
+  .designSystemProvider--light {
+    --color-page-text: #0f172a;
+    --color-page-muted: rgba(15, 23, 42, 0.72);
+    --color-page-accent: #2563eb;
+    --color-card-border: rgba(15, 23, 42, 0.08);
+    --color-card-bg: rgba(255, 255, 255, 0.72);
+    background:
+      radial-gradient(circle at top, rgba(37, 99, 235, 0.18), transparent 35%),
+      linear-gradient(160deg, #f8fafc 0%, #e2e8f0 50%, #dbeafe 100%);
+  }
+
+  .designSystemProvider--dark {
+    --color-page-text: #f5f7fb;
+    --color-page-muted: rgba(245, 247, 251, 0.8);
+    --color-page-accent: #8eb5ff;
+    --color-card-border: rgba(255, 255, 255, 0.12);
+    --color-card-bg: rgba(9, 17, 31, 0.72);
     background:
       radial-gradient(circle at top, rgba(78, 120, 255, 0.35), transparent 35%),
       linear-gradient(160deg, #09111f 0%, #111b2f 50%, #17263f 100%);

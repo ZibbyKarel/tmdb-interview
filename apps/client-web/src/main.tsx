@@ -13,10 +13,10 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <DesignSystemProvider>
-      <QueryProvider>
+    <QueryProvider>
+      <DesignSystemProvider theme="system">
         <RouterProvider router={router} />
-      </QueryProvider>
-    </DesignSystemProvider>
+      </DesignSystemProvider>
+    </QueryProvider>
   </React.StrictMode>
 );

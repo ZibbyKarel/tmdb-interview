@@ -3,6 +3,9 @@
   "files": [],
   "references": [
     {
+      "path": "./.storybook"
+    },
+    {
       "path": "./apps/client-web"
     },
     {

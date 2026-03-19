@@ -1,4 +1,4 @@
-import { PageShell, SurfaceCard } from '@ds';
+import { SurfaceCard } from '@ds';
 import { Link, Outlet } from '@tanstack/react-router';
 import type * as React from 'react';
 
@@ -9,8 +9,8 @@ const navLinkClasses =
 
 export const RootLayout: React.FC<RootLayoutProps> = () => {
   return (
-    <PageShell>
-      <SurfaceCard droppedShaddow padding="300">
+    <main className="grid min-h-screen place-items-center px-6 py-10">
+      <SurfaceCard className="p-12" droppedShaddow>
         <nav className="mb-10 flex flex-wrap gap-3">
           <Link
             activeProps={{
@@ -37,6 +37,6 @@ export const RootLayout: React.FC<RootLayoutProps> = () => {
           <Outlet />
         </div>
       </SurfaceCard>
-    </PageShell>
+    </main>
   );
 };

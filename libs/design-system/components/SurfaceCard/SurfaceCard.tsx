@@ -1,20 +1,16 @@
-import { getSpacingInPx, useClasses } from '@ds';
+import { useClasses } from '@ds';
 import type * as React from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { Spacing } from '../../types';
 
 export interface SurfaceCardProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   droppedShaddow?: boolean;
-  padding: Spacing;
 }
 
 export const SurfaceCard: React.FC<SurfaceCardProps> = ({
   children,
   className,
   droppedShaddow = false,
-  padding,
-  style,
   ...props
 }) => {
   const classes = useClasses(
@@ -24,11 +20,7 @@ export const SurfaceCard: React.FC<SurfaceCardProps> = ({
   );
 
   return (
-    <section
-      className={classes}
-      style={{ ...style, padding: getSpacingInPx(padding) }}
-      {...props}
-    >
+    <section className={classes} {...props}>
       {children}
     </section>
   );

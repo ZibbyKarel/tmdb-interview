@@ -6,7 +6,7 @@ const meta = {
   component: SurfaceCard,
   args: {
     droppedShaddow: false,
-    padding: '200',
+    children: 'There is some content of the card',
   },
 } satisfies Meta<typeof SurfaceCard>;
 
@@ -19,10 +19,10 @@ export const Playground: Story = {};
 export const Overview: Story = {
   render: () => (
     <div className="grid gap-6">
-      <SurfaceCard padding="200">
+      <SurfaceCard className="p-8">
         <Typography type="subtitle">Default card</Typography>
       </SurfaceCard>
-      <SurfaceCard droppedShaddow padding="300">
+      <SurfaceCard className="p-12" droppedShaddow>
         <Typography type="subtitle">Card with shadow</Typography>
       </SurfaceCard>
     </div>

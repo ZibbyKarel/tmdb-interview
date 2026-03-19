@@ -3,7 +3,7 @@ import { SurfaceCard } from './SurfaceCard';
 
 it('renders wrapper and children', () => {
   const { container } = render(
-    <SurfaceCard padding="200">
+    <SurfaceCard>
       <span>Card content</span>
     </SurfaceCard>
   );
@@ -12,15 +12,14 @@ it('renders wrapper and children', () => {
   expect(screen.getByText('Card content')).toBeInTheDocument();
 });
 
-it('applies padding and optional shadow styles', () => {
+it('applies the optional shadow class', () => {
   const { container } = render(
-    <SurfaceCard droppedShaddow padding="250">
+    <SurfaceCard droppedShaddow>
       <span>Card content</span>
     </SurfaceCard>
   );
 
   const section = container.querySelector('section');
 
-  expect(section).toHaveStyle({ padding: '40px' });
   expect(section).toHaveClass('shadow-hero');
 });

@@ -6,7 +6,10 @@ import { mergeConfig } from 'vite';
 const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
-  stories: ['../libs/design-system/components/**/*.stories.@(ts|tsx)'],
+  stories: [
+    '../libs/design-system/components/**/*.stories.@(ts|tsx)',
+    '../apps/client-web/src/components/**/*.stories.@(ts|tsx)',
+  ],
   framework: {
     name: '@storybook/react-vite',
     options: {},
@@ -19,6 +22,10 @@ const config: StorybookConfig = {
           '@data-access': path.resolve(
             storybookDir,
             '../libs/data-access/index.ts'
+          ),
+          '@internationalization': path.resolve(
+            storybookDir,
+            '../libs/internationalization/index.ts'
           ),
         },
       },

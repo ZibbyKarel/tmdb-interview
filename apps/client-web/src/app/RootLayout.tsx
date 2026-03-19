@@ -1,6 +1,7 @@
 import { SurfaceCard } from '@ds';
 import { Link, Outlet } from '@tanstack/react-router';
 import type * as React from 'react';
+import { Routes } from '../routing/Routes';
 
 export interface RootLayoutProps {}
 
@@ -18,7 +19,8 @@ export const RootLayout: React.FC<RootLayoutProps> = () => {
                 'rounded-full border border-page-accent/50 bg-page-accent/10 px-4 py-2 text-sm font-medium text-page-text',
             }}
             className={navLinkClasses}
-            to="/"
+            search={{}}
+            to={Routes.Index as '/'}
           >
             Home
           </Link>
@@ -28,7 +30,8 @@ export const RootLayout: React.FC<RootLayoutProps> = () => {
                 'rounded-full border border-page-accent/50 bg-page-accent/10 px-4 py-2 text-sm font-medium text-page-text',
             }}
             className={navLinkClasses}
-            to="/login"
+            search={{}}
+            to={Routes.Login as '/login'}
           >
             Login
           </Link>

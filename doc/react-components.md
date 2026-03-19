@@ -6,7 +6,6 @@
 - Keep one component per file.
 - When a component needs companion files, create a directory with the same name as the component.
 - Put the main component file inside that directory.
-- Add an `index.ts` file inside that directory.
 
 ## Component Declaration
 
@@ -22,6 +21,10 @@
 - Use `data-testid` only on meaningful nested elements.
 - Do not create a `data-testid` enum when the component would only have a wrapper test id.
 - Do not add a wrapper-only `data-testid`.
+
+## Styles
+
+- do not use classNames when using design-system components
 
 ## Example
 

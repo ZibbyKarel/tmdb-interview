@@ -9,6 +9,9 @@
       "path": "./apps/client-web"
     },
     {
+      "path": "./libs/internationalization"
+    },
+    {
       "path": "./libs/design-system"
     }
   ]

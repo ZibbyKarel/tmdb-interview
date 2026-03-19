@@ -19,6 +19,10 @@ export default defineConfig(({ mode }) => {
           __dirname,
           '../../libs/data-access/index.ts'
         ),
+        '@internationalization': path.resolve(
+          __dirname,
+          '../../libs/internationalization/index.ts'
+        ),
       },
     },
     server: {

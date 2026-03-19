@@ -14,7 +14,8 @@
     "moduleResolution": "Bundler",
     "paths": {
       "@ds": ["libs/design-system/index.ts"],
-      "@data-access": ["libs/data-access/index.ts"]
+      "@data-access": ["libs/data-access/index.ts"],
+      "@internationalization": ["libs/internationalization/index.ts"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

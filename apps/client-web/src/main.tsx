@@ -1,8 +1,10 @@
+import './styles.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './app/app';
 import { ReactQueryProvider } from './app/react-query-provider';
-import './styles.css';
+import { router } from './routing';
+import { RouterProvider } from '@tanstack/react-router';
 
 const rootElement = document.getElementById('root');
 
@@ -13,7 +15,7 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ReactQueryProvider>
-      <App />
+      <RouterProvider router={router} />;
     </ReactQueryProvider>
   </React.StrictMode>
 );

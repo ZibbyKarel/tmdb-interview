@@ -6,7 +6,7 @@ import { mergeConfig } from 'vite';
 const storybookDir = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
-  stories: ['../libs/components/src/**/*.stories.@(ts|tsx)'],
+  stories: ['../libs/design-system/components/**/*.stories.@(ts|tsx)'],
   framework: {
     name: '@storybook/react-vite',
     options: {},
@@ -15,11 +15,8 @@ const config: StorybookConfig = {
     return mergeConfig(baseConfig, {
       resolve: {
         alias: {
-          '@tmdb-interview/components': path.resolve(
-            storybookDir,
-            '../libs/components/index.ts'
-          ),
-          '@tmdb-interview/data-access': path.resolve(
+          '@ds': path.resolve(storybookDir, '../libs/design-system/index.ts'),
+          '@data-access': path.resolve(
             storybookDir,
             '../libs/data-access/index.ts'
           ),

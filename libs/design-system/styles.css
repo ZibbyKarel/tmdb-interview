@@ -24,6 +24,12 @@
 
   body {
     min-height: 100vh;
+  }
+}
+
+@layer components {
+  .designSystemProvider {
+    min-height: 100vh;
     color: var(--color-page-text);
     font-family: var(--font-sans);
     background:

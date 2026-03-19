@@ -6,7 +6,7 @@
       "path": "./apps/client-web"
     },
     {
-      "path": "./libs/components"
+      "path": "./libs/design-system"
     }
   ]
 }

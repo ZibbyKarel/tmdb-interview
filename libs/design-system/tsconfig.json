@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [
+    "index.ts",
+    "DesignSystemProvider.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx"
+  ]
+}

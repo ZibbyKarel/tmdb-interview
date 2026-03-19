@@ -1,7 +1,15 @@
 import type { Preview } from '@storybook/react-vite';
-import '../apps/client-web/src/styles.css';
+import React from 'react';
+import { DesignSystemProvider } from '@ds';
 
 const preview: Preview = {
+  decorators: [
+    (Story) => (
+      <DesignSystemProvider>
+        <Story />
+      </DesignSystemProvider>
+    ),
+  ],
   parameters: {
     controls: {
       matchers: {

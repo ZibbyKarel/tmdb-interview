@@ -13,8 +13,8 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
-      "@tmdb-interview/components": ["libs/components/index.ts"],
-      "@tmdb-interview/data-access": ["libs/data-access/index.ts"]
+      "@ds": ["libs/design-system/index.ts"],
+      "@data-access": ["libs/data-access/index.ts"]
     },
     "resolveJsonModule": true,
     "isolatedModules": true,

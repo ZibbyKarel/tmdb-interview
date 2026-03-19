@@ -7,7 +7,6 @@
 - When a component needs companion files, create a directory with the same name as the component.
 - Put the main component file inside that directory.
 - Add an `index.ts` file inside that directory.
-- Re-export the public component API from that `index.ts` file.
 
 ## Component Declaration
 

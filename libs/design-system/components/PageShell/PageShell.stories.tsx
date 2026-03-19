@@ -7,7 +7,7 @@ const meta = {
   parameters: {},
   args: {
     children: (
-      <SurfaceCard>
+      <SurfaceCard droppedShaddow padding="300">
         <Typography
           className="mb-3 uppercase tracking-[0.16em]"
           type="text"
@@ -38,12 +38,12 @@ export const Overview: Story = {
   render: () => (
     <div className="grid gap-8">
       <PageShell>
-        <SurfaceCard>
+        <SurfaceCard padding="200">
           <Typography type="title">Default spacing</Typography>
         </SurfaceCard>
       </PageShell>
       <PageShell className="px-4 py-16 sm:px-8">
-        <SurfaceCard>
+        <SurfaceCard padding="250">
           <Typography type="title">Custom spacing</Typography>
         </SurfaceCard>
       </PageShell>

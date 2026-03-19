@@ -10,7 +10,7 @@ const navLinkClasses =
 export const RootLayout: React.FC<RootLayoutProps> = () => {
   return (
     <PageShell>
-      <SurfaceCard>
+      <SurfaceCard droppedShaddow padding="300">
         <nav className="mb-10 flex flex-wrap gap-3">
           <Link
             activeProps={{

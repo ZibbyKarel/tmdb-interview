@@ -4,51 +4,51 @@
  * tmdb-api
  * OpenAPI spec version: 3
  */
+import type { CertificationMovieList200CertificationsARItem } from './certificationMovieList200CertificationsARItem';
 import type { CertificationMovieList200CertificationsAUItem } from './certificationMovieList200CertificationsAUItem';
 import type { CertificationMovieList200CertificationsBGItem } from './certificationMovieList200CertificationsBGItem';
 import type { CertificationMovieList200CertificationsBRItem } from './certificationMovieList200CertificationsBRItem';
 import type { CertificationMovieList200CertificationsCAItem } from './certificationMovieList200CertificationsCAItem';
 import type { CertificationMovieList200CertificationsCAQCItem } from './certificationMovieList200CertificationsCAQCItem';
+import type { CertificationMovieList200CertificationsCHItem } from './certificationMovieList200CertificationsCHItem';
 import type { CertificationMovieList200CertificationsDEItem } from './certificationMovieList200CertificationsDEItem';
 import type { CertificationMovieList200CertificationsDKItem } from './certificationMovieList200CertificationsDKItem';
 import type { CertificationMovieList200CertificationsESItem } from './certificationMovieList200CertificationsESItem';
 import type { CertificationMovieList200CertificationsFIItem } from './certificationMovieList200CertificationsFIItem';
 import type { CertificationMovieList200CertificationsFRItem } from './certificationMovieList200CertificationsFRItem';
 import type { CertificationMovieList200CertificationsGBItem } from './certificationMovieList200CertificationsGBItem';
+import type { CertificationMovieList200CertificationsGRItem } from './certificationMovieList200CertificationsGRItem';
+import type { CertificationMovieList200CertificationsHKItem } from './certificationMovieList200CertificationsHKItem';
 import type { CertificationMovieList200CertificationsHUItem } from './certificationMovieList200CertificationsHUItem';
+import type { CertificationMovieList200CertificationsIDItem } from './certificationMovieList200CertificationsIDItem';
+import type { CertificationMovieList200CertificationsIEItem } from './certificationMovieList200CertificationsIEItem';
+import type { CertificationMovieList200CertificationsILItem } from './certificationMovieList200CertificationsILItem';
 import type { CertificationMovieList200CertificationsINItem } from './certificationMovieList200CertificationsINItem';
 import type { CertificationMovieList200CertificationsITItem } from './certificationMovieList200CertificationsITItem';
+import type { CertificationMovieList200CertificationsJPItem } from './certificationMovieList200CertificationsJPItem';
+import type { CertificationMovieList200CertificationsKRItem } from './certificationMovieList200CertificationsKRItem';
 import type { CertificationMovieList200CertificationsLTItem } from './certificationMovieList200CertificationsLTItem';
+import type { CertificationMovieList200CertificationsLUItem } from './certificationMovieList200CertificationsLUItem';
+import type { CertificationMovieList200CertificationsLVItem } from './certificationMovieList200CertificationsLVItem';
+import type { CertificationMovieList200CertificationsMOItem } from './certificationMovieList200CertificationsMOItem';
+import type { CertificationMovieList200CertificationsMXItem } from './certificationMovieList200CertificationsMXItem';
 import type { CertificationMovieList200CertificationsMYItem } from './certificationMovieList200CertificationsMYItem';
 import type { CertificationMovieList200CertificationsNLItem } from './certificationMovieList200CertificationsNLItem';
 import type { CertificationMovieList200CertificationsNOItem } from './certificationMovieList200CertificationsNOItem';
 import type { CertificationMovieList200CertificationsNZItem } from './certificationMovieList200CertificationsNZItem';
 import type { CertificationMovieList200CertificationsPHItem } from './certificationMovieList200CertificationsPHItem';
+import type { CertificationMovieList200CertificationsPRItem } from './certificationMovieList200CertificationsPRItem';
 import type { CertificationMovieList200CertificationsPTItem } from './certificationMovieList200CertificationsPTItem';
 import type { CertificationMovieList200CertificationsRUItem } from './certificationMovieList200CertificationsRUItem';
 import type { CertificationMovieList200CertificationsSEItem } from './certificationMovieList200CertificationsSEItem';
-import type { CertificationMovieList200CertificationsUSItem } from './certificationMovieList200CertificationsUSItem';
-import type { CertificationMovieList200CertificationsKRItem } from './certificationMovieList200CertificationsKRItem';
+import type { CertificationMovieList200CertificationsSGItem } from './certificationMovieList200CertificationsSGItem';
 import type { CertificationMovieList200CertificationsSKItem } from './certificationMovieList200CertificationsSKItem';
 import type { CertificationMovieList200CertificationsTHItem } from './certificationMovieList200CertificationsTHItem';
-import type { CertificationMovieList200CertificationsMXItem } from './certificationMovieList200CertificationsMXItem';
-import type { CertificationMovieList200CertificationsIDItem } from './certificationMovieList200CertificationsIDItem';
 import type { CertificationMovieList200CertificationsTRItem } from './certificationMovieList200CertificationsTRItem';
-import type { CertificationMovieList200CertificationsARItem } from './certificationMovieList200CertificationsARItem';
-import type { CertificationMovieList200CertificationsGRItem } from './certificationMovieList200CertificationsGRItem';
 import type { CertificationMovieList200CertificationsTWItem } from './certificationMovieList200CertificationsTWItem';
-import type { CertificationMovieList200CertificationsZAItem } from './certificationMovieList200CertificationsZAItem';
-import type { CertificationMovieList200CertificationsSGItem } from './certificationMovieList200CertificationsSGItem';
-import type { CertificationMovieList200CertificationsIEItem } from './certificationMovieList200CertificationsIEItem';
-import type { CertificationMovieList200CertificationsPRItem } from './certificationMovieList200CertificationsPRItem';
-import type { CertificationMovieList200CertificationsJPItem } from './certificationMovieList200CertificationsJPItem';
+import type { CertificationMovieList200CertificationsUSItem } from './certificationMovieList200CertificationsUSItem';
 import type { CertificationMovieList200CertificationsVIItem } from './certificationMovieList200CertificationsVIItem';
-import type { CertificationMovieList200CertificationsCHItem } from './certificationMovieList200CertificationsCHItem';
-import type { CertificationMovieList200CertificationsILItem } from './certificationMovieList200CertificationsILItem';
-import type { CertificationMovieList200CertificationsHKItem } from './certificationMovieList200CertificationsHKItem';
-import type { CertificationMovieList200CertificationsMOItem } from './certificationMovieList200CertificationsMOItem';
-import type { CertificationMovieList200CertificationsLVItem } from './certificationMovieList200CertificationsLVItem';
-import type { CertificationMovieList200CertificationsLUItem } from './certificationMovieList200CertificationsLUItem';
+import type { CertificationMovieList200CertificationsZAItem } from './certificationMovieList200CertificationsZAItem';
 
 export type CertificationMovieList200Certifications = {
   AU?: CertificationMovieList200CertificationsAUItem[];

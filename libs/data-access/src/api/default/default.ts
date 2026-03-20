@@ -4,21 +4,25 @@
  * tmdb-api
  * OpenAPI spec version: 3
  */
-import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
+  DefinedUseInfiniteQueryResult,
   DefinedUseQueryResult,
+  InfiniteData,
   MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseInfiniteQueryOptions,
+  UseInfiniteQueryResult,
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 
 import type {
   AccountAddFavorite200,
@@ -291,8 +295,8 @@ import type {
   WatchProvidersMovieListParams,
 } from '.././model';
 
+import type { BodyType, ErrorType } from '../../utils/custom-fetch';
 import { customInstance } from '../../utils/custom-fetch';
-import type { ErrorType, BodyType } from '../../utils/custom-fetch';
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
@@ -314,9 +318,160 @@ export const authenticationValidateKey = (
   );
 };
 
+export const getAuthenticationValidateKeyInfiniteQueryKey = () => {
+  return ['infinite', `https://api.themoviedb.org/3/authentication`] as const;
+};
+
 export const getAuthenticationValidateKeyQueryKey = () => {
   return [`https://api.themoviedb.org/3/authentication`] as const;
 };
+
+export const getAuthenticationValidateKeyInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof authenticationValidateKey>>>,
+  TError = ErrorType<AuthenticationValidateKey401>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof authenticationValidateKey>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getAuthenticationValidateKeyInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof authenticationValidateKey>>
+  > = ({ signal }) => authenticationValidateKey(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof authenticationValidateKey>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AuthenticationValidateKeyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof authenticationValidateKey>>
+>;
+export type AuthenticationValidateKeyInfiniteQueryError =
+  ErrorType<AuthenticationValidateKey401>;
+
+export function useAuthenticationValidateKeyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof authenticationValidateKey>>>,
+  TError = ErrorType<AuthenticationValidateKey401>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationValidateKey>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationValidateKey>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationValidateKey>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationValidateKeyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof authenticationValidateKey>>>,
+  TError = ErrorType<AuthenticationValidateKey401>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationValidateKey>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationValidateKey>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationValidateKey>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationValidateKeyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof authenticationValidateKey>>>,
+  TError = ErrorType<AuthenticationValidateKey401>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationValidateKey>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Validate Key
+ */
+
+export function useAuthenticationValidateKeyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof authenticationValidateKey>>>,
+  TError = ErrorType<AuthenticationValidateKey401>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationValidateKey>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions =
+    getAuthenticationValidateKeyInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAuthenticationValidateKeyQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationValidateKey>>,
@@ -340,7 +495,12 @@ export const getAuthenticationValidateKeyQueryOptions = <
     Awaited<ReturnType<typeof authenticationValidateKey>>
   > = ({ signal }) => authenticationValidateKey(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationValidateKey>>,
     TError,
     TData
@@ -478,6 +638,17 @@ export const accountDetails = (
   );
 };
 
+export const getAccountDetailsInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountDetailsQueryKey = (
   accountId?: number,
   params?: AccountDetailsParams
@@ -487,6 +658,169 @@ export const getAccountDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountDetailsInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof accountDetails>>> = ({
+    signal,
+  }) => accountDetails(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountDetails>>
+>;
+export type AccountDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountDetails>>,
+          TError,
+          Awaited<ReturnType<typeof accountDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountDetails>>,
+          TError,
+          Awaited<ReturnType<typeof accountDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useAccountDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountDetailsInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof accountDetails>>,
@@ -514,6 +848,7 @@ export const getAccountDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountDetails>>,
@@ -879,6 +1214,17 @@ export const accountGetFavorites = (
   );
 };
 
+export const getAccountGetFavoritesInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountGetFavoritesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/favorite/movies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountGetFavoritesQueryKey = (
   accountId?: number,
   params?: AccountGetFavoritesParams
@@ -888,6 +1234,170 @@ export const getAccountGetFavoritesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountGetFavoritesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountGetFavorites>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountGetFavoritesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountGetFavorites>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountGetFavoritesInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountGetFavorites>>
+  > = ({ signal }) =>
+    accountGetFavorites(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountGetFavorites>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountGetFavoritesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountGetFavorites>>
+>;
+export type AccountGetFavoritesInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountGetFavoritesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountGetFavorites>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountGetFavoritesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountGetFavorites>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountGetFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof accountGetFavorites>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountGetFavoritesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountGetFavorites>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountGetFavoritesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountGetFavorites>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountGetFavorites>>,
+          TError,
+          Awaited<ReturnType<typeof accountGetFavorites>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountGetFavoritesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountGetFavorites>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountGetFavoritesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountGetFavorites>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Favorite Movies
+ */
+
+export function useAccountGetFavoritesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountGetFavorites>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountGetFavoritesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountGetFavorites>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountGetFavoritesInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountGetFavoritesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountGetFavorites>>,
@@ -920,6 +1430,7 @@ export const getAccountGetFavoritesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountGetFavorites>>,
@@ -1070,6 +1581,17 @@ export const accountFavoriteTv = (
   );
 };
 
+export const getAccountFavoriteTvInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountFavoriteTvParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/favorite/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountFavoriteTvQueryKey = (
   accountId?: number,
   params?: AccountFavoriteTvParams
@@ -1079,6 +1601,170 @@ export const getAccountFavoriteTvQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountFavoriteTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountFavoriteTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountFavoriteTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountFavoriteTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountFavoriteTvInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountFavoriteTv>>
+  > = ({ signal }) =>
+    accountFavoriteTv(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountFavoriteTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountFavoriteTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountFavoriteTv>>
+>;
+export type AccountFavoriteTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountFavoriteTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountFavoriteTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountFavoriteTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountFavoriteTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountFavoriteTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountFavoriteTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountFavoriteTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountFavoriteTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountFavoriteTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountFavoriteTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountFavoriteTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountFavoriteTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountFavoriteTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountFavoriteTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountFavoriteTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountFavoriteTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Favorite TV
+ */
+
+export function useAccountFavoriteTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountFavoriteTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountFavoriteTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountFavoriteTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountFavoriteTvInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountFavoriteTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountFavoriteTv>>,
@@ -1111,6 +1797,7 @@ export const getAccountFavoriteTvQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountFavoriteTv>>,
@@ -1261,6 +1948,17 @@ export const accountLists = (
   );
 };
 
+export const getAccountListsInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountListsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/lists`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountListsQueryKey = (
   accountId?: number,
   params?: AccountListsParams
@@ -1270,6 +1968,169 @@ export const getAccountListsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountListsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountListsInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof accountLists>>> = ({
+    signal,
+  }) => accountLists(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountLists>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountListsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountLists>>
+>;
+export type AccountListsInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountListsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountLists>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountLists>>,
+          TError,
+          Awaited<ReturnType<typeof accountLists>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountLists>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountLists>>,
+          TError,
+          Awaited<ReturnType<typeof accountLists>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Lists
+ */
+
+export function useAccountListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountListsInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountListsQueryOptions = <
   TData = Awaited<ReturnType<typeof accountLists>>,
@@ -1297,6 +2158,7 @@ export const getAccountListsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountLists>>,
@@ -1427,6 +2289,17 @@ export const accountRatedMovies = (
   );
 };
 
+export const getAccountRatedMoviesInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountRatedMoviesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/rated/movies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountRatedMoviesQueryKey = (
   accountId?: number,
   params?: AccountRatedMoviesParams
@@ -1436,6 +2309,170 @@ export const getAccountRatedMoviesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountRatedMoviesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountRatedMoviesInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountRatedMovies>>
+  > = ({ signal }) =>
+    accountRatedMovies(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountRatedMovies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountRatedMoviesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountRatedMovies>>
+>;
+export type AccountRatedMoviesInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountRatedMoviesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedMovies>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedMovies>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated Movies
+ */
+
+export function useAccountRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountRatedMoviesInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountRatedMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedMovies>>,
@@ -1468,6 +2505,7 @@ export const getAccountRatedMoviesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountRatedMovies>>,
@@ -1618,6 +2656,17 @@ export const accountRatedTv = (
   );
 };
 
+export const getAccountRatedTvInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountRatedTvParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/rated/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountRatedTvQueryKey = (
   accountId?: number,
   params?: AccountRatedTvParams
@@ -1627,6 +2676,169 @@ export const getAccountRatedTvQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountRatedTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountRatedTvInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof accountRatedTv>>> = ({
+    signal,
+  }) => accountRatedTv(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountRatedTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountRatedTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountRatedTv>>
+>;
+export type AccountRatedTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountRatedTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated TV
+ */
+
+export function useAccountRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountRatedTvInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountRatedTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedTv>>,
@@ -1654,6 +2866,7 @@ export const getAccountRatedTvQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountRatedTv>>,
@@ -1788,6 +3001,17 @@ export const accountRatedTvEpisodes = (
   );
 };
 
+export const getAccountRatedTvEpisodesInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountRatedTvEpisodesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/rated/tv/episodes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountRatedTvEpisodesQueryKey = (
   accountId?: number,
   params?: AccountRatedTvEpisodesParams
@@ -1797,6 +3021,170 @@ export const getAccountRatedTvEpisodesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountRatedTvEpisodesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountRatedTvEpisodesInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountRatedTvEpisodes>>
+  > = ({ signal }) =>
+    accountRatedTvEpisodes(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountRatedTvEpisodesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountRatedTvEpisodes>>
+>;
+export type AccountRatedTvEpisodesInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountRatedTvEpisodesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedTvEpisodes>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+          TError,
+          Awaited<ReturnType<typeof accountRatedTvEpisodes>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated TV Episodes
+ */
+
+export function useAccountRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountRatedTvEpisodesInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountRatedTvEpisodesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
@@ -1830,6 +3218,7 @@ export const getAccountRatedTvEpisodesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountRatedTvEpisodes>>,
@@ -1980,6 +3369,17 @@ export const accountWatchlistMovies = (
   );
 };
 
+export const getAccountWatchlistMoviesInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountWatchlistMoviesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/watchlist/movies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountWatchlistMoviesQueryKey = (
   accountId?: number,
   params?: AccountWatchlistMoviesParams
@@ -1989,6 +3389,170 @@ export const getAccountWatchlistMoviesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountWatchlistMoviesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountWatchlistMoviesInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountWatchlistMovies>>
+  > = ({ signal }) =>
+    accountWatchlistMovies(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountWatchlistMovies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountWatchlistMoviesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountWatchlistMovies>>
+>;
+export type AccountWatchlistMoviesInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountWatchlistMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountWatchlistMoviesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountWatchlistMovies>>,
+          TError,
+          Awaited<ReturnType<typeof accountWatchlistMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountWatchlistMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountWatchlistMovies>>,
+          TError,
+          Awaited<ReturnType<typeof accountWatchlistMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountWatchlistMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Watchlist Movies
+ */
+
+export function useAccountWatchlistMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountWatchlistMoviesInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountWatchlistMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof accountWatchlistMovies>>,
@@ -2022,6 +3586,7 @@ export const getAccountWatchlistMoviesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountWatchlistMovies>>,
@@ -2172,6 +3737,17 @@ export const accountWatchlistTv = (
   );
 };
 
+export const getAccountWatchlistTvInfiniteQueryKey = (
+  accountId?: number,
+  params?: AccountWatchlistTvParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/account/${accountId}/watchlist/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getAccountWatchlistTvQueryKey = (
   accountId?: number,
   params?: AccountWatchlistTvParams
@@ -2181,6 +3757,170 @@ export const getAccountWatchlistTvQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getAccountWatchlistTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAccountWatchlistTvInfiniteQueryKey(accountId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof accountWatchlistTv>>
+  > = ({ signal }) =>
+    accountWatchlistTv(accountId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!accountId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof accountWatchlistTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AccountWatchlistTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof accountWatchlistTv>>
+>;
+export type AccountWatchlistTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useAccountWatchlistTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params: undefined | AccountWatchlistTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountWatchlistTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountWatchlistTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountWatchlistTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof accountWatchlistTv>>,
+          TError,
+          Awaited<ReturnType<typeof accountWatchlistTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAccountWatchlistTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Watchlist TV
+ */
+
+export function useAccountWatchlistTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof accountWatchlistTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  accountId: number,
+  params?: AccountWatchlistTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof accountWatchlistTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAccountWatchlistTvInfiniteQueryOptions(
+    accountId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAccountWatchlistTvQueryOptions = <
   TData = Awaited<ReturnType<typeof accountWatchlistTv>>,
@@ -2213,6 +3953,7 @@ export const getAccountWatchlistTvQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!accountId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof accountWatchlistTv>>,
@@ -2359,11 +4100,176 @@ export const authenticationCreateGuestSession = (
   );
 };
 
+export const getAuthenticationCreateGuestSessionInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/authentication/guest_session/new`,
+  ] as const;
+};
+
 export const getAuthenticationCreateGuestSessionQueryKey = () => {
   return [
     `https://api.themoviedb.org/3/authentication/guest_session/new`,
   ] as const;
 };
+
+export const getAuthenticationCreateGuestSessionInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  >,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAuthenticationCreateGuestSessionInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  > = ({ signal }) => authenticationCreateGuestSession(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AuthenticationCreateGuestSessionInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+>;
+export type AuthenticationCreateGuestSessionInfiniteQueryError =
+  ErrorType<unknown>;
+
+export function useAuthenticationCreateGuestSessionInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationCreateGuestSessionInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationCreateGuestSessionInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Create Guest Session
+ */
+
+export function useAuthenticationCreateGuestSessionInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateGuestSession>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions =
+    getAuthenticationCreateGuestSessionInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAuthenticationCreateGuestSessionQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
@@ -2387,7 +4293,12 @@ export const getAuthenticationCreateGuestSessionQueryOptions = <
     Awaited<ReturnType<typeof authenticationCreateGuestSession>>
   > = ({ signal }) => authenticationCreateGuestSession(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationCreateGuestSession>>,
     TError,
     TData
@@ -2520,9 +4431,174 @@ export const authenticationCreateRequestToken = (
   );
 };
 
+export const getAuthenticationCreateRequestTokenInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/authentication/token/new`,
+  ] as const;
+};
+
 export const getAuthenticationCreateRequestTokenQueryKey = () => {
   return [`https://api.themoviedb.org/3/authentication/token/new`] as const;
 };
+
+export const getAuthenticationCreateRequestTokenInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  >,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAuthenticationCreateRequestTokenInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  > = ({ signal }) => authenticationCreateRequestToken(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AuthenticationCreateRequestTokenInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+>;
+export type AuthenticationCreateRequestTokenInfiniteQueryError =
+  ErrorType<unknown>;
+
+export function useAuthenticationCreateRequestTokenInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationCreateRequestTokenInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+          TError,
+          Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAuthenticationCreateRequestTokenInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Create Request Token
+ */
+
+export function useAuthenticationCreateRequestTokenInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof authenticationCreateRequestToken>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions =
+    getAuthenticationCreateRequestTokenInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAuthenticationCreateRequestTokenQueryOptions = <
   TData = Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
@@ -2546,7 +4622,12 @@ export const getAuthenticationCreateRequestTokenQueryOptions = <
     Awaited<ReturnType<typeof authenticationCreateRequestToken>>
   > = ({ signal }) => authenticationCreateRequestToken(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof authenticationCreateRequestToken>>,
     TError,
     TData
@@ -3053,9 +5134,161 @@ export const certificationMovieList = (
   );
 };
 
+export const getCertificationMovieListInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/certification/movie/list`,
+  ] as const;
+};
+
 export const getCertificationMovieListQueryKey = () => {
   return [`https://api.themoviedb.org/3/certification/movie/list`] as const;
 };
+
+export const getCertificationMovieListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationMovieList>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof certificationMovieList>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCertificationMovieListInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof certificationMovieList>>
+  > = ({ signal }) => certificationMovieList(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof certificationMovieList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CertificationMovieListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof certificationMovieList>>
+>;
+export type CertificationMovieListInfiniteQueryError = ErrorType<unknown>;
+
+export function useCertificationMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof certificationMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof certificationMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCertificationMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof certificationMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof certificationMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCertificationMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie Certifications
+ */
+
+export function useCertificationMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCertificationMovieListInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCertificationMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof certificationMovieList>>,
@@ -3079,7 +5312,12 @@ export const getCertificationMovieListQueryOptions = <
     Awaited<ReturnType<typeof certificationMovieList>>
   > = ({ signal }) => certificationMovieList(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof certificationMovieList>>,
     TError,
     TData
@@ -3212,9 +5450,161 @@ export const certificationsTvList = (
   );
 };
 
+export const getCertificationsTvListInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/certification/tv/list`,
+  ] as const;
+};
+
 export const getCertificationsTvListQueryKey = () => {
   return [`https://api.themoviedb.org/3/certification/tv/list`] as const;
 };
+
+export const getCertificationsTvListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationsTvList>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof certificationsTvList>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCertificationsTvListInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof certificationsTvList>>
+  > = ({ signal }) => certificationsTvList(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof certificationsTvList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CertificationsTvListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof certificationsTvList>>
+>;
+export type CertificationsTvListInfiniteQueryError = ErrorType<unknown>;
+
+export function useCertificationsTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationsTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationsTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof certificationsTvList>>,
+          TError,
+          Awaited<ReturnType<typeof certificationsTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCertificationsTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationsTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationsTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof certificationsTvList>>,
+          TError,
+          Awaited<ReturnType<typeof certificationsTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCertificationsTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationsTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationsTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV Certifications
+ */
+
+export function useCertificationsTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof certificationsTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof certificationsTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCertificationsTvListInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCertificationsTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof certificationsTvList>>,
@@ -3237,7 +5627,12 @@ export const getCertificationsTvListQueryOptions = <
     Awaited<ReturnType<typeof certificationsTvList>>
   > = ({ signal }) => certificationsTvList(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof certificationsTvList>>,
     TError,
     TData
@@ -3373,6 +5768,16 @@ export const changesMovieList = (
   );
 };
 
+export const getChangesMovieListInfiniteQueryKey = (
+  params?: ChangesMovieListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getChangesMovieListQueryKey = (
   params?: ChangesMovieListParams
 ) => {
@@ -3381,6 +5786,158 @@ export const getChangesMovieListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getChangesMovieListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof changesMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getChangesMovieListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof changesMovieList>>
+  > = ({ signal }) => changesMovieList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof changesMovieList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ChangesMovieListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof changesMovieList>>
+>;
+export type ChangesMovieListInfiniteQueryError = ErrorType<unknown>;
+
+export function useChangesMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | ChangesMovieListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof changesMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof changesMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie List
+ */
+
+export function useChangesMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getChangesMovieListInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getChangesMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesMovieList>>,
@@ -3407,7 +5964,12 @@ export const getChangesMovieListQueryOptions = <
     Awaited<ReturnType<typeof changesMovieList>>
   > = ({ signal }) => changesMovieList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof changesMovieList>>,
     TError,
     TData
@@ -3546,6 +6108,16 @@ export const changesPeopleList = (
   );
 };
 
+export const getChangesPeopleListInfiniteQueryKey = (
+  params?: ChangesPeopleListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getChangesPeopleListQueryKey = (
   params?: ChangesPeopleListParams
 ) => {
@@ -3554,6 +6126,161 @@ export const getChangesPeopleListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getChangesPeopleListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof changesPeopleList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesPeopleListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesPeopleList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getChangesPeopleListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof changesPeopleList>>
+  > = ({ signal }) => changesPeopleList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof changesPeopleList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ChangesPeopleListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof changesPeopleList>>
+>;
+export type ChangesPeopleListInfiniteQueryError = ErrorType<unknown>;
+
+export function useChangesPeopleListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesPeopleList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | ChangesPeopleListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesPeopleList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesPeopleList>>,
+          TError,
+          Awaited<ReturnType<typeof changesPeopleList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesPeopleListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesPeopleList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesPeopleListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesPeopleList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesPeopleList>>,
+          TError,
+          Awaited<ReturnType<typeof changesPeopleList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesPeopleListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesPeopleList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesPeopleListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesPeopleList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary People List
+ */
+
+export function useChangesPeopleListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesPeopleList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesPeopleListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesPeopleList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getChangesPeopleListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getChangesPeopleListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesPeopleList>>,
@@ -3580,7 +6307,12 @@ export const getChangesPeopleListQueryOptions = <
     Awaited<ReturnType<typeof changesPeopleList>>
   > = ({ signal }) => changesPeopleList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof changesPeopleList>>,
     TError,
     TData
@@ -3719,12 +6451,174 @@ export const changesTvList = (
   );
 };
 
+export const getChangesTvListInfiniteQueryKey = (
+  params?: ChangesTvListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getChangesTvListQueryKey = (params?: ChangesTvListParams) => {
   return [
     `https://api.themoviedb.org/3/tv/changes`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getChangesTvListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof changesTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getChangesTvListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof changesTvList>>> = ({
+    signal,
+  }) => changesTvList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof changesTvList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ChangesTvListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof changesTvList>>
+>;
+export type ChangesTvListInfiniteQueryError = ErrorType<unknown>;
+
+export function useChangesTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | ChangesTvListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesTvList>>,
+          TError,
+          Awaited<ReturnType<typeof changesTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof changesTvList>>,
+          TError,
+          Awaited<ReturnType<typeof changesTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useChangesTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV List
+ */
+
+export function useChangesTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof changesTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ChangesTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof changesTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getChangesTvListInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getChangesTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof changesTvList>>,
@@ -3746,7 +6640,12 @@ export const getChangesTvListQueryOptions = <
     signal,
   }) => changesTvList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof changesTvList>>,
     TError,
     TData
@@ -3871,6 +6770,17 @@ export const collectionDetails = (
   );
 };
 
+export const getCollectionDetailsInfiniteQueryKey = (
+  collectionId?: number,
+  params?: CollectionDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/collection/${collectionId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getCollectionDetailsQueryKey = (
   collectionId?: number,
   params?: CollectionDetailsParams
@@ -3880,6 +6790,170 @@ export const getCollectionDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getCollectionDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCollectionDetailsInfiniteQueryKey(collectionId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof collectionDetails>>
+  > = ({ signal }) =>
+    collectionDetails(collectionId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!collectionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof collectionDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CollectionDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof collectionDetails>>
+>;
+export type CollectionDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useCollectionDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params: undefined | CollectionDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionDetails>>,
+          TError,
+          Awaited<ReturnType<typeof collectionDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionDetails>>,
+          TError,
+          Awaited<ReturnType<typeof collectionDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useCollectionDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCollectionDetailsInfiniteQueryOptions(
+    collectionId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCollectionDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionDetails>>,
@@ -3913,6 +6987,7 @@ export const getCollectionDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!collectionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof collectionDetails>>,
@@ -4063,6 +7138,17 @@ export const collectionImages = (
   );
 };
 
+export const getCollectionImagesInfiniteQueryKey = (
+  collectionId?: number,
+  params?: CollectionImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/collection/${collectionId}/images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getCollectionImagesQueryKey = (
   collectionId?: number,
   params?: CollectionImagesParams
@@ -4072,6 +7158,170 @@ export const getCollectionImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getCollectionImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCollectionImagesInfiniteQueryKey(collectionId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof collectionImages>>
+  > = ({ signal }) =>
+    collectionImages(collectionId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!collectionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof collectionImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CollectionImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof collectionImages>>
+>;
+export type CollectionImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useCollectionImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params: undefined | CollectionImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionImages>>,
+          TError,
+          Awaited<ReturnType<typeof collectionImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionImages>>,
+          TError,
+          Awaited<ReturnType<typeof collectionImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useCollectionImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  params?: CollectionImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCollectionImagesInfiniteQueryOptions(
+    collectionId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCollectionImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionImages>>,
@@ -4104,6 +7354,7 @@ export const getCollectionImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!collectionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof collectionImages>>,
@@ -4251,11 +7502,178 @@ export const collectionTranslations = (
   );
 };
 
+export const getCollectionTranslationsInfiniteQueryKey = (
+  collectionId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/collection/${collectionId}/translations`,
+  ] as const;
+};
+
 export const getCollectionTranslationsQueryKey = (collectionId?: number) => {
   return [
     `https://api.themoviedb.org/3/collection/${collectionId}/translations`,
   ] as const;
 };
+
+export const getCollectionTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCollectionTranslationsInfiniteQueryKey(collectionId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof collectionTranslations>>
+  > = ({ signal }) =>
+    collectionTranslations(collectionId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!collectionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof collectionTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CollectionTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof collectionTranslations>>
+>;
+export type CollectionTranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useCollectionTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof collectionTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof collectionTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof collectionTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCollectionTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useCollectionTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof collectionTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  collectionId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof collectionTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCollectionTranslationsInfiniteQueryOptions(
+    collectionId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCollectionTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof collectionTranslations>>,
@@ -4287,6 +7705,7 @@ export const getCollectionTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!collectionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof collectionTranslations>>,
@@ -4430,9 +7849,172 @@ export const companyDetails = (
   );
 };
 
+export const getCompanyDetailsInfiniteQueryKey = (companyId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/company/${companyId}`,
+  ] as const;
+};
+
 export const getCompanyDetailsQueryKey = (companyId?: number) => {
   return [`https://api.themoviedb.org/3/company/${companyId}`] as const;
 };
+
+export const getCompanyDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof companyDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCompanyDetailsInfiniteQueryKey(companyId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof companyDetails>>> = ({
+    signal,
+  }) => companyDetails(companyId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!companyId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof companyDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CompanyDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof companyDetails>>
+>;
+export type CompanyDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useCompanyDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyDetails>>,
+          TError,
+          Awaited<ReturnType<typeof companyDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyDetails>>,
+          TError,
+          Awaited<ReturnType<typeof companyDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useCompanyDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCompanyDetailsInfiniteQueryOptions(
+    companyId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCompanyDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof companyDetails>>,
@@ -4459,6 +8041,7 @@ export const getCompanyDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!companyId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof companyDetails>>,
@@ -4583,11 +8166,178 @@ export const companyAlternativeNames = (
   );
 };
 
+export const getCompanyAlternativeNamesInfiniteQueryKey = (
+  companyId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/company/${companyId}/alternative_names`,
+  ] as const;
+};
+
 export const getCompanyAlternativeNamesQueryKey = (companyId?: number) => {
   return [
     `https://api.themoviedb.org/3/company/${companyId}/alternative_names`,
   ] as const;
 };
+
+export const getCompanyAlternativeNamesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof companyAlternativeNames>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyAlternativeNames>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCompanyAlternativeNamesInfiniteQueryKey(companyId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof companyAlternativeNames>>
+  > = ({ signal }) =>
+    companyAlternativeNames(companyId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!companyId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof companyAlternativeNames>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CompanyAlternativeNamesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof companyAlternativeNames>>
+>;
+export type CompanyAlternativeNamesInfiniteQueryError = ErrorType<unknown>;
+
+export function useCompanyAlternativeNamesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyAlternativeNames>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyAlternativeNames>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyAlternativeNames>>,
+          TError,
+          Awaited<ReturnType<typeof companyAlternativeNames>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyAlternativeNamesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyAlternativeNames>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyAlternativeNames>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyAlternativeNames>>,
+          TError,
+          Awaited<ReturnType<typeof companyAlternativeNames>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyAlternativeNamesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyAlternativeNames>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyAlternativeNames>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Alternative Names
+ */
+
+export function useCompanyAlternativeNamesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyAlternativeNames>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyAlternativeNames>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCompanyAlternativeNamesInfiniteQueryOptions(
+    companyId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCompanyAlternativeNamesQueryOptions = <
   TData = Awaited<ReturnType<typeof companyAlternativeNames>>,
@@ -4619,6 +8369,7 @@ export const getCompanyAlternativeNamesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!companyId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof companyAlternativeNames>>,
@@ -4762,9 +8513,169 @@ export const companyImages = (
   );
 };
 
+export const getCompanyImagesInfiniteQueryKey = (companyId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/company/${companyId}/images`,
+  ] as const;
+};
+
 export const getCompanyImagesQueryKey = (companyId?: number) => {
   return [`https://api.themoviedb.org/3/company/${companyId}/images`] as const;
 };
+
+export const getCompanyImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof companyImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getCompanyImagesInfiniteQueryKey(companyId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof companyImages>>> = ({
+    signal,
+  }) => companyImages(companyId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!companyId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof companyImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CompanyImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof companyImages>>
+>;
+export type CompanyImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useCompanyImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyImages>>,
+          TError,
+          Awaited<ReturnType<typeof companyImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof companyImages>>,
+          TError,
+          Awaited<ReturnType<typeof companyImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCompanyImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useCompanyImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof companyImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  companyId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof companyImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCompanyImagesInfiniteQueryOptions(companyId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCompanyImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof companyImages>>,
@@ -4791,6 +8702,7 @@ export const getCompanyImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!companyId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof companyImages>>,
@@ -4914,9 +8826,158 @@ export const configurationDetails = (
   );
 };
 
+export const getConfigurationDetailsInfiniteQueryKey = () => {
+  return ['infinite', `https://api.themoviedb.org/3/configuration`] as const;
+};
+
 export const getConfigurationDetailsQueryKey = () => {
   return [`https://api.themoviedb.org/3/configuration`] as const;
 };
+
+export const getConfigurationDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationDetails>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof configurationDetails>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfigurationDetailsInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationDetails>>
+  > = ({ signal }) => configurationDetails(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationDetails>>
+>;
+export type ConfigurationDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useConfigurationDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationDetails>>,
+          TError,
+          Awaited<ReturnType<typeof configurationDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationDetails>>,
+          TError,
+          Awaited<ReturnType<typeof configurationDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useConfigurationDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getConfigurationDetailsInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationDetails>>,
@@ -4939,7 +9000,12 @@ export const getConfigurationDetailsQueryOptions = <
     Awaited<ReturnType<typeof configurationDetails>>
   > = ({ signal }) => configurationDetails(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationDetails>>,
     TError,
     TData
@@ -5075,6 +9141,16 @@ export const configurationCountries = (
   );
 };
 
+export const getConfigurationCountriesInfiniteQueryKey = (
+  params?: ConfigurationCountriesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/configuration/countries`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getConfigurationCountriesQueryKey = (
   params?: ConfigurationCountriesParams
 ) => {
@@ -5083,6 +9159,161 @@ export const getConfigurationCountriesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getConfigurationCountriesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationCountries>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ConfigurationCountriesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationCountries>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfigurationCountriesInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationCountries>>
+  > = ({ signal }) => configurationCountries(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationCountries>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationCountriesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationCountries>>
+>;
+export type ConfigurationCountriesInfiniteQueryError = ErrorType<unknown>;
+
+export function useConfigurationCountriesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationCountries>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | ConfigurationCountriesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationCountries>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationCountries>>,
+          TError,
+          Awaited<ReturnType<typeof configurationCountries>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationCountriesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationCountries>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ConfigurationCountriesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationCountries>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationCountries>>,
+          TError,
+          Awaited<ReturnType<typeof configurationCountries>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationCountriesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationCountries>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ConfigurationCountriesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationCountries>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Countries
+ */
+
+export function useConfigurationCountriesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationCountries>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ConfigurationCountriesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationCountries>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getConfigurationCountriesInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationCountriesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationCountries>>,
@@ -5109,7 +9340,12 @@ export const getConfigurationCountriesQueryOptions = <
     Awaited<ReturnType<typeof configurationCountries>>
   > = ({ signal }) => configurationCountries(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationCountries>>,
     TError,
     TData
@@ -5247,9 +9483,161 @@ export const configurationJobs = (
   );
 };
 
+export const getConfigurationJobsInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/configuration/jobs`,
+  ] as const;
+};
+
 export const getConfigurationJobsQueryKey = () => {
   return [`https://api.themoviedb.org/3/configuration/jobs`] as const;
 };
+
+export const getConfigurationJobsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationJobs>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof configurationJobs>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfigurationJobsInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationJobs>>
+  > = ({ signal }) => configurationJobs(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationJobs>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationJobsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationJobs>>
+>;
+export type ConfigurationJobsInfiniteQueryError = ErrorType<unknown>;
+
+export function useConfigurationJobsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationJobs>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationJobs>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationJobs>>,
+          TError,
+          Awaited<ReturnType<typeof configurationJobs>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationJobsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationJobs>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationJobs>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationJobs>>,
+          TError,
+          Awaited<ReturnType<typeof configurationJobs>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationJobsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationJobs>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationJobs>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Jobs
+ */
+
+export function useConfigurationJobsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationJobs>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationJobs>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getConfigurationJobsInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationJobsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationJobs>>,
@@ -5272,7 +9660,12 @@ export const getConfigurationJobsQueryOptions = <
     Awaited<ReturnType<typeof configurationJobs>>
   > = ({ signal }) => configurationJobs(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationJobs>>,
     TError,
     TData
@@ -5406,9 +9799,161 @@ export const configurationLanguages = (
   );
 };
 
+export const getConfigurationLanguagesInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/configuration/languages`,
+  ] as const;
+};
+
 export const getConfigurationLanguagesQueryKey = () => {
   return [`https://api.themoviedb.org/3/configuration/languages`] as const;
 };
+
+export const getConfigurationLanguagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationLanguages>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof configurationLanguages>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfigurationLanguagesInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationLanguages>>
+  > = ({ signal }) => configurationLanguages(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationLanguages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationLanguagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationLanguages>>
+>;
+export type ConfigurationLanguagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useConfigurationLanguagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationLanguages>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationLanguages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationLanguages>>,
+          TError,
+          Awaited<ReturnType<typeof configurationLanguages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationLanguagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationLanguages>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationLanguages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationLanguages>>,
+          TError,
+          Awaited<ReturnType<typeof configurationLanguages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationLanguagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationLanguages>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationLanguages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Languages
+ */
+
+export function useConfigurationLanguagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationLanguages>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationLanguages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getConfigurationLanguagesInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationLanguagesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationLanguages>>,
@@ -5432,7 +9977,12 @@ export const getConfigurationLanguagesQueryOptions = <
     Awaited<ReturnType<typeof configurationLanguages>>
   > = ({ signal }) => configurationLanguages(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationLanguages>>,
     TError,
     TData
@@ -5566,11 +10116,176 @@ export const configurationPrimaryTranslations = (
   );
 };
 
+export const getConfigurationPrimaryTranslationsInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/configuration/primary_translations`,
+  ] as const;
+};
+
 export const getConfigurationPrimaryTranslationsQueryKey = () => {
   return [
     `https://api.themoviedb.org/3/configuration/primary_translations`,
   ] as const;
 };
+
+export const getConfigurationPrimaryTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  >,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getConfigurationPrimaryTranslationsInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  > = ({ signal }) => configurationPrimaryTranslations(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationPrimaryTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+>;
+export type ConfigurationPrimaryTranslationsInfiniteQueryError =
+  ErrorType<unknown>;
+
+export function useConfigurationPrimaryTranslationsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationPrimaryTranslationsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationPrimaryTranslationsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Primary Translations
+ */
+
+export function useConfigurationPrimaryTranslationsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof configurationPrimaryTranslations>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions =
+    getConfigurationPrimaryTranslationsInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationPrimaryTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
@@ -5594,7 +10309,12 @@ export const getConfigurationPrimaryTranslationsQueryOptions = <
     Awaited<ReturnType<typeof configurationPrimaryTranslations>>
   > = ({ signal }) => configurationPrimaryTranslations(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationPrimaryTranslations>>,
     TError,
     TData
@@ -5728,9 +10448,161 @@ export const configurationTimezones = (
   );
 };
 
+export const getConfigurationTimezonesInfiniteQueryKey = () => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/configuration/timezones`,
+  ] as const;
+};
+
 export const getConfigurationTimezonesQueryKey = () => {
   return [`https://api.themoviedb.org/3/configuration/timezones`] as const;
 };
+
+export const getConfigurationTimezonesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationTimezones>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof configurationTimezones>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getConfigurationTimezonesInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof configurationTimezones>>
+  > = ({ signal }) => configurationTimezones(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof configurationTimezones>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ConfigurationTimezonesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof configurationTimezones>>
+>;
+export type ConfigurationTimezonesInfiniteQueryError = ErrorType<unknown>;
+
+export function useConfigurationTimezonesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationTimezones>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationTimezones>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationTimezones>>,
+          TError,
+          Awaited<ReturnType<typeof configurationTimezones>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationTimezonesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationTimezones>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationTimezones>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof configurationTimezones>>,
+          TError,
+          Awaited<ReturnType<typeof configurationTimezones>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useConfigurationTimezonesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationTimezones>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationTimezones>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Timezones
+ */
+
+export function useConfigurationTimezonesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof configurationTimezones>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof configurationTimezones>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getConfigurationTimezonesInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getConfigurationTimezonesQueryOptions = <
   TData = Awaited<ReturnType<typeof configurationTimezones>>,
@@ -5754,7 +10626,12 @@ export const getConfigurationTimezonesQueryOptions = <
     Awaited<ReturnType<typeof configurationTimezones>>
   > = ({ signal }) => configurationTimezones(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof configurationTimezones>>,
     TError,
     TData
@@ -5891,6 +10768,17 @@ export const creditDetails = (
   );
 };
 
+export const getCreditDetailsInfiniteQueryKey = (
+  creditId?: string,
+  params?: CreditDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/credit/${creditId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getCreditDetailsQueryKey = (
   creditId?: string,
   params?: CreditDetailsParams
@@ -5900,6 +10788,169 @@ export const getCreditDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getCreditDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof creditDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  creditId: string,
+  params?: CreditDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof creditDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getCreditDetailsInfiniteQueryKey(creditId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof creditDetails>>> = ({
+    signal,
+  }) => creditDetails(creditId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!creditId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof creditDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type CreditDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof creditDetails>>
+>;
+export type CreditDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useCreditDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof creditDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  creditId: string,
+  params: undefined | CreditDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof creditDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof creditDetails>>,
+          TError,
+          Awaited<ReturnType<typeof creditDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCreditDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof creditDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  creditId: string,
+  params?: CreditDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof creditDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof creditDetails>>,
+          TError,
+          Awaited<ReturnType<typeof creditDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useCreditDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof creditDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  creditId: string,
+  params?: CreditDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof creditDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useCreditDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof creditDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  creditId: string,
+  params?: CreditDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof creditDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getCreditDetailsInfiniteQueryOptions(
+    creditId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getCreditDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof creditDetails>>,
@@ -5927,6 +10978,7 @@ export const getCreditDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!creditId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof creditDetails>>,
@@ -6056,12 +11108,174 @@ export const discoverMovie = (
   );
 };
 
+export const getDiscoverMovieInfiniteQueryKey = (
+  params?: DiscoverMovieParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/discover/movie`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getDiscoverMovieQueryKey = (params?: DiscoverMovieParams) => {
   return [
     `https://api.themoviedb.org/3/discover/movie`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getDiscoverMovieInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getDiscoverMovieInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof discoverMovie>>> = ({
+    signal,
+  }) => discoverMovie(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof discoverMovie>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DiscoverMovieInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof discoverMovie>>
+>;
+export type DiscoverMovieInfiniteQueryError = ErrorType<unknown>;
+
+export function useDiscoverMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | DiscoverMovieParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverMovie>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverMovie>>,
+          TError,
+          Awaited<ReturnType<typeof discoverMovie>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverMovie>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverMovie>>,
+          TError,
+          Awaited<ReturnType<typeof discoverMovie>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie
+ */
+
+export function useDiscoverMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getDiscoverMovieInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getDiscoverMovieQueryOptions = <
   TData = Awaited<ReturnType<typeof discoverMovie>>,
@@ -6083,7 +11297,12 @@ export const getDiscoverMovieQueryOptions = <
     signal,
   }) => discoverMovie(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof discoverMovie>>,
     TError,
     TData
@@ -6207,12 +11426,172 @@ export const discoverTv = (
   );
 };
 
+export const getDiscoverTvInfiniteQueryKey = (params?: DiscoverTvParams) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/discover/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getDiscoverTvQueryKey = (params?: DiscoverTvParams) => {
   return [
     `https://api.themoviedb.org/3/discover/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getDiscoverTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getDiscoverTvInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof discoverTv>>> = ({
+    signal,
+  }) => discoverTv(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof discoverTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DiscoverTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof discoverTv>>
+>;
+export type DiscoverTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useDiscoverTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | DiscoverTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverTv>>,
+          TError,
+          Awaited<ReturnType<typeof discoverTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof discoverTv>>,
+          TError,
+          Awaited<ReturnType<typeof discoverTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDiscoverTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV
+ */
+
+export function useDiscoverTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof discoverTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: DiscoverTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof discoverTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getDiscoverTvInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getDiscoverTvQueryOptions = <
   TData = Awaited<ReturnType<typeof discoverTv>>,
@@ -6234,7 +11613,12 @@ export const getDiscoverTvQueryOptions = <
     signal,
   }) => discoverTv(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof discoverTv>>,
     TError,
     TData
@@ -6359,6 +11743,17 @@ export const findById = (
   );
 };
 
+export const getFindByIdInfiniteQueryKey = (
+  externalId?: string,
+  params?: FindByIdParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/find/${externalId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getFindByIdQueryKey = (
   externalId?: string,
   params?: FindByIdParams
@@ -6368,6 +11763,168 @@ export const getFindByIdQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getFindByIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof findById>>>,
+  TError = ErrorType<unknown>,
+>(
+  externalId: string,
+  params: FindByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof findById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getFindByIdInfiniteQueryKey(externalId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof findById>>> = ({
+    signal,
+  }) => findById(externalId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!externalId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof findById>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type FindByIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof findById>>
+>;
+export type FindByIdInfiniteQueryError = ErrorType<unknown>;
+
+export function useFindByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof findById>>>,
+  TError = ErrorType<unknown>,
+>(
+  externalId: string,
+  params: FindByIdParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof findById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findById>>,
+          TError,
+          Awaited<ReturnType<typeof findById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFindByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof findById>>>,
+  TError = ErrorType<unknown>,
+>(
+  externalId: string,
+  params: FindByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof findById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof findById>>,
+          TError,
+          Awaited<ReturnType<typeof findById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useFindByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof findById>>>,
+  TError = ErrorType<unknown>,
+>(
+  externalId: string,
+  params: FindByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof findById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Find By ID
+ */
+
+export function useFindByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof findById>>>,
+  TError = ErrorType<unknown>,
+>(
+  externalId: string,
+  params: FindByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof findById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getFindByIdInfiniteQueryOptions(
+    externalId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getFindByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof findById>>,
@@ -6395,6 +11952,7 @@ export const getFindByIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!externalId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<Awaited<ReturnType<typeof findById>>, TError, TData> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -6522,12 +12080,174 @@ export const genreMovieList = (
   );
 };
 
+export const getGenreMovieListInfiniteQueryKey = (
+  params?: GenreMovieListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/genre/movie/list`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getGenreMovieListQueryKey = (params?: GenreMovieListParams) => {
   return [
     `https://api.themoviedb.org/3/genre/movie/list`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getGenreMovieListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof genreMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGenreMovieListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof genreMovieList>>> = ({
+    signal,
+  }) => genreMovieList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof genreMovieList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GenreMovieListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof genreMovieList>>
+>;
+export type GenreMovieListInfiniteQueryError = ErrorType<unknown>;
+
+export function useGenreMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | GenreMovieListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof genreMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof genreMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGenreMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof genreMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof genreMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGenreMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie List
+ */
+
+export function useGenreMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGenreMovieListInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getGenreMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof genreMovieList>>,
@@ -6549,7 +12269,12 @@ export const getGenreMovieListQueryOptions = <
     signal,
   }) => genreMovieList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof genreMovieList>>,
     TError,
     TData
@@ -6673,12 +12398,172 @@ export const genreTvList = (
   );
 };
 
+export const getGenreTvListInfiniteQueryKey = (params?: GenreTvListParams) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/genre/tv/list`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getGenreTvListQueryKey = (params?: GenreTvListParams) => {
   return [
     `https://api.themoviedb.org/3/genre/tv/list`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getGenreTvListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof genreTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGenreTvListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof genreTvList>>> = ({
+    signal,
+  }) => genreTvList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof genreTvList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GenreTvListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof genreTvList>>
+>;
+export type GenreTvListInfiniteQueryError = ErrorType<unknown>;
+
+export function useGenreTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | GenreTvListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof genreTvList>>,
+          TError,
+          Awaited<ReturnType<typeof genreTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGenreTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof genreTvList>>,
+          TError,
+          Awaited<ReturnType<typeof genreTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGenreTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV List
+ */
+
+export function useGenreTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof genreTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GenreTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof genreTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGenreTvListInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getGenreTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof genreTvList>>,
@@ -6700,7 +12585,12 @@ export const getGenreTvListQueryOptions = <
     signal,
   }) => genreTvList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof genreTvList>>,
     TError,
     TData
@@ -6825,6 +12715,17 @@ export const guestSessionRatedMovies = (
   );
 };
 
+export const getGuestSessionRatedMoviesInfiniteQueryKey = (
+  guestSessionId?: string,
+  params?: GuestSessionRatedMoviesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/movies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getGuestSessionRatedMoviesQueryKey = (
   guestSessionId?: string,
   params?: GuestSessionRatedMoviesParams
@@ -6834,6 +12735,170 @@ export const getGuestSessionRatedMoviesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getGuestSessionRatedMoviesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGuestSessionRatedMoviesInfiniteQueryKey(guestSessionId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof guestSessionRatedMovies>>
+  > = ({ signal }) =>
+    guestSessionRatedMovies(guestSessionId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!guestSessionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GuestSessionRatedMoviesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof guestSessionRatedMovies>>
+>;
+export type GuestSessionRatedMoviesInfiniteQueryError = ErrorType<unknown>;
+
+export function useGuestSessionRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params: undefined | GuestSessionRatedMoviesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated Movies
+ */
+
+export function useGuestSessionRatedMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGuestSessionRatedMoviesInfiniteQueryOptions(
+    guestSessionId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getGuestSessionRatedMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedMovies>>,
@@ -6867,6 +12932,7 @@ export const getGuestSessionRatedMoviesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!guestSessionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof guestSessionRatedMovies>>,
@@ -7017,6 +13083,17 @@ export const guestSessionRatedTv = (
   );
 };
 
+export const getGuestSessionRatedTvInfiniteQueryKey = (
+  guestSessionId?: string,
+  params?: GuestSessionRatedTvParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getGuestSessionRatedTvQueryKey = (
   guestSessionId?: string,
   params?: GuestSessionRatedTvParams
@@ -7026,6 +13103,170 @@ export const getGuestSessionRatedTvQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getGuestSessionRatedTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGuestSessionRatedTvInfiniteQueryKey(guestSessionId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof guestSessionRatedTv>>
+  > = ({ signal }) =>
+    guestSessionRatedTv(guestSessionId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!guestSessionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof guestSessionRatedTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GuestSessionRatedTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof guestSessionRatedTv>>
+>;
+export type GuestSessionRatedTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useGuestSessionRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params: undefined | GuestSessionRatedTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedTv>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedTv>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated TV
+ */
+
+export function useGuestSessionRatedTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGuestSessionRatedTvInfiniteQueryOptions(
+    guestSessionId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getGuestSessionRatedTvQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedTv>>,
@@ -7059,6 +13300,7 @@ export const getGuestSessionRatedTvQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!guestSessionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof guestSessionRatedTv>>,
@@ -7209,6 +13451,17 @@ export const guestSessionRatedTvEpisodes = (
   );
 };
 
+export const getGuestSessionRatedTvEpisodesInfiniteQueryKey = (
+  guestSessionId?: string,
+  params?: GuestSessionRatedTvEpisodesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/guest_session/${guestSessionId}/rated/tv/episodes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getGuestSessionRatedTvEpisodesQueryKey = (
   guestSessionId?: string,
   params?: GuestSessionRatedTvEpisodesParams
@@ -7218,6 +13471,170 @@ export const getGuestSessionRatedTvEpisodesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getGuestSessionRatedTvEpisodesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGuestSessionRatedTvEpisodesInfiniteQueryKey(guestSessionId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
+  > = ({ signal }) =>
+    guestSessionRatedTvEpisodes(guestSessionId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!guestSessionId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GuestSessionRatedTvEpisodesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
+>;
+export type GuestSessionRatedTvEpisodesInfiniteQueryError = ErrorType<unknown>;
+
+export function useGuestSessionRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params: undefined | GuestSessionRatedTvEpisodesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+          TError,
+          Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGuestSessionRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Rated TV Episodes
+ */
+
+export function useGuestSessionRatedTvEpisodesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>>,
+  TError = ErrorType<unknown>,
+>(
+  guestSessionId: string,
+  params?: GuestSessionRatedTvEpisodesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGuestSessionRatedTvEpisodesInfiniteQueryOptions(
+    guestSessionId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getGuestSessionRatedTvEpisodesQueryOptions = <
   TData = Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
@@ -7251,6 +13668,7 @@ export const getGuestSessionRatedTvEpisodesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!guestSessionId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof guestSessionRatedTvEpisodes>>,
@@ -7398,9 +13816,172 @@ export const keywordDetails = (
   );
 };
 
+export const getKeywordDetailsInfiniteQueryKey = (keywordId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/keyword/${keywordId}`,
+  ] as const;
+};
+
 export const getKeywordDetailsQueryKey = (keywordId?: number) => {
   return [`https://api.themoviedb.org/3/keyword/${keywordId}`] as const;
 };
+
+export const getKeywordDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getKeywordDetailsInfiniteQueryKey(keywordId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof keywordDetails>>> = ({
+    signal,
+  }) => keywordDetails(keywordId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!keywordId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof keywordDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type KeywordDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof keywordDetails>>
+>;
+export type KeywordDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useKeywordDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof keywordDetails>>,
+          TError,
+          Awaited<ReturnType<typeof keywordDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useKeywordDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof keywordDetails>>,
+          TError,
+          Awaited<ReturnType<typeof keywordDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useKeywordDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useKeywordDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getKeywordDetailsInfiniteQueryOptions(
+    keywordId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getKeywordDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof keywordDetails>>,
@@ -7427,6 +14008,7 @@ export const getKeywordDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!keywordId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof keywordDetails>>,
@@ -7552,6 +14134,17 @@ export const keywordMovies = (
   );
 };
 
+export const getKeywordMoviesInfiniteQueryKey = (
+  keywordId?: string,
+  params?: KeywordMoviesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/keyword/${keywordId}/movies`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getKeywordMoviesQueryKey = (
   keywordId?: string,
   params?: KeywordMoviesParams
@@ -7561,6 +14154,169 @@ export const getKeywordMoviesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getKeywordMoviesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: string,
+  params?: KeywordMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getKeywordMoviesInfiniteQueryKey(keywordId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof keywordMovies>>> = ({
+    signal,
+  }) => keywordMovies(keywordId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!keywordId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof keywordMovies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type KeywordMoviesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof keywordMovies>>
+>;
+export type KeywordMoviesInfiniteQueryError = ErrorType<unknown>;
+
+export function useKeywordMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: string,
+  params: undefined | KeywordMoviesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof keywordMovies>>,
+          TError,
+          Awaited<ReturnType<typeof keywordMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useKeywordMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: string,
+  params?: KeywordMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof keywordMovies>>,
+          TError,
+          Awaited<ReturnType<typeof keywordMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useKeywordMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: string,
+  params?: KeywordMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movies
+ */
+
+export function useKeywordMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof keywordMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  keywordId: string,
+  params?: KeywordMoviesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof keywordMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getKeywordMoviesInfiniteQueryOptions(
+    keywordId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getKeywordMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof keywordMovies>>,
@@ -7588,6 +14344,7 @@ export const getKeywordMoviesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!keywordId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof keywordMovies>>,
@@ -7833,6 +14590,17 @@ export const listCheckItemStatus = (
   );
 };
 
+export const getListCheckItemStatusInfiniteQueryKey = (
+  listId?: number,
+  params?: ListCheckItemStatusParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/list/${listId}/item_status`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getListCheckItemStatusQueryKey = (
   listId?: number,
   params?: ListCheckItemStatusParams
@@ -7842,6 +14610,170 @@ export const getListCheckItemStatusQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getListCheckItemStatusInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof listCheckItemStatus>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListCheckItemStatusParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listCheckItemStatus>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getListCheckItemStatusInfiniteQueryKey(listId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listCheckItemStatus>>
+  > = ({ signal }) =>
+    listCheckItemStatus(listId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!listId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof listCheckItemStatus>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListCheckItemStatusInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listCheckItemStatus>>
+>;
+export type ListCheckItemStatusInfiniteQueryError = ErrorType<unknown>;
+
+export function useListCheckItemStatusInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listCheckItemStatus>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params: undefined | ListCheckItemStatusParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listCheckItemStatus>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCheckItemStatus>>,
+          TError,
+          Awaited<ReturnType<typeof listCheckItemStatus>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCheckItemStatusInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listCheckItemStatus>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListCheckItemStatusParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listCheckItemStatus>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCheckItemStatus>>,
+          TError,
+          Awaited<ReturnType<typeof listCheckItemStatus>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListCheckItemStatusInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listCheckItemStatus>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListCheckItemStatusParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listCheckItemStatus>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Check Item Status
+ */
+
+export function useListCheckItemStatusInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listCheckItemStatus>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListCheckItemStatusParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listCheckItemStatus>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListCheckItemStatusInfiniteQueryOptions(
+    listId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getListCheckItemStatusQueryOptions = <
   TData = Awaited<ReturnType<typeof listCheckItemStatus>>,
@@ -7874,6 +14806,7 @@ export const getListCheckItemStatusQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!listId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof listCheckItemStatus>>,
@@ -8289,6 +15222,17 @@ export const listDetails = (
   );
 };
 
+export const getListDetailsInfiniteQueryKey = (
+  listId?: number,
+  params?: ListDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/list/${listId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getListDetailsQueryKey = (
   listId?: number,
   params?: ListDetailsParams
@@ -8298,6 +15242,168 @@ export const getListDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getListDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof listDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListDetailsInfiniteQueryKey(listId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listDetails>>> = ({
+    signal,
+  }) => listDetails(listId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!listId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof listDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listDetails>>
+>;
+export type ListDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useListDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params: undefined | ListDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listDetails>>,
+          TError,
+          Awaited<ReturnType<typeof listDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listDetails>>,
+          TError,
+          Awaited<ReturnType<typeof listDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useListDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  listId: number,
+  params?: ListDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListDetailsInfiniteQueryOptions(
+    listId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getListDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof listDetails>>,
@@ -8325,6 +15431,7 @@ export const getListDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!listId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof listDetails>>,
@@ -8569,6 +15676,16 @@ export const movieNowPlayingList = (
   );
 };
 
+export const getMovieNowPlayingListInfiniteQueryKey = (
+  params?: MovieNowPlayingListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/now_playing`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieNowPlayingListQueryKey = (
   params?: MovieNowPlayingListParams
 ) => {
@@ -8577,6 +15694,161 @@ export const getMovieNowPlayingListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieNowPlayingListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieNowPlayingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieNowPlayingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieNowPlayingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieNowPlayingListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieNowPlayingList>>
+  > = ({ signal }) => movieNowPlayingList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieNowPlayingList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieNowPlayingListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieNowPlayingList>>
+>;
+export type MovieNowPlayingListInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieNowPlayingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieNowPlayingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | MovieNowPlayingListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieNowPlayingList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieNowPlayingList>>,
+          TError,
+          Awaited<ReturnType<typeof movieNowPlayingList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieNowPlayingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieNowPlayingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieNowPlayingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieNowPlayingList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieNowPlayingList>>,
+          TError,
+          Awaited<ReturnType<typeof movieNowPlayingList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieNowPlayingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieNowPlayingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieNowPlayingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieNowPlayingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Now Playing
+ */
+
+export function useMovieNowPlayingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieNowPlayingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieNowPlayingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieNowPlayingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieNowPlayingListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieNowPlayingListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieNowPlayingList>>,
@@ -8603,7 +15875,12 @@ export const getMovieNowPlayingListQueryOptions = <
     Awaited<ReturnType<typeof movieNowPlayingList>>
   > = ({ signal }) => movieNowPlayingList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof movieNowPlayingList>>,
     TError,
     TData
@@ -8743,6 +16020,16 @@ export const moviePopularList = (
   );
 };
 
+export const getMoviePopularListInfiniteQueryKey = (
+  params?: MoviePopularListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/popular`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMoviePopularListQueryKey = (
   params?: MoviePopularListParams
 ) => {
@@ -8751,6 +16038,158 @@ export const getMoviePopularListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMoviePopularListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof moviePopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MoviePopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof moviePopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMoviePopularListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof moviePopularList>>
+  > = ({ signal }) => moviePopularList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof moviePopularList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MoviePopularListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof moviePopularList>>
+>;
+export type MoviePopularListInfiniteQueryError = ErrorType<unknown>;
+
+export function useMoviePopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof moviePopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | MoviePopularListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof moviePopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof moviePopularList>>,
+          TError,
+          Awaited<ReturnType<typeof moviePopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMoviePopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof moviePopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MoviePopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof moviePopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof moviePopularList>>,
+          TError,
+          Awaited<ReturnType<typeof moviePopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMoviePopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof moviePopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MoviePopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof moviePopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Popular
+ */
+
+export function useMoviePopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof moviePopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MoviePopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof moviePopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMoviePopularListInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMoviePopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof moviePopularList>>,
@@ -8777,7 +16216,12 @@ export const getMoviePopularListQueryOptions = <
     Awaited<ReturnType<typeof moviePopularList>>
   > = ({ signal }) => moviePopularList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof moviePopularList>>,
     TError,
     TData
@@ -8917,6 +16361,16 @@ export const movieTopRatedList = (
   );
 };
 
+export const getMovieTopRatedListInfiniteQueryKey = (
+  params?: MovieTopRatedListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/top_rated`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieTopRatedListQueryKey = (
   params?: MovieTopRatedListParams
 ) => {
@@ -8925,6 +16379,161 @@ export const getMovieTopRatedListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieTopRatedListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieTopRatedListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieTopRatedList>>
+  > = ({ signal }) => movieTopRatedList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieTopRatedList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieTopRatedListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieTopRatedList>>
+>;
+export type MovieTopRatedListInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | MovieTopRatedListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTopRatedList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieTopRatedList>>,
+          TError,
+          Awaited<ReturnType<typeof movieTopRatedList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTopRatedList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieTopRatedList>>,
+          TError,
+          Awaited<ReturnType<typeof movieTopRatedList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Top Rated
+ */
+
+export function useMovieTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieTopRatedListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieTopRatedListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieTopRatedList>>,
@@ -8951,7 +16560,12 @@ export const getMovieTopRatedListQueryOptions = <
     Awaited<ReturnType<typeof movieTopRatedList>>
   > = ({ signal }) => movieTopRatedList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof movieTopRatedList>>,
     TError,
     TData
@@ -9091,6 +16705,16 @@ export const movieUpcomingList = (
   );
 };
 
+export const getMovieUpcomingListInfiniteQueryKey = (
+  params?: MovieUpcomingListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/upcoming`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieUpcomingListQueryKey = (
   params?: MovieUpcomingListParams
 ) => {
@@ -9099,6 +16723,161 @@ export const getMovieUpcomingListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieUpcomingListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieUpcomingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieUpcomingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieUpcomingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieUpcomingListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieUpcomingList>>
+  > = ({ signal }) => movieUpcomingList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieUpcomingList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieUpcomingListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieUpcomingList>>
+>;
+export type MovieUpcomingListInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieUpcomingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieUpcomingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | MovieUpcomingListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieUpcomingList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieUpcomingList>>,
+          TError,
+          Awaited<ReturnType<typeof movieUpcomingList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieUpcomingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieUpcomingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieUpcomingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieUpcomingList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieUpcomingList>>,
+          TError,
+          Awaited<ReturnType<typeof movieUpcomingList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieUpcomingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieUpcomingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieUpcomingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieUpcomingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Upcoming
+ */
+
+export function useMovieUpcomingListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieUpcomingList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: MovieUpcomingListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieUpcomingList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieUpcomingListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieUpcomingListQueryOptions = <
   TData = Awaited<ReturnType<typeof movieUpcomingList>>,
@@ -9125,7 +16904,12 @@ export const getMovieUpcomingListQueryOptions = <
     Awaited<ReturnType<typeof movieUpcomingList>>
   > = ({ signal }) => movieUpcomingList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof movieUpcomingList>>,
     TError,
     TData
@@ -9266,6 +17050,17 @@ export const movieDetails = (
   );
 };
 
+export const getMovieDetailsInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieDetailsQueryKey = (
   movieId?: number,
   params?: MovieDetailsParams
@@ -9275,6 +17070,168 @@ export const getMovieDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieDetailsInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieDetails>>> = ({
+    signal,
+  }) => movieDetails(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieDetails>>
+>;
+export type MovieDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieDetails>>,
+          TError,
+          Awaited<ReturnType<typeof movieDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieDetails>>,
+          TError,
+          Awaited<ReturnType<typeof movieDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useMovieDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieDetailsInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieDetails>>,
@@ -9302,6 +17259,7 @@ export const getMovieDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieDetails>>,
@@ -9432,6 +17390,17 @@ export const movieAccountStates = (
   );
 };
 
+export const getMovieAccountStatesInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieAccountStatesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/account_states`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieAccountStatesQueryKey = (
   movieId?: number,
   params?: MovieAccountStatesParams
@@ -9441,6 +17410,170 @@ export const getMovieAccountStatesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieAccountStatesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getMovieAccountStatesInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieAccountStates>>
+  > = ({ signal }) =>
+    movieAccountStates(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieAccountStates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieAccountStatesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieAccountStates>>
+>;
+export type MovieAccountStatesInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieAccountStatesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof movieAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof movieAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Account States
+ */
+
+export function useMovieAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieAccountStatesInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieAccountStates>>,
@@ -9473,6 +17606,7 @@ export const getMovieAccountStatesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieAccountStates>>,
@@ -9623,6 +17757,17 @@ export const movieAlternativeTitles = (
   );
 };
 
+export const getMovieAlternativeTitlesInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieAlternativeTitlesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/alternative_titles`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieAlternativeTitlesQueryKey = (
   movieId?: number,
   params?: MovieAlternativeTitlesParams
@@ -9632,6 +17777,170 @@ export const getMovieAlternativeTitlesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieAlternativeTitlesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAlternativeTitlesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getMovieAlternativeTitlesInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieAlternativeTitles>>
+  > = ({ signal }) =>
+    movieAlternativeTitles(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieAlternativeTitles>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieAlternativeTitlesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieAlternativeTitles>>
+>;
+export type MovieAlternativeTitlesInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieAlternativeTitlesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAlternativeTitles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieAlternativeTitles>>,
+          TError,
+          Awaited<ReturnType<typeof movieAlternativeTitles>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAlternativeTitlesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAlternativeTitles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieAlternativeTitles>>,
+          TError,
+          Awaited<ReturnType<typeof movieAlternativeTitles>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAlternativeTitlesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Alternative Titles
+ */
+
+export function useMovieAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieAlternativeTitlesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieAlternativeTitlesInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieAlternativeTitlesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieAlternativeTitles>>,
@@ -9665,6 +17974,7 @@ export const getMovieAlternativeTitlesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieAlternativeTitles>>,
@@ -9815,6 +18125,17 @@ export const movieChanges = (
   );
 };
 
+export const getMovieChangesInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieChangesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieChangesQueryKey = (
   movieId?: number,
   params?: MovieChangesParams
@@ -9824,6 +18145,168 @@ export const getMovieChangesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieChangesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieChangesInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieChanges>>> = ({
+    signal,
+  }) => movieChanges(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieChanges>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieChangesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieChanges>>
+>;
+export type MovieChangesInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieChangesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieChanges>>,
+          TError,
+          Awaited<ReturnType<typeof movieChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieChanges>>,
+          TError,
+          Awaited<ReturnType<typeof movieChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Changes
+ */
+
+export function useMovieChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieChangesInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieChanges>>,
@@ -9851,6 +18334,7 @@ export const getMovieChangesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieChanges>>,
@@ -9980,6 +18464,17 @@ export const movieCredits = (
   );
 };
 
+export const getMovieCreditsInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieCreditsQueryKey = (
   movieId?: number,
   params?: MovieCreditsParams
@@ -9989,6 +18484,168 @@ export const getMovieCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieCreditsInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieCredits>>> = ({
+    signal,
+  }) => movieCredits(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieCredits>>
+>;
+export type MovieCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieCredits>>,
+          TError,
+          Awaited<ReturnType<typeof movieCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieCredits>>,
+          TError,
+          Awaited<ReturnType<typeof movieCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Credits
+ */
+
+export function useMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieCreditsInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieCredits>>,
@@ -10016,6 +18673,7 @@ export const getMovieCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieCredits>>,
@@ -10143,11 +18801,174 @@ export const movieExternalIds = (
   );
 };
 
+export const getMovieExternalIdsInfiniteQueryKey = (movieId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/external_ids`,
+  ] as const;
+};
+
 export const getMovieExternalIdsQueryKey = (movieId?: number) => {
   return [
     `https://api.themoviedb.org/3/movie/${movieId}/external_ids`,
   ] as const;
 };
+
+export const getMovieExternalIdsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieExternalIdsInfiniteQueryKey(movieId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieExternalIds>>
+  > = ({ signal }) => movieExternalIds(movieId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieExternalIds>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieExternalIdsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieExternalIds>>
+>;
+export type MovieExternalIdsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof movieExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof movieExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary External IDs
+ */
+
+export function useMovieExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieExternalIdsInfiniteQueryOptions(
+    movieId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieExternalIds>>,
@@ -10178,6 +18999,7 @@ export const getMovieExternalIdsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieExternalIds>>,
@@ -10320,6 +19142,17 @@ export const movieImages = (
   );
 };
 
+export const getMovieImagesInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieImagesQueryKey = (
   movieId?: number,
   params?: MovieImagesParams
@@ -10329,6 +19162,168 @@ export const getMovieImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieImagesInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieImages>>> = ({
+    signal,
+  }) => movieImages(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieImages>>
+>;
+export type MovieImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieImages>>,
+          TError,
+          Awaited<ReturnType<typeof movieImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieImages>>,
+          TError,
+          Awaited<ReturnType<typeof movieImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useMovieImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieImagesInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieImages>>,
@@ -10356,6 +19351,7 @@ export const getMovieImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieImages>>,
@@ -10483,9 +19479,169 @@ export const movieKeywords = (
   );
 };
 
+export const getMovieKeywordsInfiniteQueryKey = (movieId?: string) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/keywords`,
+  ] as const;
+};
+
 export const getMovieKeywordsQueryKey = (movieId?: string) => {
   return [`https://api.themoviedb.org/3/movie/${movieId}/keywords`] as const;
 };
+
+export const getMovieKeywordsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieKeywordsInfiniteQueryKey(movieId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieKeywords>>> = ({
+    signal,
+  }) => movieKeywords(movieId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieKeywords>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieKeywordsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieKeywords>>
+>;
+export type MovieKeywordsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: string,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieKeywords>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieKeywords>>,
+          TError,
+          Awaited<ReturnType<typeof movieKeywords>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieKeywords>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieKeywords>>,
+          TError,
+          Awaited<ReturnType<typeof movieKeywords>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Keywords
+ */
+
+export function useMovieKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieKeywordsInfiniteQueryOptions(movieId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieKeywordsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieKeywords>>,
@@ -10511,6 +19667,7 @@ export const getMovieKeywordsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieKeywords>>,
@@ -10630,9 +19787,157 @@ export const movieLatestId = (
   );
 };
 
+export const getMovieLatestIdInfiniteQueryKey = () => {
+  return ['infinite', `https://api.themoviedb.org/3/movie/latest`] as const;
+};
+
 export const getMovieLatestIdQueryKey = () => {
   return [`https://api.themoviedb.org/3/movie/latest`] as const;
 };
+
+export const getMovieLatestIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLatestId>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof movieLatestId>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getMovieLatestIdInfiniteQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieLatestId>>> = ({
+    signal,
+  }) => movieLatestId(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieLatestId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieLatestIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieLatestId>>
+>;
+export type MovieLatestIdInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof movieLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof movieLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Latest
+ */
+
+export function useMovieLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieLatestIdInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof movieLatestId>>,
@@ -10651,7 +19956,12 @@ export const getMovieLatestIdQueryOptions = <
     signal,
   }) => movieLatestId(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof movieLatestId>>,
     TError,
     TData
@@ -10772,6 +20082,17 @@ export const movieLists = (
   );
 };
 
+export const getMovieListsInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieListsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/lists`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieListsQueryKey = (
   movieId?: number,
   params?: MovieListsParams
@@ -10781,6 +20102,168 @@ export const getMovieListsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieListsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieListsInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieLists>>> = ({
+    signal,
+  }) => movieLists(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieLists>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieListsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieLists>>
+>;
+export type MovieListsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieListsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLists>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieLists>>,
+          TError,
+          Awaited<ReturnType<typeof movieLists>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLists>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieLists>>,
+          TError,
+          Awaited<ReturnType<typeof movieLists>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Lists
+ */
+
+export function useMovieListsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieLists>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieListsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieLists>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieListsInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieListsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieLists>>,
@@ -10808,6 +20291,7 @@ export const getMovieListsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieLists>>,
@@ -10937,6 +20421,17 @@ export const movieRecommendations = (
   );
 };
 
+export const getMovieRecommendationsInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieRecommendationsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/recommendations`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieRecommendationsQueryKey = (
   movieId?: number,
   params?: MovieRecommendationsParams
@@ -10946,6 +20441,170 @@ export const getMovieRecommendationsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieRecommendationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getMovieRecommendationsInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieRecommendations>>
+  > = ({ signal }) =>
+    movieRecommendations(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieRecommendations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieRecommendationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieRecommendations>>
+>;
+export type MovieRecommendationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieRecommendationsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieRecommendations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof movieRecommendations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieRecommendations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof movieRecommendations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Recommendations
+ */
+
+export function useMovieRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieRecommendationsInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieRecommendationsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieRecommendations>>,
@@ -10978,6 +20637,7 @@ export const getMovieRecommendationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieRecommendations>>,
@@ -11126,11 +20786,174 @@ export const movieReleaseDates = (
   );
 };
 
+export const getMovieReleaseDatesInfiniteQueryKey = (movieId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
+  ] as const;
+};
+
 export const getMovieReleaseDatesQueryKey = (movieId?: number) => {
   return [
     `https://api.themoviedb.org/3/movie/${movieId}/release_dates`,
   ] as const;
 };
+
+export const getMovieReleaseDatesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReleaseDates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReleaseDates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieReleaseDatesInfiniteQueryKey(movieId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieReleaseDates>>
+  > = ({ signal }) => movieReleaseDates(movieId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieReleaseDates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieReleaseDatesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieReleaseDates>>
+>;
+export type MovieReleaseDatesInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieReleaseDatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReleaseDates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReleaseDates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieReleaseDates>>,
+          TError,
+          Awaited<ReturnType<typeof movieReleaseDates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieReleaseDatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReleaseDates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReleaseDates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieReleaseDates>>,
+          TError,
+          Awaited<ReturnType<typeof movieReleaseDates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieReleaseDatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReleaseDates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReleaseDates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Release Dates
+ */
+
+export function useMovieReleaseDatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReleaseDates>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReleaseDates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieReleaseDatesInfiniteQueryOptions(
+    movieId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieReleaseDatesQueryOptions = <
   TData = Awaited<ReturnType<typeof movieReleaseDates>>,
@@ -11161,6 +20984,7 @@ export const getMovieReleaseDatesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieReleaseDates>>,
@@ -11303,6 +21127,17 @@ export const movieReviews = (
   );
 };
 
+export const getMovieReviewsInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieReviewsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/reviews`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieReviewsQueryKey = (
   movieId?: number,
   params?: MovieReviewsParams
@@ -11312,6 +21147,168 @@ export const getMovieReviewsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieReviewsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieReviewsInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieReviews>>> = ({
+    signal,
+  }) => movieReviews(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieReviews>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieReviewsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieReviews>>
+>;
+export type MovieReviewsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieReviewsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReviews>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieReviews>>,
+          TError,
+          Awaited<ReturnType<typeof movieReviews>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReviews>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieReviews>>,
+          TError,
+          Awaited<ReturnType<typeof movieReviews>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Reviews
+ */
+
+export function useMovieReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieReviewsInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieReviewsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieReviews>>,
@@ -11339,6 +21336,7 @@ export const getMovieReviewsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieReviews>>,
@@ -11469,6 +21467,17 @@ export const movieSimilar = (
   );
 };
 
+export const getMovieSimilarInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieSimilarParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/similar`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieSimilarQueryKey = (
   movieId?: number,
   params?: MovieSimilarParams
@@ -11478,6 +21487,168 @@ export const getMovieSimilarQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieSimilarInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieSimilarInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieSimilar>>> = ({
+    signal,
+  }) => movieSimilar(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieSimilar>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieSimilarInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieSimilar>>
+>;
+export type MovieSimilarInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieSimilarParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieSimilar>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof movieSimilar>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieSimilar>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof movieSimilar>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Similar
+ */
+
+export function useMovieSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieSimilarInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieSimilarQueryOptions = <
   TData = Awaited<ReturnType<typeof movieSimilar>>,
@@ -11505,6 +21676,7 @@ export const getMovieSimilarQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieSimilar>>,
@@ -11633,11 +21805,174 @@ export const movieTranslations = (
   );
 };
 
+export const getMovieTranslationsInfiniteQueryKey = (movieId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/translations`,
+  ] as const;
+};
+
 export const getMovieTranslationsQueryKey = (movieId?: number) => {
   return [
     `https://api.themoviedb.org/3/movie/${movieId}/translations`,
   ] as const;
 };
+
+export const getMovieTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieTranslationsInfiniteQueryKey(movieId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieTranslations>>
+  > = ({ signal }) => movieTranslations(movieId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieTranslations>>
+>;
+export type MovieTranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof movieTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof movieTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useMovieTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieTranslationsInfiniteQueryOptions(
+    movieId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof movieTranslations>>,
@@ -11668,6 +22003,7 @@ export const getMovieTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieTranslations>>,
@@ -11809,6 +22145,17 @@ export const movieVideos = (
   );
 };
 
+export const getMovieVideosInfiniteQueryKey = (
+  movieId?: number,
+  params?: MovieVideosParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getMovieVideosQueryKey = (
   movieId?: number,
   params?: MovieVideosParams
@@ -11818,6 +22165,168 @@ export const getMovieVideosQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getMovieVideosInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieVideosInfiniteQueryKey(movieId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof movieVideos>>> = ({
+    signal,
+  }) => movieVideos(movieId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieVideos>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieVideosInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieVideos>>
+>;
+export type MovieVideosInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params: undefined | MovieVideosParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieVideos>>,
+          TError,
+          Awaited<ReturnType<typeof movieVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieVideos>>,
+          TError,
+          Awaited<ReturnType<typeof movieVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Videos
+ */
+
+export function useMovieVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  params?: MovieVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieVideosInfiniteQueryOptions(
+    movieId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof movieVideos>>,
@@ -11845,6 +22354,7 @@ export const getMovieVideosQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieVideos>>,
@@ -11973,11 +22483,174 @@ export const movieWatchProviders = (
   );
 };
 
+export const getMovieWatchProvidersInfiniteQueryKey = (movieId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`,
+  ] as const;
+};
+
 export const getMovieWatchProvidersQueryKey = (movieId?: number) => {
   return [
     `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`,
   ] as const;
 };
+
+export const getMovieWatchProvidersInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof movieWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getMovieWatchProvidersInfiniteQueryKey(movieId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof movieWatchProviders>>
+  > = ({ signal }) => movieWatchProviders(movieId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!movieId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof movieWatchProviders>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type MovieWatchProvidersInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof movieWatchProviders>>
+>;
+export type MovieWatchProvidersInfiniteQueryError = ErrorType<unknown>;
+
+export function useMovieWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof movieWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof movieWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof movieWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useMovieWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Watch Providers
+ */
+
+export function useMovieWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof movieWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  movieId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof movieWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getMovieWatchProvidersInfiniteQueryOptions(
+    movieId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getMovieWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof movieWatchProviders>>,
@@ -12008,6 +22681,7 @@ export const getMovieWatchProvidersQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!movieId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof movieWatchProviders>>,
@@ -12352,9 +23026,172 @@ export const networkDetails = (
   );
 };
 
+export const getNetworkDetailsInfiniteQueryKey = (networkId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/network/${networkId}`,
+  ] as const;
+};
+
 export const getNetworkDetailsQueryKey = (networkId?: number) => {
   return [`https://api.themoviedb.org/3/network/${networkId}`] as const;
 };
+
+export const getNetworkDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof networkDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof networkDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getNetworkDetailsInfiniteQueryKey(networkId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof networkDetails>>> = ({
+    signal,
+  }) => networkDetails(networkId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!networkId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof networkDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type NetworkDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof networkDetails>>
+>;
+export type NetworkDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useNetworkDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof networkDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof networkDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof networkDetails>>,
+          TError,
+          Awaited<ReturnType<typeof networkDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useNetworkDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof networkDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof networkDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof networkDetails>>,
+          TError,
+          Awaited<ReturnType<typeof networkDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useNetworkDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof networkDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof networkDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useNetworkDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof networkDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof networkDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getNetworkDetailsInfiniteQueryOptions(
+    networkId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getNetworkDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof networkDetails>>,
@@ -12381,6 +23218,7 @@ export const getNetworkDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!networkId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof networkDetails>>,
@@ -12505,11 +23343,171 @@ export const detailsCopy = (
   );
 };
 
+export const getDetailsCopyInfiniteQueryKey = (networkId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/network/${networkId}/alternative_names`,
+  ] as const;
+};
+
 export const getDetailsCopyQueryKey = (networkId?: number) => {
   return [
     `https://api.themoviedb.org/3/network/${networkId}/alternative_names`,
   ] as const;
 };
+
+export const getDetailsCopyInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof detailsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof detailsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getDetailsCopyInfiniteQueryKey(networkId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof detailsCopy>>> = ({
+    signal,
+  }) => detailsCopy(networkId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!networkId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof detailsCopy>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DetailsCopyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof detailsCopy>>
+>;
+export type DetailsCopyInfiniteQueryError = ErrorType<unknown>;
+
+export function useDetailsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof detailsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof detailsCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof detailsCopy>>,
+          TError,
+          Awaited<ReturnType<typeof detailsCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDetailsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof detailsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof detailsCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof detailsCopy>>,
+          TError,
+          Awaited<ReturnType<typeof detailsCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useDetailsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof detailsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof detailsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Alternative Names
+ */
+
+export function useDetailsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof detailsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof detailsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getDetailsCopyInfiniteQueryOptions(networkId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getDetailsCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof detailsCopy>>,
@@ -12535,6 +23533,7 @@ export const getDetailsCopyQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!networkId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof detailsCopy>>,
@@ -12659,9 +23658,173 @@ export const alternativeNamesCopy = (
   );
 };
 
+export const getAlternativeNamesCopyInfiniteQueryKey = (networkId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/network/${networkId}/images`,
+  ] as const;
+};
+
 export const getAlternativeNamesCopyQueryKey = (networkId?: number) => {
   return [`https://api.themoviedb.org/3/network/${networkId}/images`] as const;
 };
+
+export const getAlternativeNamesCopyInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof alternativeNamesCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof alternativeNamesCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAlternativeNamesCopyInfiniteQueryKey(networkId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof alternativeNamesCopy>>
+  > = ({ signal }) => alternativeNamesCopy(networkId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!networkId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof alternativeNamesCopy>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AlternativeNamesCopyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof alternativeNamesCopy>>
+>;
+export type AlternativeNamesCopyInfiniteQueryError = ErrorType<unknown>;
+
+export function useAlternativeNamesCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof alternativeNamesCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof alternativeNamesCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof alternativeNamesCopy>>,
+          TError,
+          Awaited<ReturnType<typeof alternativeNamesCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAlternativeNamesCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof alternativeNamesCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof alternativeNamesCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof alternativeNamesCopy>>,
+          TError,
+          Awaited<ReturnType<typeof alternativeNamesCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAlternativeNamesCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof alternativeNamesCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof alternativeNamesCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useAlternativeNamesCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof alternativeNamesCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  networkId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof alternativeNamesCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getAlternativeNamesCopyInfiniteQueryOptions(
+    networkId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getAlternativeNamesCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof alternativeNamesCopy>>,
@@ -12692,6 +23855,7 @@ export const getAlternativeNamesCopyQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!networkId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof alternativeNamesCopy>>,
@@ -12833,6 +23997,16 @@ export const personPopularList = (
   );
 };
 
+export const getPersonPopularListInfiniteQueryKey = (
+  params?: PersonPopularListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/popular`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonPopularListQueryKey = (
   params?: PersonPopularListParams
 ) => {
@@ -12841,6 +24015,161 @@ export const getPersonPopularListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonPopularListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PersonPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPersonPopularListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof personPopularList>>
+  > = ({ signal }) => personPopularList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personPopularList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonPopularListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personPopularList>>
+>;
+export type PersonPopularListInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | PersonPopularListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personPopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personPopularList>>,
+          TError,
+          Awaited<ReturnType<typeof personPopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PersonPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personPopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personPopularList>>,
+          TError,
+          Awaited<ReturnType<typeof personPopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PersonPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Popular
+ */
+
+export function usePersonPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: PersonPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonPopularListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonPopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof personPopularList>>,
@@ -12867,7 +24196,12 @@ export const getPersonPopularListQueryOptions = <
     Awaited<ReturnType<typeof personPopularList>>
   > = ({ signal }) => personPopularList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof personPopularList>>,
     TError,
     TData
@@ -13008,6 +24342,17 @@ export const personDetails = (
   );
 };
 
+export const getPersonDetailsInfiniteQueryKey = (
+  personId?: number,
+  params?: PersonDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonDetailsQueryKey = (
   personId?: number,
   params?: PersonDetailsParams
@@ -13017,6 +24362,169 @@ export const getPersonDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonDetailsInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof personDetails>>> = ({
+    signal,
+  }) => personDetails(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personDetails>>
+>;
+export type PersonDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params: undefined | PersonDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personDetails>>,
+          TError,
+          Awaited<ReturnType<typeof personDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personDetails>>,
+          TError,
+          Awaited<ReturnType<typeof personDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function usePersonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonDetailsInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof personDetails>>,
@@ -13044,6 +24552,7 @@ export const getPersonDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personDetails>>,
@@ -13174,6 +24683,17 @@ export const personChanges = (
   );
 };
 
+export const getPersonChangesInfiniteQueryKey = (
+  personId?: number,
+  params?: PersonChangesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonChangesQueryKey = (
   personId?: number,
   params?: PersonChangesParams
@@ -13183,6 +24703,169 @@ export const getPersonChangesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonChangesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonChangesInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof personChanges>>> = ({
+    signal,
+  }) => personChanges(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personChanges>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonChangesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personChanges>>
+>;
+export type PersonChangesInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params: undefined | PersonChangesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personChanges>>,
+          TError,
+          Awaited<ReturnType<typeof personChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personChanges>>,
+          TError,
+          Awaited<ReturnType<typeof personChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Changes
+ */
+
+export function usePersonChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonChangesInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof personChanges>>,
@@ -13210,6 +24893,7 @@ export const getPersonChangesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personChanges>>,
@@ -13340,6 +25024,17 @@ export const personCombinedCredits = (
   );
 };
 
+export const getPersonCombinedCreditsInfiniteQueryKey = (
+  personId?: string,
+  params?: PersonCombinedCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/combined_credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonCombinedCreditsQueryKey = (
   personId?: string,
   params?: PersonCombinedCreditsParams
@@ -13349,6 +25044,170 @@ export const getPersonCombinedCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonCombinedCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personCombinedCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: string,
+  params?: PersonCombinedCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personCombinedCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonCombinedCreditsInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof personCombinedCredits>>
+  > = ({ signal }) =>
+    personCombinedCredits(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personCombinedCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonCombinedCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personCombinedCredits>>
+>;
+export type PersonCombinedCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonCombinedCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personCombinedCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: string,
+  params: undefined | PersonCombinedCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personCombinedCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personCombinedCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personCombinedCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonCombinedCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personCombinedCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: string,
+  params?: PersonCombinedCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personCombinedCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personCombinedCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personCombinedCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonCombinedCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personCombinedCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: string,
+  params?: PersonCombinedCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personCombinedCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Combined Credits
+ */
+
+export function usePersonCombinedCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personCombinedCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: string,
+  params?: PersonCombinedCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personCombinedCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonCombinedCreditsInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonCombinedCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personCombinedCredits>>,
@@ -13382,6 +25241,7 @@ export const getPersonCombinedCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personCombinedCredits>>,
@@ -13530,11 +25390,174 @@ export const personExternalIds = (
   );
 };
 
+export const getPersonExternalIdsInfiniteQueryKey = (personId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/external_ids`,
+  ] as const;
+};
+
 export const getPersonExternalIdsQueryKey = (personId?: number) => {
   return [
     `https://api.themoviedb.org/3/person/${personId}/external_ids`,
   ] as const;
 };
+
+export const getPersonExternalIdsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPersonExternalIdsInfiniteQueryKey(personId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof personExternalIds>>
+  > = ({ signal }) => personExternalIds(personId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personExternalIds>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonExternalIdsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personExternalIds>>
+>;
+export type PersonExternalIdsInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof personExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof personExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary External IDs
+ */
+
+export function usePersonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonExternalIdsInfiniteQueryOptions(
+    personId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof personExternalIds>>,
@@ -13565,6 +25588,7 @@ export const getPersonExternalIdsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personExternalIds>>,
@@ -13705,9 +25729,169 @@ export const personImages = (
   );
 };
 
+export const getPersonImagesInfiniteQueryKey = (personId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/images`,
+  ] as const;
+};
+
 export const getPersonImagesQueryKey = (personId?: number) => {
   return [`https://api.themoviedb.org/3/person/${personId}/images`] as const;
 };
+
+export const getPersonImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPersonImagesInfiniteQueryKey(personId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof personImages>>> = ({
+    signal,
+  }) => personImages(personId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personImages>>
+>;
+export type PersonImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personImages>>,
+          TError,
+          Awaited<ReturnType<typeof personImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personImages>>,
+          TError,
+          Awaited<ReturnType<typeof personImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function usePersonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonImagesInfiniteQueryOptions(personId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof personImages>>,
@@ -13733,6 +25917,7 @@ export const getPersonImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personImages>>,
@@ -13856,9 +26041,158 @@ export const personLatestId = (
   );
 };
 
+export const getPersonLatestIdInfiniteQueryKey = () => {
+  return ['infinite', `https://api.themoviedb.org/3/person/latest`] as const;
+};
+
 export const getPersonLatestIdQueryKey = () => {
   return [`https://api.themoviedb.org/3/person/latest`] as const;
 };
+
+export const getPersonLatestIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personLatestId>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof personLatestId>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getPersonLatestIdInfiniteQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof personLatestId>>> = ({
+    signal,
+  }) => personLatestId(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personLatestId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonLatestIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personLatestId>>
+>;
+export type PersonLatestIdInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof personLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof personLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Latest
+ */
+
+export function usePersonLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonLatestIdInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof personLatestId>>,
@@ -13877,7 +26211,12 @@ export const getPersonLatestIdQueryOptions = <
     signal,
   }) => personLatestId(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof personLatestId>>,
     TError,
     TData
@@ -13998,6 +26337,17 @@ export const personMovieCredits = (
   );
 };
 
+export const getPersonMovieCreditsInfiniteQueryKey = (
+  personId?: number,
+  params?: PersonMovieCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/movie_credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonMovieCreditsQueryKey = (
   personId?: number,
   params?: PersonMovieCreditsParams
@@ -14007,6 +26357,170 @@ export const getPersonMovieCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonMovieCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personMovieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonMovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personMovieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonMovieCreditsInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof personMovieCredits>>
+  > = ({ signal }) =>
+    personMovieCredits(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personMovieCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonMovieCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personMovieCredits>>
+>;
+export type PersonMovieCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personMovieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params: undefined | PersonMovieCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personMovieCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personMovieCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personMovieCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personMovieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonMovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personMovieCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personMovieCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personMovieCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personMovieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonMovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personMovieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie Credits
+ */
+
+export function usePersonMovieCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personMovieCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonMovieCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personMovieCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonMovieCreditsInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonMovieCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personMovieCredits>>,
@@ -14039,6 +26553,7 @@ export const getPersonMovieCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personMovieCredits>>,
@@ -14189,6 +26704,17 @@ export const personTvCredits = (
   );
 };
 
+export const getPersonTvCreditsInfiniteQueryKey = (
+  personId?: number,
+  params?: PersonTvCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/tv_credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonTvCreditsQueryKey = (
   personId?: number,
   params?: PersonTvCreditsParams
@@ -14198,6 +26724,169 @@ export const getPersonTvCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonTvCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personTvCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTvCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTvCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonTvCreditsInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof personTvCredits>>> = ({
+    signal,
+  }) => personTvCredits(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personTvCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonTvCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personTvCredits>>
+>;
+export type PersonTvCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonTvCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTvCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params: undefined | PersonTvCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTvCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personTvCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personTvCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonTvCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTvCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTvCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTvCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personTvCredits>>,
+          TError,
+          Awaited<ReturnType<typeof personTvCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonTvCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTvCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTvCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTvCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV Credits
+ */
+
+export function usePersonTvCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTvCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTvCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTvCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonTvCreditsInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonTvCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof personTvCredits>>,
@@ -14229,6 +26918,7 @@ export const getPersonTvCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personTvCredits>>,
@@ -14379,6 +27069,17 @@ export const personTaggedImages = (
   );
 };
 
+export const getPersonTaggedImagesInfiniteQueryKey = (
+  personId?: number,
+  params?: PersonTaggedImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/tagged_images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getPersonTaggedImagesQueryKey = (
   personId?: number,
   params?: PersonTaggedImagesParams
@@ -14388,6 +27089,170 @@ export const getPersonTaggedImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getPersonTaggedImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof personTaggedImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTaggedImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTaggedImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getPersonTaggedImagesInfiniteQueryKey(personId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof personTaggedImages>>
+  > = ({ signal }) =>
+    personTaggedImages(personId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof personTaggedImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PersonTaggedImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof personTaggedImages>>
+>;
+export type PersonTaggedImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function usePersonTaggedImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTaggedImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params: undefined | PersonTaggedImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTaggedImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personTaggedImages>>,
+          TError,
+          Awaited<ReturnType<typeof personTaggedImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonTaggedImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTaggedImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTaggedImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTaggedImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof personTaggedImages>>,
+          TError,
+          Awaited<ReturnType<typeof personTaggedImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function usePersonTaggedImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTaggedImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTaggedImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTaggedImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Tagged Images
+ */
+
+export function usePersonTaggedImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof personTaggedImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  params?: PersonTaggedImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof personTaggedImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getPersonTaggedImagesInfiniteQueryOptions(
+    personId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getPersonTaggedImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof personTaggedImages>>,
@@ -14420,6 +27285,7 @@ export const getPersonTaggedImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof personTaggedImages>>,
@@ -14568,11 +27434,171 @@ export const translations = (
   );
 };
 
+export const getTranslationsInfiniteQueryKey = (personId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/person/${personId}/translations`,
+  ] as const;
+};
+
 export const getTranslationsQueryKey = (personId?: number) => {
   return [
     `https://api.themoviedb.org/3/person/${personId}/translations`,
   ] as const;
 };
+
+export const getTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof translations>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof translations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTranslationsInfiniteQueryKey(personId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof translations>>> = ({
+    signal,
+  }) => translations(personId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!personId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof translations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof translations>>
+>;
+export type TranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof translations>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof translations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof translations>>,
+          TError,
+          Awaited<ReturnType<typeof translations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof translations>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof translations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof translations>>,
+          TError,
+          Awaited<ReturnType<typeof translations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof translations>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof translations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof translations>>>,
+  TError = ErrorType<unknown>,
+>(
+  personId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof translations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTranslationsInfiniteQueryOptions(personId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof translations>>,
@@ -14598,6 +27624,7 @@ export const getTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!personId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof translations>>,
@@ -14722,9 +27749,169 @@ export const reviewDetails = (
   );
 };
 
+export const getReviewDetailsInfiniteQueryKey = (reviewId?: string) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/review/${reviewId}`,
+  ] as const;
+};
+
 export const getReviewDetailsQueryKey = (reviewId?: string) => {
   return [`https://api.themoviedb.org/3/review/${reviewId}`] as const;
 };
+
+export const getReviewDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof reviewDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  reviewId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof reviewDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getReviewDetailsInfiniteQueryKey(reviewId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof reviewDetails>>> = ({
+    signal,
+  }) => reviewDetails(reviewId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!reviewId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof reviewDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ReviewDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof reviewDetails>>
+>;
+export type ReviewDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useReviewDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof reviewDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  reviewId: string,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof reviewDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof reviewDetails>>,
+          TError,
+          Awaited<ReturnType<typeof reviewDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useReviewDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof reviewDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  reviewId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof reviewDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof reviewDetails>>,
+          TError,
+          Awaited<ReturnType<typeof reviewDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useReviewDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof reviewDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  reviewId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof reviewDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useReviewDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof reviewDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  reviewId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof reviewDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getReviewDetailsInfiniteQueryOptions(reviewId, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getReviewDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof reviewDetails>>,
@@ -14750,6 +27937,7 @@ export const getReviewDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!reviewId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof reviewDetails>>,
@@ -14875,6 +28063,16 @@ export const searchCollection = (
   );
 };
 
+export const getSearchCollectionInfiniteQueryKey = (
+  params?: SearchCollectionParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/collection`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchCollectionQueryKey = (
   params?: SearchCollectionParams
 ) => {
@@ -14883,6 +28081,158 @@ export const getSearchCollectionQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchCollectionInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCollection>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCollectionParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCollection>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchCollectionInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof searchCollection>>
+  > = ({ signal }) => searchCollection(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchCollection>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchCollectionInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchCollection>>
+>;
+export type SearchCollectionInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchCollectionInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCollection>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCollectionParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCollection>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchCollection>>,
+          TError,
+          Awaited<ReturnType<typeof searchCollection>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchCollectionInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCollection>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCollectionParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCollection>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchCollection>>,
+          TError,
+          Awaited<ReturnType<typeof searchCollection>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchCollectionInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCollection>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCollectionParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCollection>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Collection
+ */
+
+export function useSearchCollectionInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCollection>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCollectionParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCollection>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchCollectionInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchCollectionQueryOptions = <
   TData = Awaited<ReturnType<typeof searchCollection>>,
@@ -14909,7 +28259,12 @@ export const getSearchCollectionQueryOptions = <
     Awaited<ReturnType<typeof searchCollection>>
   > = ({ signal }) => searchCollection(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchCollection>>,
     TError,
     TData
@@ -15049,12 +28404,174 @@ export const searchCompany = (
   );
 };
 
+export const getSearchCompanyInfiniteQueryKey = (
+  params?: SearchCompanyParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/company`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchCompanyQueryKey = (params?: SearchCompanyParams) => {
   return [
     `https://api.themoviedb.org/3/search/company`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchCompanyInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCompany>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCompanyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCompany>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchCompanyInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchCompany>>> = ({
+    signal,
+  }) => searchCompany(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchCompany>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchCompanyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchCompany>>
+>;
+export type SearchCompanyInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchCompanyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCompany>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCompanyParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCompany>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchCompany>>,
+          TError,
+          Awaited<ReturnType<typeof searchCompany>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchCompanyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCompany>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCompanyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCompany>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchCompany>>,
+          TError,
+          Awaited<ReturnType<typeof searchCompany>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchCompanyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCompany>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCompanyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCompany>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Company
+ */
+
+export function useSearchCompanyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchCompany>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchCompanyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchCompany>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchCompanyInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchCompanyQueryOptions = <
   TData = Awaited<ReturnType<typeof searchCompany>>,
@@ -15076,7 +28593,12 @@ export const getSearchCompanyQueryOptions = <
     signal,
   }) => searchCompany(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchCompany>>,
     TError,
     TData
@@ -15200,12 +28722,174 @@ export const searchKeyword = (
   );
 };
 
+export const getSearchKeywordInfiniteQueryKey = (
+  params?: SearchKeywordParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/keyword`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchKeywordQueryKey = (params?: SearchKeywordParams) => {
   return [
     `https://api.themoviedb.org/3/search/keyword`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchKeywordInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchKeyword>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchKeywordParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchKeyword>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchKeywordInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchKeyword>>> = ({
+    signal,
+  }) => searchKeyword(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchKeyword>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchKeywordInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchKeyword>>
+>;
+export type SearchKeywordInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchKeywordInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchKeyword>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchKeywordParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchKeyword>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchKeyword>>,
+          TError,
+          Awaited<ReturnType<typeof searchKeyword>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchKeywordInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchKeyword>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchKeywordParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchKeyword>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchKeyword>>,
+          TError,
+          Awaited<ReturnType<typeof searchKeyword>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchKeywordInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchKeyword>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchKeywordParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchKeyword>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Keyword
+ */
+
+export function useSearchKeywordInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchKeyword>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchKeywordParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchKeyword>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchKeywordInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchKeywordQueryOptions = <
   TData = Awaited<ReturnType<typeof searchKeyword>>,
@@ -15227,7 +28911,12 @@ export const getSearchKeywordQueryOptions = <
     signal,
   }) => searchKeyword(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchKeyword>>,
     TError,
     TData
@@ -15351,12 +29040,172 @@ export const searchMovie = (
   );
 };
 
+export const getSearchMovieInfiniteQueryKey = (params?: SearchMovieParams) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/movie`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchMovieQueryKey = (params?: SearchMovieParams) => {
   return [
     `https://api.themoviedb.org/3/search/movie`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchMovieInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchMovieInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchMovie>>> = ({
+    signal,
+  }) => searchMovie(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchMovie>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchMovieInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchMovie>>
+>;
+export type SearchMovieInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMovieParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMovie>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchMovie>>,
+          TError,
+          Awaited<ReturnType<typeof searchMovie>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMovie>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchMovie>>,
+          TError,
+          Awaited<ReturnType<typeof searchMovie>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie
+ */
+
+export function useSearchMovieInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMovie>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMovieParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMovie>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchMovieInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchMovieQueryOptions = <
   TData = Awaited<ReturnType<typeof searchMovie>>,
@@ -15378,7 +29227,12 @@ export const getSearchMovieQueryOptions = <
     signal,
   }) => searchMovie(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchMovie>>,
     TError,
     TData
@@ -15502,12 +29356,172 @@ export const searchMulti = (
   );
 };
 
+export const getSearchMultiInfiniteQueryKey = (params?: SearchMultiParams) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/multi`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchMultiQueryKey = (params?: SearchMultiParams) => {
   return [
     `https://api.themoviedb.org/3/search/multi`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchMultiInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMulti>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMultiParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMulti>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchMultiInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchMulti>>> = ({
+    signal,
+  }) => searchMulti(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchMulti>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchMultiInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchMulti>>
+>;
+export type SearchMultiInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchMultiInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMulti>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMultiParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMulti>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchMulti>>,
+          TError,
+          Awaited<ReturnType<typeof searchMulti>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchMultiInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMulti>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMultiParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMulti>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchMulti>>,
+          TError,
+          Awaited<ReturnType<typeof searchMulti>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchMultiInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMulti>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMultiParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMulti>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Multi
+ */
+
+export function useSearchMultiInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchMulti>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchMultiParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchMulti>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchMultiInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchMultiQueryOptions = <
   TData = Awaited<ReturnType<typeof searchMulti>>,
@@ -15529,7 +29543,12 @@ export const getSearchMultiQueryOptions = <
     signal,
   }) => searchMulti(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchMulti>>,
     TError,
     TData
@@ -15653,12 +29672,174 @@ export const searchPerson = (
   );
 };
 
+export const getSearchPersonInfiniteQueryKey = (
+  params?: SearchPersonParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/person`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchPersonQueryKey = (params?: SearchPersonParams) => {
   return [
     `https://api.themoviedb.org/3/search/person`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchPersonInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchPerson>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchPersonParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchPerson>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchPersonInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchPerson>>> = ({
+    signal,
+  }) => searchPerson(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchPerson>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchPersonInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchPerson>>
+>;
+export type SearchPersonInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchPersonInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchPerson>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchPersonParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchPerson>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchPerson>>,
+          TError,
+          Awaited<ReturnType<typeof searchPerson>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchPersonInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchPerson>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchPersonParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchPerson>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchPerson>>,
+          TError,
+          Awaited<ReturnType<typeof searchPerson>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchPersonInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchPerson>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchPersonParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchPerson>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Person
+ */
+
+export function useSearchPersonInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchPerson>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchPersonParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchPerson>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchPersonInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchPersonQueryOptions = <
   TData = Awaited<ReturnType<typeof searchPerson>>,
@@ -15680,7 +29861,12 @@ export const getSearchPersonQueryOptions = <
     signal,
   }) => searchPerson(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof searchPerson>>,
     TError,
     TData
@@ -15804,12 +29990,172 @@ export const searchTv = (
   );
 };
 
+export const getSearchTvInfiniteQueryKey = (params?: SearchTvParams) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/search/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getSearchTvQueryKey = (params?: SearchTvParams) => {
   return [
     `https://api.themoviedb.org/3/search/tv`,
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getSearchTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof searchTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getSearchTvInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof searchTv>>> = ({
+    signal,
+  }) => searchTv(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof searchTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type SearchTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof searchTv>>
+>;
+export type SearchTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useSearchTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchTvParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchTv>>,
+          TError,
+          Awaited<ReturnType<typeof searchTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof searchTv>>,
+          TError,
+          Awaited<ReturnType<typeof searchTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useSearchTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV
+ */
+
+export function useSearchTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof searchTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: SearchTvParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof searchTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getSearchTvInfiniteQueryOptions(params, options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getSearchTvQueryOptions = <
   TData = Awaited<ReturnType<typeof searchTv>>,
@@ -15831,11 +30177,14 @@ export const getSearchTvQueryOptions = <
     signal,
   }) => searchTv(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof searchTv>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof searchTv>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 };
 
 export type SearchTvQueryResult = NonNullable<
@@ -15956,6 +30305,17 @@ export const trendingAll = (
   );
 };
 
+export const getTrendingAllInfiniteQueryKey = (
+  params?: TrendingAllParams,
+  timeWindow: 'day' | 'week' = 'day'
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/trending/all/${timeWindow}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTrendingAllQueryKey = (
   params?: TrendingAllParams,
   timeWindow: 'day' | 'week' = 'day'
@@ -15965,6 +30325,169 @@ export const getTrendingAllQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTrendingAllInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingAll>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingAllParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingAll>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTrendingAllInfiniteQueryKey(params, timeWindow);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingAll>>> = ({
+    signal,
+  }) => trendingAll(params, timeWindow, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!timeWindow,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof trendingAll>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrendingAllInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trendingAll>>
+>;
+export type TrendingAllInfiniteQueryError = ErrorType<unknown>;
+
+export function useTrendingAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingAll>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TrendingAllParams,
+  timeWindow: undefined | 'day' | 'week',
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingAll>>,
+          TError,
+          Awaited<ReturnType<typeof trendingAll>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingAll>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingAllParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingAll>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingAll>>,
+          TError,
+          Awaited<ReturnType<typeof trendingAll>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingAll>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingAllParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingAll>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary All
+ */
+
+export function useTrendingAllInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingAll>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingAllParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingAll>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTrendingAllInfiniteQueryOptions(
+    params,
+    timeWindow,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTrendingAllQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingAll>>,
@@ -15992,6 +30515,7 @@ export const getTrendingAllQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!timeWindow,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof trendingAll>>,
@@ -16122,6 +30646,17 @@ export const trendingMovies = (
   );
 };
 
+export const getTrendingMoviesInfiniteQueryKey = (
+  params?: TrendingMoviesParams,
+  timeWindow: 'day' | 'week' = 'day'
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/trending/movie/${timeWindow}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTrendingMoviesQueryKey = (
   params?: TrendingMoviesParams,
   timeWindow: 'day' | 'week' = 'day'
@@ -16131,6 +30666,169 @@ export const getTrendingMoviesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTrendingMoviesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingMoviesParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTrendingMoviesInfiniteQueryKey(params, timeWindow);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingMovies>>> = ({
+    signal,
+  }) => trendingMovies(params, timeWindow, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!timeWindow,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof trendingMovies>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrendingMoviesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trendingMovies>>
+>;
+export type TrendingMoviesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTrendingMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TrendingMoviesParams,
+  timeWindow: undefined | 'day' | 'week',
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingMovies>>,
+          TError,
+          Awaited<ReturnType<typeof trendingMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingMoviesParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingMovies>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingMovies>>,
+          TError,
+          Awaited<ReturnType<typeof trendingMovies>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingMoviesParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movies
+ */
+
+export function useTrendingMoviesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingMovies>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingMoviesParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingMovies>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTrendingMoviesInfiniteQueryOptions(
+    params,
+    timeWindow,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTrendingMoviesQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingMovies>>,
@@ -16158,6 +30856,7 @@ export const getTrendingMoviesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!timeWindow,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof trendingMovies>>,
@@ -16292,6 +30991,17 @@ export const trendingPeople = (
   );
 };
 
+export const getTrendingPeopleInfiniteQueryKey = (
+  params?: TrendingPeopleParams,
+  timeWindow: 'day' | 'week' = 'day'
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/trending/person/${timeWindow}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTrendingPeopleQueryKey = (
   params?: TrendingPeopleParams,
   timeWindow: 'day' | 'week' = 'day'
@@ -16301,6 +31011,169 @@ export const getTrendingPeopleQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTrendingPeopleInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingPeople>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingPeopleParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingPeople>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTrendingPeopleInfiniteQueryKey(params, timeWindow);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingPeople>>> = ({
+    signal,
+  }) => trendingPeople(params, timeWindow, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!timeWindow,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof trendingPeople>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrendingPeopleInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trendingPeople>>
+>;
+export type TrendingPeopleInfiniteQueryError = ErrorType<unknown>;
+
+export function useTrendingPeopleInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingPeople>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TrendingPeopleParams,
+  timeWindow: undefined | 'day' | 'week',
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingPeople>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingPeople>>,
+          TError,
+          Awaited<ReturnType<typeof trendingPeople>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingPeopleInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingPeople>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingPeopleParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingPeople>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingPeople>>,
+          TError,
+          Awaited<ReturnType<typeof trendingPeople>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingPeopleInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingPeople>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingPeopleParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingPeople>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary People
+ */
+
+export function useTrendingPeopleInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingPeople>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingPeopleParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingPeople>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTrendingPeopleInfiniteQueryOptions(
+    params,
+    timeWindow,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTrendingPeopleQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingPeople>>,
@@ -16328,6 +31201,7 @@ export const getTrendingPeopleQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!timeWindow,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof trendingPeople>>,
@@ -16462,6 +31336,17 @@ export const trendingTv = (
   );
 };
 
+export const getTrendingTvInfiniteQueryKey = (
+  params?: TrendingTvParams,
+  timeWindow: 'day' | 'week' = 'day'
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/trending/tv/${timeWindow}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTrendingTvQueryKey = (
   params?: TrendingTvParams,
   timeWindow: 'day' | 'week' = 'day'
@@ -16471,6 +31356,168 @@ export const getTrendingTvQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTrendingTvInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingTvParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTrendingTvInfiniteQueryKey(params, timeWindow);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trendingTv>>> = ({
+    signal,
+  }) => trendingTv(params, timeWindow, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!timeWindow,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof trendingTv>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrendingTvInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trendingTv>>
+>;
+export type TrendingTvInfiniteQueryError = ErrorType<unknown>;
+
+export function useTrendingTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TrendingTvParams,
+  timeWindow: undefined | 'day' | 'week',
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingTv>>,
+          TError,
+          Awaited<ReturnType<typeof trendingTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingTvParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingTv>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trendingTv>>,
+          TError,
+          Awaited<ReturnType<typeof trendingTv>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTrendingTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingTvParams,
+  timeWindow?: 'day' | 'week',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV
+ */
+
+export function useTrendingTvInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof trendingTv>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TrendingTvParams,
+  timeWindow: 'day' | 'week' = 'day',
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof trendingTv>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTrendingTvInfiniteQueryOptions(
+    params,
+    timeWindow,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTrendingTvQueryOptions = <
   TData = Awaited<ReturnType<typeof trendingTv>>,
@@ -16498,6 +31545,7 @@ export const getTrendingTvQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!timeWindow,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof trendingTv>>,
@@ -16627,6 +31675,16 @@ export const tvSeriesAiringTodayList = (
   );
 };
 
+export const getTvSeriesAiringTodayListInfiniteQueryKey = (
+  params?: TvSeriesAiringTodayListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/airing_today`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesAiringTodayListQueryKey = (
   params?: TvSeriesAiringTodayListParams
 ) => {
@@ -16635,6 +31693,162 @@ export const getTvSeriesAiringTodayListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesAiringTodayListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAiringTodayList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesAiringTodayListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesAiringTodayListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
+  > = ({ signal }) => tvSeriesAiringTodayList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesAiringTodayListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
+>;
+export type TvSeriesAiringTodayListInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesAiringTodayListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAiringTodayList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TvSeriesAiringTodayListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAiringTodayListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAiringTodayList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesAiringTodayListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAiringTodayListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAiringTodayList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesAiringTodayListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Airing Today
+ */
+
+export function useTvSeriesAiringTodayListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAiringTodayList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesAiringTodayListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesAiringTodayListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesAiringTodayListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
@@ -16661,7 +31875,12 @@ export const getTvSeriesAiringTodayListQueryOptions = <
     Awaited<ReturnType<typeof tvSeriesAiringTodayList>>
   > = ({ signal }) => tvSeriesAiringTodayList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesAiringTodayList>>,
     TError,
     TData
@@ -16801,6 +32020,16 @@ export const tvSeriesOnTheAirList = (
   );
 };
 
+export const getTvSeriesOnTheAirListInfiniteQueryKey = (
+  params?: TvSeriesOnTheAirListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/on_the_air`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesOnTheAirListQueryKey = (
   params?: TvSeriesOnTheAirListParams
 ) => {
@@ -16809,6 +32038,161 @@ export const getTvSeriesOnTheAirListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesOnTheAirListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesOnTheAirList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesOnTheAirListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesOnTheAirListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
+  > = ({ signal }) => tvSeriesOnTheAirList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesOnTheAirListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
+>;
+export type TvSeriesOnTheAirListInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesOnTheAirListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesOnTheAirList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TvSeriesOnTheAirListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesOnTheAirListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesOnTheAirList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesOnTheAirListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesOnTheAirListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesOnTheAirList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesOnTheAirListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary On The Air
+ */
+
+export function useTvSeriesOnTheAirListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesOnTheAirList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesOnTheAirListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesOnTheAirListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesOnTheAirListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
@@ -16835,7 +32219,12 @@ export const getTvSeriesOnTheAirListQueryOptions = <
     Awaited<ReturnType<typeof tvSeriesOnTheAirList>>
   > = ({ signal }) => tvSeriesOnTheAirList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesOnTheAirList>>,
     TError,
     TData
@@ -16975,6 +32364,16 @@ export const tvSeriesPopularList = (
   );
 };
 
+export const getTvSeriesPopularListInfiniteQueryKey = (
+  params?: TvSeriesPopularListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/popular`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesPopularListQueryKey = (
   params?: TvSeriesPopularListParams
 ) => {
@@ -16983,6 +32382,161 @@ export const getTvSeriesPopularListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesPopularListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesPopularListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesPopularList>>
+  > = ({ signal }) => tvSeriesPopularList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesPopularList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesPopularListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesPopularList>>
+>;
+export type TvSeriesPopularListInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TvSeriesPopularListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesPopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesPopularList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesPopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesPopularList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesPopularList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesPopularList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Popular
+ */
+
+export function useTvSeriesPopularListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesPopularList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesPopularListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesPopularList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesPopularListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesPopularListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesPopularList>>,
@@ -17009,7 +32563,12 @@ export const getTvSeriesPopularListQueryOptions = <
     Awaited<ReturnType<typeof tvSeriesPopularList>>
   > = ({ signal }) => tvSeriesPopularList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesPopularList>>,
     TError,
     TData
@@ -17149,6 +32708,16 @@ export const tvSeriesTopRatedList = (
   );
 };
 
+export const getTvSeriesTopRatedListInfiniteQueryKey = (
+  params?: TvSeriesTopRatedListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/top_rated`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesTopRatedListQueryKey = (
   params?: TvSeriesTopRatedListParams
 ) => {
@@ -17157,6 +32726,161 @@ export const getTvSeriesTopRatedListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesTopRatedListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesTopRatedListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesTopRatedList>>
+  > = ({ signal }) => tvSeriesTopRatedList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesTopRatedListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesTopRatedList>>
+>;
+export type TvSeriesTopRatedListInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | TvSeriesTopRatedListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesTopRatedList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesTopRatedList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Top Rated
+ */
+
+export function useTvSeriesTopRatedListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTopRatedList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: TvSeriesTopRatedListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesTopRatedListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesTopRatedListQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
@@ -17183,7 +32907,12 @@ export const getTvSeriesTopRatedListQueryOptions = <
     Awaited<ReturnType<typeof tvSeriesTopRatedList>>
   > = ({ signal }) => tvSeriesTopRatedList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesTopRatedList>>,
     TError,
     TData
@@ -17324,6 +33053,17 @@ export const tvSeriesDetails = (
   );
 };
 
+export const getTvSeriesDetailsInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesDetailsQueryKey = (
   seriesId?: number,
   params?: TvSeriesDetailsParams
@@ -17333,6 +33073,169 @@ export const getTvSeriesDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesDetailsInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesDetails>>> = ({
+    signal,
+  }) => tvSeriesDetails(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesDetails>>
+>;
+export type TvSeriesDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useTvSeriesDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesDetailsInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesDetails>>,
@@ -17364,6 +33267,7 @@ export const getTvSeriesDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesDetails>>,
@@ -17514,6 +33418,17 @@ export const tvSeriesAccountStates = (
   );
 };
 
+export const getTvSeriesAccountStatesInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesAccountStatesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/account_states`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesAccountStatesQueryKey = (
   seriesId?: number,
   params?: TvSeriesAccountStatesParams
@@ -17523,6 +33438,170 @@ export const getTvSeriesAccountStatesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesAccountStatesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesAccountStatesInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesAccountStates>>
+  > = ({ signal }) =>
+    tvSeriesAccountStates(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesAccountStatesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesAccountStates>>
+>;
+export type TvSeriesAccountStatesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesAccountStatesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Account States
+ */
+
+export function useTvSeriesAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesAccountStatesInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAccountStates>>,
@@ -17556,6 +33635,7 @@ export const getTvSeriesAccountStatesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesAccountStates>>,
@@ -17706,6 +33786,17 @@ export const tvSeriesAggregateCredits = (
   );
 };
 
+export const getTvSeriesAggregateCreditsInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesAggregateCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/aggregate_credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesAggregateCreditsQueryKey = (
   seriesId?: number,
   params?: TvSeriesAggregateCreditsParams
@@ -17715,6 +33806,170 @@ export const getTvSeriesAggregateCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesAggregateCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesAggregateCreditsInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
+  > = ({ signal }) =>
+    tvSeriesAggregateCredits(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesAggregateCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
+>;
+export type TvSeriesAggregateCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesAggregateCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAggregateCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Aggregate Credits
+ */
+
+export function useTvSeriesAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesAggregateCreditsInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesAggregateCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
@@ -17748,6 +34003,7 @@ export const getTvSeriesAggregateCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesAggregateCredits>>,
@@ -17896,11 +34152,178 @@ export const tvSeriesAlternativeTitles = (
   );
 };
 
+export const getTvSeriesAlternativeTitlesInfiniteQueryKey = (
+  seriesId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/alternative_titles`,
+  ] as const;
+};
+
 export const getTvSeriesAlternativeTitlesQueryKey = (seriesId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/${seriesId}/alternative_titles`,
   ] as const;
 };
+
+export const getTvSeriesAlternativeTitlesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesAlternativeTitlesInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
+  > = ({ signal }) =>
+    tvSeriesAlternativeTitles(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesAlternativeTitlesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
+>;
+export type TvSeriesAlternativeTitlesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Alternative Titles
+ */
+
+export function useTvSeriesAlternativeTitlesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesAlternativeTitlesInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesAlternativeTitlesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
@@ -17932,6 +34355,7 @@ export const getTvSeriesAlternativeTitlesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesAlternativeTitles>>,
@@ -18077,6 +34501,17 @@ export const tvSeriesChanges = (
   );
 };
 
+export const getTvSeriesChangesInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesChangesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesChangesQueryKey = (
   seriesId?: number,
   params?: TvSeriesChangesParams
@@ -18086,6 +34521,169 @@ export const getTvSeriesChangesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesChangesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesChangesInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesChanges>>> = ({
+    signal,
+  }) => tvSeriesChanges(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesChanges>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesChangesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesChanges>>
+>;
+export type TvSeriesChangesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesChangesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesChanges>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesChanges>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesChanges>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesChanges>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Changes
+ */
+
+export function useTvSeriesChangesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesChanges>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesChangesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesChanges>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesChangesInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesChangesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesChanges>>,
@@ -18117,6 +34715,7 @@ export const getTvSeriesChangesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesChanges>>,
@@ -18265,11 +34864,177 @@ export const tvSeriesContentRatings = (
   );
 };
 
+export const getTvSeriesContentRatingsInfiniteQueryKey = (
+  seriesId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/content_ratings`,
+  ] as const;
+};
+
 export const getTvSeriesContentRatingsQueryKey = (seriesId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/${seriesId}/content_ratings`,
   ] as const;
 };
+
+export const getTvSeriesContentRatingsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesContentRatings>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesContentRatingsInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesContentRatings>>
+  > = ({ signal }) => tvSeriesContentRatings(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesContentRatingsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesContentRatings>>
+>;
+export type TvSeriesContentRatingsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesContentRatingsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesContentRatings>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesContentRatings>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesContentRatingsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesContentRatings>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesContentRatings>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesContentRatingsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesContentRatings>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Content Ratings
+ */
+
+export function useTvSeriesContentRatingsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesContentRatings>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesContentRatings>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesContentRatingsInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesContentRatingsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesContentRatings>>,
@@ -18300,6 +35065,7 @@ export const getTvSeriesContentRatingsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesContentRatings>>,
@@ -18442,6 +35208,17 @@ export const tvSeriesCredits = (
   );
 };
 
+export const getTvSeriesCreditsInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesCreditsQueryKey = (
   seriesId?: number,
   params?: TvSeriesCreditsParams
@@ -18451,6 +35228,169 @@ export const getTvSeriesCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesCreditsInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesCredits>>> = ({
+    signal,
+  }) => tvSeriesCredits(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesCredits>>
+>;
+export type TvSeriesCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Credits
+ */
+
+export function useTvSeriesCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesCreditsInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesCredits>>,
@@ -18482,6 +35422,7 @@ export const getTvSeriesCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesCredits>>,
@@ -18630,11 +35571,175 @@ export const tvSeriesEpisodeGroups = (
   );
 };
 
+export const getTvSeriesEpisodeGroupsInfiniteQueryKey = (seriesId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/episode_groups`,
+  ] as const;
+};
+
 export const getTvSeriesEpisodeGroupsQueryKey = (seriesId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/${seriesId}/episode_groups`,
   ] as const;
 };
+
+export const getTvSeriesEpisodeGroupsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesEpisodeGroupsInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
+  > = ({ signal }) => tvSeriesEpisodeGroups(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesEpisodeGroupsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
+>;
+export type TvSeriesEpisodeGroupsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesEpisodeGroupsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesEpisodeGroupsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesEpisodeGroupsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Episode Groups
+ */
+
+export function useTvSeriesEpisodeGroupsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesEpisodeGroupsInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesEpisodeGroupsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
@@ -18665,6 +35770,7 @@ export const getTvSeriesEpisodeGroupsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesEpisodeGroups>>,
@@ -18805,9 +35911,172 @@ export const tvSeriesExternalIds = (
   );
 };
 
+export const getTvSeriesExternalIdsInfiniteQueryKey = (seriesId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/external_ids`,
+  ] as const;
+};
+
 export const getTvSeriesExternalIdsQueryKey = (seriesId?: number) => {
   return [`https://api.themoviedb.org/3/tv/${seriesId}/external_ids`] as const;
 };
+
+export const getTvSeriesExternalIdsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesExternalIdsInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesExternalIds>>
+  > = ({ signal }) => tvSeriesExternalIds(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesExternalIdsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesExternalIds>>
+>;
+export type TvSeriesExternalIdsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary External IDs
+ */
+
+export function useTvSeriesExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesExternalIdsInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesExternalIds>>,
@@ -18838,6 +36107,7 @@ export const getTvSeriesExternalIdsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesExternalIds>>,
@@ -18980,6 +36250,17 @@ export const tvSeriesImages = (
   );
 };
 
+export const getTvSeriesImagesInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesImagesQueryKey = (
   seriesId?: number,
   params?: TvSeriesImagesParams
@@ -18989,6 +36270,169 @@ export const getTvSeriesImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesImagesInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesImages>>> = ({
+    signal,
+  }) => tvSeriesImages(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesImages>>
+>;
+export type TvSeriesImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useTvSeriesImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesImagesInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesImages>>,
@@ -19016,6 +36460,7 @@ export const getTvSeriesImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesImages>>,
@@ -19144,9 +36589,172 @@ export const tvSeriesKeywords = (
   );
 };
 
+export const getTvSeriesKeywordsInfiniteQueryKey = (seriesId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/keywords`,
+  ] as const;
+};
+
 export const getTvSeriesKeywordsQueryKey = (seriesId?: number) => {
   return [`https://api.themoviedb.org/3/tv/${seriesId}/keywords`] as const;
 };
+
+export const getTvSeriesKeywordsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesKeywordsInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesKeywords>>
+  > = ({ signal }) => tvSeriesKeywords(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesKeywords>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesKeywordsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesKeywords>>
+>;
+export type TvSeriesKeywordsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesKeywords>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesKeywords>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesKeywords>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesKeywords>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesKeywords>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesKeywords>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Keywords
+ */
+
+export function useTvSeriesKeywordsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesKeywords>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesKeywords>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesKeywordsInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesKeywordsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesKeywords>>,
@@ -19177,6 +36785,7 @@ export const getTvSeriesKeywordsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesKeywords>>,
@@ -19312,9 +36921,158 @@ export const tvSeriesLatestId = (
   );
 };
 
+export const getTvSeriesLatestIdInfiniteQueryKey = () => {
+  return ['infinite', `https://api.themoviedb.org/3/tv/latest`] as const;
+};
+
 export const getTvSeriesLatestIdQueryKey = () => {
   return [`https://api.themoviedb.org/3/tv/latest`] as const;
 };
+
+export const getTvSeriesLatestIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesLatestId>>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: Partial<
+    UseInfiniteQueryOptions<
+      Awaited<ReturnType<typeof tvSeriesLatestId>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesLatestIdInfiniteQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesLatestId>>
+  > = ({ signal }) => tvSeriesLatestId(requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesLatestId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesLatestIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesLatestId>>
+>;
+export type TvSeriesLatestIdInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesLatestId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesLatestId>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesLatestId>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Latest
+ */
+
+export function useTvSeriesLatestIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesLatestId>>>,
+  TError = ErrorType<unknown>,
+>(
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesLatestId>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesLatestIdInfiniteQueryOptions(options);
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesLatestIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesLatestId>>,
@@ -19333,7 +37091,12 @@ export const getTvSeriesLatestIdQueryOptions = <
     Awaited<ReturnType<typeof tvSeriesLatestId>>
   > = ({ signal }) => tvSeriesLatestId(requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesLatestId>>,
     TError,
     TData
@@ -19470,6 +37233,17 @@ export const listsCopy = (
   );
 };
 
+export const getListsCopyInfiniteQueryKey = (
+  seriesId?: number,
+  params?: ListsCopyParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/lists`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getListsCopyQueryKey = (
   seriesId?: number,
   params?: ListsCopyParams
@@ -19479,6 +37253,168 @@ export const getListsCopyQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getListsCopyInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof listsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: ListsCopyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListsCopyInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listsCopy>>> = ({
+    signal,
+  }) => listsCopy(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof listsCopy>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ListsCopyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listsCopy>>
+>;
+export type ListsCopyInfiniteQueryError = ErrorType<unknown>;
+
+export function useListsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | ListsCopyParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listsCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listsCopy>>,
+          TError,
+          Awaited<ReturnType<typeof listsCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: ListsCopyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listsCopy>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listsCopy>>,
+          TError,
+          Awaited<ReturnType<typeof listsCopy>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useListsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: ListsCopyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Lists
+ */
+
+export function useListsCopyInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof listsCopy>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: ListsCopyParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof listsCopy>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getListsCopyInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getListsCopyQueryOptions = <
   TData = Awaited<ReturnType<typeof listsCopy>>,
@@ -19506,6 +37442,7 @@ export const getListsCopyQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<Awaited<ReturnType<typeof listsCopy>>, TError, TData> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -19633,6 +37570,17 @@ export const tvSeriesRecommendations = (
   );
 };
 
+export const getTvSeriesRecommendationsInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesRecommendationsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/recommendations`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesRecommendationsQueryKey = (
   seriesId?: number,
   params?: TvSeriesRecommendationsParams
@@ -19642,6 +37590,170 @@ export const getTvSeriesRecommendationsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesRecommendationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesRecommendationsInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesRecommendations>>
+  > = ({ signal }) =>
+    tvSeriesRecommendations(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesRecommendationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesRecommendations>>
+>;
+export type TvSeriesRecommendationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesRecommendationsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesRecommendations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesRecommendations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Recommendations
+ */
+
+export function useTvSeriesRecommendationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesRecommendations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesRecommendationsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesRecommendations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesRecommendationsInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesRecommendationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesRecommendations>>,
@@ -19675,6 +37787,7 @@ export const getTvSeriesRecommendationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesRecommendations>>,
@@ -19825,6 +37938,17 @@ export const tvSeriesReviews = (
   );
 };
 
+export const getTvSeriesReviewsInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesReviewsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/reviews`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesReviewsQueryKey = (
   seriesId?: number,
   params?: TvSeriesReviewsParams
@@ -19834,6 +37958,169 @@ export const getTvSeriesReviewsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesReviewsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesReviewsInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesReviews>>> = ({
+    signal,
+  }) => tvSeriesReviews(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesReviews>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesReviewsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesReviews>>
+>;
+export type TvSeriesReviewsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesReviewsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesReviews>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesReviews>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesReviews>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesReviews>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesReviews>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesReviews>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Reviews
+ */
+
+export function useTvSeriesReviewsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesReviews>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesReviewsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesReviews>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesReviewsInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesReviewsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesReviews>>,
@@ -19865,6 +38152,7 @@ export const getTvSeriesReviewsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesReviews>>,
@@ -20013,11 +38301,188 @@ export const tvSeriesScreenedTheatrically = (
   );
 };
 
+export const getTvSeriesScreenedTheatricallyInfiniteQueryKey = (
+  seriesId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/screened_theatrically`,
+  ] as const;
+};
+
 export const getTvSeriesScreenedTheatricallyQueryKey = (seriesId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/${seriesId}/screened_theatrically`,
   ] as const;
 };
+
+export const getTvSeriesScreenedTheatricallyInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesScreenedTheatricallyInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  > = ({ signal }) =>
+    tvSeriesScreenedTheatrically(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesScreenedTheatricallyInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+>;
+export type TvSeriesScreenedTheatricallyInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesScreenedTheatricallyInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesScreenedTheatricallyInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesScreenedTheatricallyInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Screened Theatrically
+ */
+
+export function useTvSeriesScreenedTheatricallyInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesScreenedTheatricallyInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesScreenedTheatricallyQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
@@ -20049,6 +38514,7 @@ export const getTvSeriesScreenedTheatricallyQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesScreenedTheatrically>>,
@@ -20194,6 +38660,17 @@ export const tvSeriesSimilar = (
   );
 };
 
+export const getTvSeriesSimilarInfiniteQueryKey = (
+  seriesId?: string,
+  params?: TvSeriesSimilarParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/similar`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesSimilarQueryKey = (
   seriesId?: string,
   params?: TvSeriesSimilarParams
@@ -20203,6 +38680,169 @@ export const getTvSeriesSimilarQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesSimilarInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: string,
+  params?: TvSeriesSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesSimilarInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesSimilar>>> = ({
+    signal,
+  }) => tvSeriesSimilar(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesSimilar>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesSimilarInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesSimilar>>
+>;
+export type TvSeriesSimilarInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: string,
+  params: undefined | TvSeriesSimilarParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesSimilar>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesSimilar>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: string,
+  params?: TvSeriesSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesSimilar>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesSimilar>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesSimilar>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: string,
+  params?: TvSeriesSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Similar
+ */
+
+export function useTvSeriesSimilarInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesSimilar>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: string,
+  params?: TvSeriesSimilarParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesSimilar>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesSimilarInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesSimilarQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesSimilar>>,
@@ -20234,6 +38874,7 @@ export const getTvSeriesSimilarQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesSimilar>>,
@@ -20382,9 +39023,172 @@ export const tvSeriesTranslations = (
   );
 };
 
+export const getTvSeriesTranslationsInfiniteQueryKey = (seriesId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/translations`,
+  ] as const;
+};
+
 export const getTvSeriesTranslationsQueryKey = (seriesId?: number) => {
   return [`https://api.themoviedb.org/3/tv/${seriesId}/translations`] as const;
 };
+
+export const getTvSeriesTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getTvSeriesTranslationsInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesTranslations>>
+  > = ({ signal }) => tvSeriesTranslations(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesTranslations>>
+>;
+export type TvSeriesTranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useTvSeriesTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesTranslationsInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesTranslations>>,
@@ -20415,6 +39219,7 @@ export const getTvSeriesTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesTranslations>>,
@@ -20557,6 +39362,17 @@ export const tvSeriesVideos = (
   );
 };
 
+export const getTvSeriesVideosInfiniteQueryKey = (
+  seriesId?: number,
+  params?: TvSeriesVideosParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeriesVideosQueryKey = (
   seriesId?: number,
   params?: TvSeriesVideosParams
@@ -20566,6 +39382,169 @@ export const getTvSeriesVideosQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeriesVideosInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesVideosInfiniteQueryKey(seriesId, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeriesVideos>>> = ({
+    signal,
+  }) => tvSeriesVideos(seriesId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesVideos>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesVideosInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesVideos>>
+>;
+export type TvSeriesVideosInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params: undefined | TvSeriesVideosParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Videos
+ */
+
+export function useTvSeriesVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  params?: TvSeriesVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesVideosInfiniteQueryOptions(
+    seriesId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesVideos>>,
@@ -20593,6 +39572,7 @@ export const getTvSeriesVideosQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesVideos>>,
@@ -20721,11 +39701,177 @@ export const tvSeriesWatchProviders = (
   );
 };
 
+export const getTvSeriesWatchProvidersInfiniteQueryKey = (
+  seriesId?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/watch/providers`,
+  ] as const;
+};
+
 export const getTvSeriesWatchProvidersQueryKey = (seriesId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/${seriesId}/watch/providers`,
   ] as const;
 };
+
+export const getTvSeriesWatchProvidersInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeriesWatchProvidersInfiniteQueryKey(seriesId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeriesWatchProviders>>
+  > = ({ signal }) => tvSeriesWatchProviders(seriesId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seriesId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeriesWatchProvidersInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeriesWatchProviders>>
+>;
+export type TvSeriesWatchProvidersInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeriesWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeriesWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeriesWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Watch Providers
+ */
+
+export function useTvSeriesWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeriesWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeriesWatchProvidersInfiniteQueryOptions(
+    seriesId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeriesWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
@@ -20756,6 +39902,7 @@ export const getTvSeriesWatchProvidersQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seriesId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeriesWatchProviders>>,
@@ -21103,6 +40250,18 @@ export const tvSeasonDetails = (
   );
 };
 
+export const getTvSeasonDetailsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonDetailsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -21113,6 +40272,175 @@ export const getTvSeasonDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonDetailsInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonDetails>>> = ({
+    signal,
+  }) => tvSeasonDetails(seriesId, seasonNumber, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonDetails>>
+>;
+export type TvSeasonDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useTvSeasonDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonDetailsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonDetails>>,
@@ -21146,6 +40474,7 @@ export const getTvSeasonDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonDetails>>,
@@ -21302,6 +40631,18 @@ export const tvSeasonAccountStates = (
   );
 };
 
+export const getTvSeasonAccountStatesInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonAccountStatesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/account_states`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonAccountStatesQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -21312,6 +40653,182 @@ export const getTvSeasonAccountStatesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonAccountStatesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonAccountStatesInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonAccountStates>>
+  > = ({ signal }) =>
+    tvSeasonAccountStates(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonAccountStatesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonAccountStates>>
+>;
+export type TvSeasonAccountStatesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonAccountStatesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Account States
+ */
+
+export function useTvSeasonAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonAccountStatesInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonAccountStates>>,
@@ -21352,6 +40869,7 @@ export const getTvSeasonAccountStatesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonAccountStates>>,
@@ -21508,6 +41026,18 @@ export const tvSeasonAggregateCredits = (
   );
 };
 
+export const getTvSeasonAggregateCreditsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonAggregateCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/aggregate_credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonAggregateCreditsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -21518,6 +41048,182 @@ export const getTvSeasonAggregateCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonAggregateCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonAggregateCreditsInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
+  > = ({ signal }) =>
+    tvSeasonAggregateCredits(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonAggregateCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
+>;
+export type TvSeasonAggregateCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonAggregateCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonAggregateCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Aggregate Credits
+ */
+
+export function useTvSeasonAggregateCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonAggregateCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonAggregateCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonAggregateCreditsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonAggregateCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
@@ -21558,6 +41264,7 @@ export const getTvSeasonAggregateCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonAggregateCredits>>,
@@ -21713,6 +41420,17 @@ export const tvSeasonChangesById = (
   );
 };
 
+export const getTvSeasonChangesByIdInfiniteQueryKey = (
+  seasonId?: number,
+  params?: TvSeasonChangesByIdParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/season/${seasonId}/changes`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonChangesByIdQueryKey = (
   seasonId?: number,
   params?: TvSeasonChangesByIdParams
@@ -21722,6 +41440,170 @@ export const getTvSeasonChangesByIdQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonChangesByIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  seasonId: number,
+  params?: TvSeasonChangesByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonChangesByIdInfiniteQueryKey(seasonId, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonChangesById>>
+  > = ({ signal }) =>
+    tvSeasonChangesById(seasonId, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!seasonId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonChangesById>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonChangesByIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonChangesById>>
+>;
+export type TvSeasonChangesByIdInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  seasonId: number,
+  params: undefined | TvSeasonChangesByIdParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonChangesById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonChangesById>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonChangesById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  seasonId: number,
+  params?: TvSeasonChangesByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonChangesById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonChangesById>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonChangesById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  seasonId: number,
+  params?: TvSeasonChangesByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Changes
+ */
+
+export function useTvSeasonChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  seasonId: number,
+  params?: TvSeasonChangesByIdParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonChangesByIdInfiniteQueryOptions(
+    seasonId,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonChangesByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonChangesById>>,
@@ -21754,6 +41636,7 @@ export const getTvSeasonChangesByIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!seasonId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonChangesById>>,
@@ -21904,6 +41787,18 @@ export const tvSeasonCredits = (
   );
 };
 
+export const getTvSeasonCreditsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonCreditsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -21914,6 +41809,175 @@ export const getTvSeasonCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonCreditsInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonCredits>>> = ({
+    signal,
+  }) => tvSeasonCredits(seriesId, seasonNumber, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonCredits>>
+>;
+export type TvSeasonCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Credits
+ */
+
+export function useTvSeasonCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonCreditsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonCredits>>,
@@ -21947,6 +42011,7 @@ export const getTvSeasonCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonCredits>>,
@@ -22101,6 +42166,16 @@ export const tvSeasonExternalIds = (
   );
 };
 
+export const getTvSeasonExternalIdsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/external_ids`,
+  ] as const;
+};
+
 export const getTvSeasonExternalIdsQueryKey = (
   seriesId?: number,
   seasonNumber?: number
@@ -22109,6 +42184,170 @@ export const getTvSeasonExternalIdsQueryKey = (
     `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/external_ids`,
   ] as const;
 };
+
+export const getTvSeasonExternalIdsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonExternalIdsInfiniteQueryKey(seriesId, seasonNumber);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonExternalIds>>
+  > = ({ signal }) =>
+    tvSeasonExternalIds(seriesId, seasonNumber, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonExternalIdsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonExternalIds>>
+>;
+export type TvSeasonExternalIdsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary External IDs
+ */
+
+export function useTvSeasonExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonExternalIdsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonExternalIds>>,
@@ -22142,6 +42381,7 @@ export const getTvSeasonExternalIdsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonExternalIds>>,
@@ -22293,6 +42533,18 @@ export const tvSeasonImages = (
   );
 };
 
+export const getTvSeasonImagesInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonImagesQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -22303,6 +42555,175 @@ export const getTvSeasonImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonImagesInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonImages>>> = ({
+    signal,
+  }) => tvSeasonImages(seriesId, seasonNumber, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonImages>>
+>;
+export type TvSeasonImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useTvSeasonImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonImagesInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonImages>>,
@@ -22332,6 +42753,7 @@ export const getTvSeasonImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonImages>>,
@@ -22470,6 +42892,16 @@ export const tvSeasonTranslations = (
   );
 };
 
+export const getTvSeasonTranslationsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/translations`,
+  ] as const;
+};
+
 export const getTvSeasonTranslationsQueryKey = (
   seriesId?: number,
   seasonNumber?: number
@@ -22478,6 +42910,170 @@ export const getTvSeasonTranslationsQueryKey = (
     `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/translations`,
   ] as const;
 };
+
+export const getTvSeasonTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonTranslationsInfiniteQueryKey(seriesId, seasonNumber);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonTranslations>>
+  > = ({ signal }) =>
+    tvSeasonTranslations(seriesId, seasonNumber, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonTranslations>>
+>;
+export type TvSeasonTranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useTvSeasonTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonTranslationsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonTranslations>>,
@@ -22511,6 +43107,7 @@ export const getTvSeasonTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonTranslations>>,
@@ -22662,6 +43259,18 @@ export const tvSeasonVideos = (
   );
 };
 
+export const getTvSeasonVideosInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonVideosParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonVideosQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -22672,6 +43281,175 @@ export const getTvSeasonVideosQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonVideosInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonVideosInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvSeasonVideos>>> = ({
+    signal,
+  }) => tvSeasonVideos(seriesId, seasonNumber, params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonVideos>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonVideosInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonVideos>>
+>;
+export type TvSeasonVideosInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonVideosParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Videos
+ */
+
+export function useTvSeasonVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonVideosInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonVideos>>,
@@ -22701,6 +43479,7 @@ export const getTvSeasonVideosQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonVideos>>,
@@ -22841,6 +43620,18 @@ export const tvSeasonWatchProviders = (
   );
 };
 
+export const getTvSeasonWatchProvidersInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  params?: TvSeasonWatchProvidersParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/watch/providers`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvSeasonWatchProvidersQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -22851,6 +43642,182 @@ export const getTvSeasonWatchProvidersQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvSeasonWatchProvidersInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonWatchProvidersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvSeasonWatchProvidersInfiniteQueryKey(seriesId, seasonNumber, params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvSeasonWatchProviders>>
+  > = ({ signal }) =>
+    tvSeasonWatchProviders(
+      seriesId,
+      seasonNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvSeasonWatchProvidersInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvSeasonWatchProviders>>
+>;
+export type TvSeasonWatchProvidersInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvSeasonWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params: undefined | TvSeasonWatchProvidersParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonWatchProvidersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+          TError,
+          Awaited<ReturnType<typeof tvSeasonWatchProviders>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvSeasonWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonWatchProvidersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Watch Providers
+ */
+
+export function useTvSeasonWatchProvidersInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvSeasonWatchProviders>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  params?: TvSeasonWatchProvidersParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvSeasonWatchProvidersInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvSeasonWatchProvidersQueryOptions = <
   TData = Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
@@ -22891,6 +43858,7 @@ export const getTvSeasonWatchProvidersQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvSeasonWatchProviders>>,
@@ -23048,6 +44016,19 @@ export const tvEpisodeDetails = (
   );
 };
 
+export const getTvEpisodeDetailsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number,
+  params?: TvEpisodeDetailsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvEpisodeDetailsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -23059,6 +44040,194 @@ export const getTvEpisodeDetailsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvEpisodeDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeDetailsInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params
+    );
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeDetails>>
+  > = ({ signal }) =>
+    tvEpisodeDetails(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeDetails>>
+>;
+export type TvEpisodeDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params: undefined | TvEpisodeDetailsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useTvEpisodeDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeDetailsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeDetailsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeDetails>>,
@@ -23101,6 +44270,7 @@ export const getTvEpisodeDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeDetails>>,
@@ -23263,6 +44433,19 @@ export const tvEpisodeAccountStates = (
   );
 };
 
+export const getTvEpisodeAccountStatesInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number,
+  params?: TvEpisodeAccountStatesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/account_states`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvEpisodeAccountStatesQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -23274,6 +44457,194 @@ export const getTvEpisodeAccountStatesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvEpisodeAccountStatesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeAccountStatesInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params
+    );
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeAccountStates>>
+  > = ({ signal }) =>
+    tvEpisodeAccountStates(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeAccountStatesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeAccountStates>>
+>;
+export type TvEpisodeAccountStatesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params: undefined | TvEpisodeAccountStatesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeAccountStates>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Account States
+ */
+
+export function useTvEpisodeAccountStatesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeAccountStates>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeAccountStatesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeAccountStatesInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeAccountStatesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
@@ -23321,6 +44692,7 @@ export const getTvEpisodeAccountStatesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeAccountStates>>,
@@ -23479,11 +44851,175 @@ export const tvEpisodeChangesById = (
   );
 };
 
+export const getTvEpisodeChangesByIdInfiniteQueryKey = (episodeId?: number) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/episode/${episodeId}/changes`,
+  ] as const;
+};
+
 export const getTvEpisodeChangesByIdQueryKey = (episodeId?: number) => {
   return [
     `https://api.themoviedb.org/3/tv/episode/${episodeId}/changes`,
   ] as const;
 };
+
+export const getTvEpisodeChangesByIdInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  episodeId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeChangesByIdInfiniteQueryKey(episodeId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeChangesById>>
+  > = ({ signal }) => tvEpisodeChangesById(episodeId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!episodeId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeChangesByIdInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeChangesById>>
+>;
+export type TvEpisodeChangesByIdInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  episodeId: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeChangesById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  episodeId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeChangesById>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  episodeId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Changes
+ */
+
+export function useTvEpisodeChangesByIdInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeChangesById>>>,
+  TError = ErrorType<unknown>,
+>(
+  episodeId: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeChangesById>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeChangesByIdInfiniteQueryOptions(
+    episodeId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeChangesByIdQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeChangesById>>,
@@ -23514,6 +45050,7 @@ export const getTvEpisodeChangesByIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!episodeId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeChangesById>>,
@@ -23657,6 +45194,19 @@ export const tvEpisodeCredits = (
   );
 };
 
+export const getTvEpisodeCreditsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number,
+  params?: TvEpisodeCreditsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/credits`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvEpisodeCreditsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -23668,6 +45218,194 @@ export const getTvEpisodeCreditsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvEpisodeCreditsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeCreditsInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params
+    );
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeCredits>>
+  > = ({ signal }) =>
+    tvEpisodeCredits(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeCredits>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeCreditsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeCredits>>
+>;
+export type TvEpisodeCreditsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params: undefined | TvEpisodeCreditsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeCredits>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeCredits>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeCredits>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Credits
+ */
+
+export function useTvEpisodeCreditsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeCredits>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeCreditsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeCredits>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeCreditsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeCreditsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeCredits>>,
@@ -23710,6 +45448,7 @@ export const getTvEpisodeCreditsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeCredits>>,
@@ -23870,6 +45609,17 @@ export const tvEpisodeExternalIds = (
   );
 };
 
+export const getTvEpisodeExternalIdsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: string
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`,
+  ] as const;
+};
+
 export const getTvEpisodeExternalIdsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -23879,6 +45629,186 @@ export const getTvEpisodeExternalIdsQueryKey = (
     `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/external_ids`,
   ] as const;
 };
+
+export const getTvEpisodeExternalIdsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeExternalIdsInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber
+    );
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeExternalIds>>
+  > = ({ signal }) =>
+    tvEpisodeExternalIds(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeExternalIdsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeExternalIds>>
+>;
+export type TvEpisodeExternalIdsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: string,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeExternalIds>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary External IDs
+ */
+
+export function useTvEpisodeExternalIdsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeExternalIds>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeExternalIdsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeExternalIdsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
@@ -23919,6 +45849,7 @@ export const getTvEpisodeExternalIdsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeExternalIds>>,
@@ -24076,6 +46007,19 @@ export const tvEpisodeImages = (
   );
 };
 
+export const getTvEpisodeImagesInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number,
+  params?: TvEpisodeImagesParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/images`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvEpisodeImagesQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -24087,6 +46031,194 @@ export const getTvEpisodeImagesQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvEpisodeImagesInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeImagesInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params
+    );
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvEpisodeImages>>> = ({
+    signal,
+  }) =>
+    tvEpisodeImages(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeImages>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeImagesInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeImages>>
+>;
+export type TvEpisodeImagesInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params: undefined | TvEpisodeImagesParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeImages>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeImages>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeImages>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Images
+ */
+
+export function useTvEpisodeImagesInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeImages>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeImagesParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeImages>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeImagesInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeImagesQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeImages>>,
@@ -24129,6 +46261,7 @@ export const getTvEpisodeImagesQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeImages>>,
@@ -24289,6 +46422,17 @@ export const tvEpisodeTranslations = (
   );
 };
 
+export const getTvEpisodeTranslationsInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`,
+  ] as const;
+};
+
 export const getTvEpisodeTranslationsQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -24298,6 +46442,186 @@ export const getTvEpisodeTranslationsQueryKey = (
     `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/translations`,
   ] as const;
 };
+
+export const getTvEpisodeTranslationsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeTranslationsInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber
+    );
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeTranslations>>
+  > = ({ signal }) =>
+    tvEpisodeTranslations(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeTranslationsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeTranslations>>
+>;
+export type TvEpisodeTranslationsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeTranslations>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Translations
+ */
+
+export function useTvEpisodeTranslationsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeTranslations>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeTranslations>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeTranslationsInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeTranslationsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeTranslations>>,
@@ -24338,6 +46662,7 @@ export const getTvEpisodeTranslationsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeTranslations>>,
@@ -24495,6 +46820,19 @@ export const tvEpisodeVideos = (
   );
 };
 
+export const getTvEpisodeVideosInfiniteQueryKey = (
+  seriesId?: number,
+  seasonNumber?: number,
+  episodeNumber?: number,
+  params?: TvEpisodeVideosParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/${seriesId}/season/${seasonNumber}/episode/${episodeNumber}/videos`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getTvEpisodeVideosQueryKey = (
   seriesId?: number,
   seasonNumber?: number,
@@ -24506,6 +46844,194 @@ export const getTvEpisodeVideosQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getTvEpisodeVideosInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeVideosInfiniteQueryKey(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params
+    );
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof tvEpisodeVideos>>> = ({
+    signal,
+  }) =>
+    tvEpisodeVideos(
+      seriesId,
+      seasonNumber,
+      episodeNumber,
+      params,
+      requestOptions,
+      signal
+    );
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeVideos>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeVideosInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeVideos>>
+>;
+export type TvEpisodeVideosInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params: undefined | TvEpisodeVideosParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeVideos>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeVideos>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeVideos>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Videos
+ */
+
+export function useTvEpisodeVideosInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeVideos>>>,
+  TError = ErrorType<unknown>,
+>(
+  seriesId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  params?: TvEpisodeVideosParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeVideos>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeVideosInfiniteQueryOptions(
+    seriesId,
+    seasonNumber,
+    episodeNumber,
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeVideosQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeVideos>>,
@@ -24548,6 +47074,7 @@ export const getTvEpisodeVideosQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!(seriesId && seasonNumber && episodeNumber),
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeVideos>>,
@@ -24963,11 +47490,178 @@ export const tvEpisodeGroupDetails = (
   );
 };
 
+export const getTvEpisodeGroupDetailsInfiniteQueryKey = (
+  tvEpisodeGroupId?: string
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/tv/episode_group/${tvEpisodeGroupId}`,
+  ] as const;
+};
+
 export const getTvEpisodeGroupDetailsQueryKey = (tvEpisodeGroupId?: string) => {
   return [
     `https://api.themoviedb.org/3/tv/episode_group/${tvEpisodeGroupId}`,
   ] as const;
 };
+
+export const getTvEpisodeGroupDetailsInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeGroupDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  tvEpisodeGroupId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getTvEpisodeGroupDetailsInfiniteQueryKey(tvEpisodeGroupId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
+  > = ({ signal }) =>
+    tvEpisodeGroupDetails(tvEpisodeGroupId, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!tvEpisodeGroupId,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TvEpisodeGroupDetailsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
+>;
+export type TvEpisodeGroupDetailsInfiniteQueryError = ErrorType<unknown>;
+
+export function useTvEpisodeGroupDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeGroupDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  tvEpisodeGroupId: string,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeGroupDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeGroupDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  tvEpisodeGroupId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+          TError,
+          Awaited<ReturnType<typeof tvEpisodeGroupDetails>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useTvEpisodeGroupDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeGroupDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  tvEpisodeGroupId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Details
+ */
+
+export function useTvEpisodeGroupDetailsInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof tvEpisodeGroupDetails>>>,
+  TError = ErrorType<unknown>,
+>(
+  tvEpisodeGroupId: string,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getTvEpisodeGroupDetailsInfiniteQueryOptions(
+    tvEpisodeGroupId,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getTvEpisodeGroupDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
@@ -25000,6 +47694,7 @@ export const getTvEpisodeGroupDetailsQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!tvEpisodeGroupId,
+    staleTime: 10000,
     ...queryOptions,
   } as UseQueryOptions<
     Awaited<ReturnType<typeof tvEpisodeGroupDetails>>,
@@ -25144,6 +47839,16 @@ export const watchProvidersAvailableRegions = (
   );
 };
 
+export const getWatchProvidersAvailableRegionsInfiniteQueryKey = (
+  params?: WatchProvidersAvailableRegionsParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/watch/providers/regions`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getWatchProvidersAvailableRegionsQueryKey = (
   params?: WatchProvidersAvailableRegionsParams
 ) => {
@@ -25152,6 +47857,174 @@ export const getWatchProvidersAvailableRegionsQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getWatchProvidersAvailableRegionsInfiniteQueryOptions = <
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersAvailableRegionsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getWatchProvidersAvailableRegionsInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  > = ({ signal }) =>
+    watchProvidersAvailableRegions(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type WatchProvidersAvailableRegionsInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+>;
+export type WatchProvidersAvailableRegionsInfiniteQueryError =
+  ErrorType<unknown>;
+
+export function useWatchProvidersAvailableRegionsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | WatchProvidersAvailableRegionsParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+          TError,
+          Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProvidersAvailableRegionsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersAvailableRegionsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+          TError,
+          Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProvidersAvailableRegionsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersAvailableRegionsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Available Regions
+ */
+
+export function useWatchProvidersAvailableRegionsInfinite<
+  TData = InfiniteData<
+    Awaited<ReturnType<typeof watchProvidersAvailableRegions>>
+  >,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersAvailableRegionsParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getWatchProvidersAvailableRegionsInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getWatchProvidersAvailableRegionsQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
@@ -25179,7 +48052,12 @@ export const getWatchProvidersAvailableRegionsQueryOptions = <
   > = ({ signal }) =>
     watchProvidersAvailableRegions(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProvidersAvailableRegions>>,
     TError,
     TData
@@ -25322,6 +48200,16 @@ export const watchProvidersMovieList = (
   );
 };
 
+export const getWatchProvidersMovieListInfiniteQueryKey = (
+  params?: WatchProvidersMovieListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/watch/providers/movie`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getWatchProvidersMovieListQueryKey = (
   params?: WatchProvidersMovieListParams
 ) => {
@@ -25330,6 +48218,162 @@ export const getWatchProvidersMovieListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getWatchProvidersMovieListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProvidersMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getWatchProvidersMovieListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof watchProvidersMovieList>>
+  > = ({ signal }) => watchProvidersMovieList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof watchProvidersMovieList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type WatchProvidersMovieListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof watchProvidersMovieList>>
+>;
+export type WatchProvidersMovieListInfiniteQueryError = ErrorType<unknown>;
+
+export function useWatchProvidersMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProvidersMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | WatchProvidersMovieListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProvidersMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof watchProvidersMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProvidersMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProvidersMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersMovieList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProvidersMovieList>>,
+          TError,
+          Awaited<ReturnType<typeof watchProvidersMovieList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProvidersMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProvidersMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Movie Providers
+ */
+
+export function useWatchProvidersMovieListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProvidersMovieList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProvidersMovieListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProvidersMovieList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getWatchProvidersMovieListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getWatchProvidersMovieListQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProvidersMovieList>>,
@@ -25356,7 +48400,12 @@ export const getWatchProvidersMovieListQueryOptions = <
     Awaited<ReturnType<typeof watchProvidersMovieList>>
   > = ({ signal }) => watchProvidersMovieList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProvidersMovieList>>,
     TError,
     TData
@@ -25496,6 +48545,16 @@ export const watchProviderTvList = (
   );
 };
 
+export const getWatchProviderTvListInfiniteQueryKey = (
+  params?: WatchProviderTvListParams
+) => {
+  return [
+    'infinite',
+    `https://api.themoviedb.org/3/watch/providers/tv`,
+    ...(params ? [params] : []),
+  ] as const;
+};
+
 export const getWatchProviderTvListQueryKey = (
   params?: WatchProviderTvListParams
 ) => {
@@ -25504,6 +48563,161 @@ export const getWatchProviderTvListQueryKey = (
     ...(params ? [params] : []),
   ] as const;
 };
+
+export const getWatchProviderTvListInfiniteQueryOptions = <
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProviderTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProviderTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProviderTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getWatchProviderTvListInfiniteQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof watchProviderTvList>>
+  > = ({ signal }) => watchProviderTvList(params, requestOptions, signal);
+
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseInfiniteQueryOptions<
+    Awaited<ReturnType<typeof watchProviderTvList>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type WatchProviderTvListInfiniteQueryResult = NonNullable<
+  Awaited<ReturnType<typeof watchProviderTvList>>
+>;
+export type WatchProviderTvListInfiniteQueryError = ErrorType<unknown>;
+
+export function useWatchProviderTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProviderTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params: undefined | WatchProviderTvListParams,
+  options: {
+    query: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProviderTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProviderTvList>>,
+          TError,
+          Awaited<ReturnType<typeof watchProviderTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): DefinedUseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProviderTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProviderTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProviderTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProviderTvList>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof watchProviderTvList>>,
+          TError,
+          Awaited<ReturnType<typeof watchProviderTvList>>
+        >,
+        'initialData'
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useWatchProviderTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProviderTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProviderTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProviderTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary TV Providers
+ */
+
+export function useWatchProviderTvListInfinite<
+  TData = InfiniteData<Awaited<ReturnType<typeof watchProviderTvList>>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: WatchProviderTvListParams,
+  options?: {
+    query?: Partial<
+      UseInfiniteQueryOptions<
+        Awaited<ReturnType<typeof watchProviderTvList>>,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient
+): UseInfiniteQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getWatchProviderTvListInfiniteQueryOptions(
+    params,
+    options
+  );
+
+  const query = useInfiniteQuery(
+    queryOptions,
+    queryClient
+  ) as UseInfiniteQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
 
 export const getWatchProviderTvListQueryOptions = <
   TData = Awaited<ReturnType<typeof watchProviderTvList>>,
@@ -25530,7 +48744,12 @@ export const getWatchProviderTvListQueryOptions = <
     Awaited<ReturnType<typeof watchProviderTvList>>
   > = ({ signal }) => watchProviderTvList(params, requestOptions, signal);
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  return {
+    queryKey,
+    queryFn,
+    staleTime: 10000,
+    ...queryOptions,
+  } as UseQueryOptions<
     Awaited<ReturnType<typeof watchProviderTvList>>,
     TError,
     TData

@@ -4,8 +4,8 @@
  * tmdb-api
  * OpenAPI spec version: 3
  */
-import type { TvSeriesChanges200ChangesItemItemsItemValue } from './tvSeriesChanges200ChangesItemItemsItemValue';
 import type { TvSeriesChanges200ChangesItemItemsItemOriginalValue } from './tvSeriesChanges200ChangesItemItemsItemOriginalValue';
+import type { TvSeriesChanges200ChangesItemItemsItemValue } from './tvSeriesChanges200ChangesItemItemsItemValue';
 
 export type TvSeriesChanges200ChangesItemItemsItem = {
   id?: string;

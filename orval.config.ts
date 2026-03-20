@@ -16,6 +16,14 @@ export default defineConfig({
           path: './libs/data-access/src/utils/custom-fetch.ts',
           name: 'customInstance',
         },
+        query: {
+          useQuery: true,
+          useInfinite: true,
+          useMutation: true,
+          options: {
+            staleTime: 10000,
+          },
+        },
       },
     },
     hooks: {

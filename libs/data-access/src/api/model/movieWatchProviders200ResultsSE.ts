@@ -5,8 +5,8 @@
  * OpenAPI spec version: 3
  */
 import type { MovieWatchProviders200ResultsSEBuyItem } from './movieWatchProviders200ResultsSEBuyItem';
-import type { MovieWatchProviders200ResultsSERentItem } from './movieWatchProviders200ResultsSERentItem';
 import type { MovieWatchProviders200ResultsSEFlatrateItem } from './movieWatchProviders200ResultsSEFlatrateItem';
+import type { MovieWatchProviders200ResultsSERentItem } from './movieWatchProviders200ResultsSERentItem';
 
 export type MovieWatchProviders200ResultsSE = {
   link?: string;

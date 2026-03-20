@@ -2,12 +2,11 @@ import './styles.css';
 
 import type * as React from 'react';
 import type { HTMLAttributes, PropsWithChildren } from 'react';
-import { useClasses, useTheme } from './utils';
 import type { ProviderTheme } from './utils';
+import { useClasses, useTheme } from './utils';
 
 export interface DesignSystemProviderProps
-  extends HTMLAttributes<HTMLDivElement>,
-    PropsWithChildren {
+  extends HTMLAttributes<HTMLDivElement>, PropsWithChildren {
   theme?: ProviderTheme;
 }
 

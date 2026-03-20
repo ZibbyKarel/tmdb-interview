@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import type { Decorator } from '@storybook/react-vite';
 import {
   createMemoryHistory,
   createRootRoute,
@@ -9,7 +10,6 @@ import {
   type NotFoundRouteProps,
 } from '@tanstack/react-router';
 import { createContext, useContext, type ReactElement } from 'react';
-import type { Decorator } from '@storybook/react-vite';
 
 export const CurrentStoryContext = createContext<ReactElement | undefined>(
   undefined

@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes } from 'react';
 import type { PaddingProps } from '../../types';
 import { useClasses, usePaddingProps } from '../../utils';
 

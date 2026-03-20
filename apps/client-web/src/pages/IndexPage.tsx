@@ -1,5 +1,5 @@
-import { Typography } from '@ds';
 import { useMovieTopRatedList } from '@data-access';
+import { Typography } from '@ds';
 import type * as React from 'react';
 import { MoviePosterCard } from '../components/MoviePosterCard/MoviePosterCard';
 import { MoviewResultsListsItemToMoviewListItem } from '../utils/selectTopRatedMovies';

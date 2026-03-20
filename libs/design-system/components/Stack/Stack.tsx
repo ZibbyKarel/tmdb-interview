@@ -1,7 +1,7 @@
 import type * as React from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { getSpacingInPx, useClasses } from '../../utils';
 import type { Spacing } from '../../types/spacing';
+import { getSpacingInPx, useClasses } from '../../utils';
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;

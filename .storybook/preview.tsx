@@ -1,5 +1,5 @@
-import type { Preview } from '@storybook/react-vite';
 import { DesignSystemProvider } from '@ds';
+import type { Preview } from '@storybook/react-vite';
 import { withMockRouter } from './decorators/mockRouter';
 
 const preview: Preview = {

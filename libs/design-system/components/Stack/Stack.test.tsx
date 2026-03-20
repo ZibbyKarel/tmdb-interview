@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { Stack } from './Stack';
 
 it('renders horizontal layout by default', () => {

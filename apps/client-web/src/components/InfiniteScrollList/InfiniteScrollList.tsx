@@ -1,10 +1,10 @@
-import { Typography } from '@ds';
+import { Container, Typography } from '@ds';
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
 } from '@tanstack/react-query';
 import type * as React from 'react';
-import { Fragment, useEffect, useEffectEvent, useRef } from 'react';
+import { InView } from 'react-intersection-observer';
 
 export interface InfiniteScrollListProps<TPage> {
   className?: string;
@@ -25,7 +25,6 @@ export const InfiniteScrollList = <TPage,>({
   renderPage,
   useDataInfinite,
 }: InfiniteScrollListProps<TPage>) => {
-  const loadMoreTriggerRef = useRef<HTMLDivElement | null>(null);
   const {
     data,
     error,
@@ -36,46 +35,12 @@ export const InfiniteScrollList = <TPage,>({
   } = useDataInfinite;
   const pages = data?.pages ?? [];
 
-  const handleIntersection = useEffectEvent(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-
-      if (!entry?.isIntersecting || !hasNextPage || isFetchingNextPage) {
-        return;
-      }
-
-      void fetchNextPage();
-    }
-  );
-
-  useEffect(() => {
-    const target = loadMoreTriggerRef.current;
-
-    if (!target || !hasNextPage) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(handleIntersection, {
-      rootMargin: '320px 0px',
-    });
-
-    observer.observe(target);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [handleIntersection, hasNextPage]);
-
   return (
     <>
-      <div className={className}>
-        {pages.map((page, index) => (
-          <Fragment key={index}>{renderPage(page, index)}</Fragment>
-        ))}
-      </div>
+      <div className={className}>{pages.map(renderPage)}</div>
 
       {(hasNextPage || isFetchingNextPage || isLoading || error) && (
-        <div className="pt-6">
+        <Container padding={['100', '0']}>
           {isLoading && (
             <Typography type="text" variant="secondary">
               Loading...
@@ -95,9 +60,20 @@ export const InfiniteScrollList = <TPage,>({
           )}
 
           {hasNextPage && (
-            <div className="h-1 w-full" ref={loadMoreTriggerRef} />
+            <InView
+              as="div"
+              className="h-1 w-full"
+              onChange={(inView) => {
+                if (!inView || isFetchingNextPage) {
+                  return;
+                }
+
+                fetchNextPage();
+              }}
+              rootMargin="320px"
+            />
           )}
-        </div>
+        </Container>
       )}
     </>
   );

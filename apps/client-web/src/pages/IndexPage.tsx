@@ -1,6 +1,6 @@
 import type { MovieTopRatedList200 } from '@data-access';
 import { movieTopRatedList, useMovieTopRatedListInfinite } from '@data-access';
-import { Typography } from '@ds';
+import { Container, Typography } from '@ds';
 import type * as React from 'react';
 import { InfiniteScrollList } from '../components/InfiniteScrollList/InfiniteScrollList';
 import { MoviePosterCard } from '../components/MoviePosterCard/MoviePosterCard';
@@ -29,12 +29,9 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
+      <Container padding={['0', '0', '100', '0']}>
         <Typography type="pageTitle">Top rated movies</Typography>
-        <Typography type="text" variant="secondary">
-          Discover the most highly rated films currently returned by TMDB.
-        </Typography>
-      </div>
+      </Container>
 
       <InfiniteScrollList
         className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-6"

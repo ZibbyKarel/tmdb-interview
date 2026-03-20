@@ -21,8 +21,8 @@ const typeToElementMap: Record<TypographyType, ElementType> = {
   pageTitle: 'h1',
   title: 'h2',
   subtitle: 'h3',
-  text: 'p',
-  note: 'p',
+  text: 'div',
+  note: 'div',
 };
 
 const typeToClassNameMap: Record<TypographyType, string> = {

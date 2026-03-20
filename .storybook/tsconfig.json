@@ -3,5 +3,10 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": ["main.ts", "preview.tsx"]
+  "include": [
+    "main.ts",
+    "preview.tsx",
+    "decorators/**/*.ts",
+    "decorators/**/*.tsx"
+  ]
 }

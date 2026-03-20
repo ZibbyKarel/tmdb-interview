@@ -1,14 +1,16 @@
 import type * as React from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
-import type { Spacing } from '../../types';
-import { getSpacingInPx, useClasses } from '../../utils';
+import type { PaddingProps } from '../../types';
+import { useClasses, usePaddingProps } from '../../utils';
 
 export type ContainerAlign = 'begin' | 'center' | 'end';
 
-export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
+export interface ContainerProps
+  extends
+    React.PropsWithChildren,
+    HTMLAttributes<HTMLDivElement>,
+    PaddingProps {
   align?: ContainerAlign;
-  children: ReactNode;
-  padding: Spacing;
 }
 
 const alignToClassNameMap: Record<ContainerAlign, string> = {
@@ -30,13 +32,10 @@ export const Container: React.FC<ContainerProps> = ({
     alignToClassNameMap[align],
     className
   );
+  const paddingProps = usePaddingProps(padding);
 
   return (
-    <div
-      className={classes}
-      style={{ ...style, padding: getSpacingInPx(padding) }}
-      {...props}
-    >
+    <div className={classes} style={{ ...style, ...paddingProps }} {...props}>
       {children}
     </div>
   );

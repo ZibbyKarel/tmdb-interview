@@ -16,15 +16,15 @@ export const SurfaceCard: React.FC<SurfaceCardProps> = ({
   ...props
 }) => {
   const classes = useClasses(
-    'w-full max-w-3xl rounded-[28px] border bg-card-bg backdrop-blur-[18px] transition-colors duration-200 ease-out',
+    'w-full max-w-3xl overflow-hidden rounded-[28px] border bg-card-bg backdrop-blur-[18px] transition-colors duration-200 ease-out',
     showBorder ? 'border-card-border' : 'border-transparent',
     droppedShaddow ? 'shadow-hero' : undefined,
     className
   );
 
   return (
-    <section className={classes} {...props}>
+    <div className={classes} {...props}>
       {children}
-    </section>
+    </div>
   );
 };

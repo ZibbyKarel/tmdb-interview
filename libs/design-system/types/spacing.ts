@@ -1,4 +1,5 @@
 export type Spacing =
+  | '0'
   | '25'
   | '50'
   | '75'

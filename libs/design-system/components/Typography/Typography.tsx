@@ -2,7 +2,12 @@ import { useClasses } from '@ds';
 import type * as React from 'react';
 import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 
-export type TypographyType = 'pageTitle' | 'title' | 'subtitle' | 'text';
+export type TypographyType =
+  | 'pageTitle'
+  | 'title'
+  | 'subtitle'
+  | 'text'
+  | 'note';
 
 export type TypographyVariant = 'primary' | 'secondary' | 'tertiary';
 
@@ -17,6 +22,7 @@ const typeToElementMap: Record<TypographyType, ElementType> = {
   title: 'h2',
   subtitle: 'h3',
   text: 'p',
+  note: 'p',
 };
 
 const typeToClassNameMap: Record<TypographyType, string> = {
@@ -24,12 +30,13 @@ const typeToClassNameMap: Record<TypographyType, string> = {
   title: 'm-0 text-4xl leading-tight',
   subtitle: 'm-0 text-xl font-medium leading-7',
   text: 'm-0 text-[1.05rem] leading-7',
+  note: 'm-0 text-sm leading-5',
 };
 
 const variantToClassNameMap: Record<TypographyVariant, string> = {
   primary: 'text-page-text',
   secondary: 'text-page-muted',
-  tertiary: 'text-page-accent',
+  tertiary: 'text-slate-500',
 };
 
 export const Typography: React.FC<TypographyProps> = ({

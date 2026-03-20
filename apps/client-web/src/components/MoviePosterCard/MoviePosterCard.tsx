@@ -1,19 +1,17 @@
-import { Stack, SurfaceCard, Typography } from '@ds';
+import { Container, Stack, SurfaceCard, Typography } from '@ds';
 import { useLocalizedDate } from '@internationalization';
 import { Link } from '@tanstack/react-router';
 import type * as React from 'react';
 import { useState } from 'react';
-import { Routes } from '../../routing/Routes';
+import { Placeholder } from '../Placeholder/Placeholder';
 
 export interface MoviePosterCardProps {
   id: string;
   poster: string;
-  rating: number;
+  rating: string;
   releaseDate: string;
   title: string;
 }
-
-const formatRating = (rating: number): string => `${Math.round(rating * 10)}%`;
 
 export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
   id,
@@ -23,40 +21,46 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
   title,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const localizedDate = useLocalizedDate();
 
   return (
     <Link
-      className="block w-full max-w-[220px] rounded-[28px]"
+      className="block w-full max-w-[170px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       params={{ movieId: id }}
-      search={{}}
-      to={Routes.MovieDetail as '/movies/$movieId'}
+      to="/movies/$movieId"
     >
       <SurfaceCard droppedShaddow={isHovered}>
-        <div className="p-4">
-          <Stack spacing="75" vertical>
-            <img
-              alt={title}
-              className="aspect-[2/3] w-full rounded-[24px] object-cover"
-              src={poster}
-            />
-            <Stack spacing="25" vertical>
-              <div className="text-sm font-semibold">
-                <Typography type="text">{formatRating(rating)}</Typography>
-              </div>
-              <div className="text-base font-semibold">
-                <Typography type="subtitle">{title}</Typography>
-              </div>
-              <div className="text-sm">
-                <Typography type="text" variant="secondary">
-                  {localizedDate(releaseDate)}
-                </Typography>
-              </div>
+        <Stack vertical>
+          <SurfaceCard>
+            <div className="relative aspect-[2/3] w-full">
+              {!isImageLoaded ? <Placeholder /> : null}
+              <img
+                alt={title}
+                className={`h-full w-full object-cover transition-opacity duration-300 ${
+                  isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onError={() => setIsImageLoaded(true)}
+                onLoad={() => setIsImageLoaded(true)}
+                src={poster}
+              />
+            </div>
+          </SurfaceCard>
+
+          <Container padding={['0', '0', '0', '100']}>
+            <Stack vertical>
+              <Typography type="text">{rating}</Typography>
+              <Typography type="text" variant="primary">
+                {title}
+              </Typography>
+              <Typography type="note" variant="tertiary">
+                {localizedDate(releaseDate)}
+              </Typography>
             </Stack>
-          </Stack>
-        </div>
+          </Container>
+        </Stack>
       </SurfaceCard>
     </Link>
   );

@@ -7,7 +7,7 @@ const meta = {
   argTypes: {
     type: {
       control: 'select',
-      options: ['pageTitle', 'title', 'subtitle', 'text'],
+      options: ['pageTitle', 'title', 'subtitle', 'text', 'note'],
     },
     variant: {
       control: 'select',
@@ -36,8 +36,11 @@ export const Overview: Story = {
       <Typography type="text" variant="secondary">
         Body text carries longer content with a softer emphasis.
       </Typography>
+      <Typography type="note" variant="secondary">
+        Supporting note text for metadata and captions.
+      </Typography>
       <Typography type="title" variant="tertiary">
-        Accent title
+        Neutral tertiary title
       </Typography>
     </div>
   ),
@@ -68,6 +71,14 @@ export const Text: Story = {
   args: {
     children: 'Body text carries longer content with a softer emphasis.',
     type: 'text',
+    variant: 'secondary',
+  },
+};
+
+export const Note: Story = {
+  args: {
+    children: 'Supporting note text for metadata and captions.',
+    type: 'note',
     variant: 'secondary',
   },
 };

@@ -24,7 +24,9 @@
 
 ## Styles
 
+- primary use components from design-system to build more complex components
 - do not use classNames when using design-system components
+- do not overwrite design-system component's look by adding custom classes to parent component
 
 ## Example
 

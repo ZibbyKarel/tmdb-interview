@@ -10,6 +10,12 @@ it('renders the selected semantic element', () => {
   expect(element).toHaveTextContent('Heading');
 });
 
+it('renders the note type with the note sizing classes', () => {
+  render(<Typography type="note">Note text</Typography>);
+
+  expect(screen.getByText('Note text')).toHaveClass('text-sm', 'leading-5');
+});
+
 it('applies the primary variant by default', () => {
   render(<Typography type="text">Primary text</Typography>);
 
@@ -33,5 +39,5 @@ it('applies the tertiary variant', () => {
     </Typography>
   );
 
-  expect(screen.getByText('Tertiary text')).toHaveClass('text-page-accent');
+  expect(screen.getByText('Tertiary text')).toHaveClass('text-slate-500');
 });

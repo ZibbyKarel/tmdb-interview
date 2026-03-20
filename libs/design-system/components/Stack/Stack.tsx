@@ -5,14 +5,14 @@ import type { Spacing } from '../../types/spacing';
 
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  spacing: Spacing;
+  spacing?: Spacing;
   vertical?: boolean;
 }
 
 export const Stack: React.FC<StackProps> = ({
   children,
   className,
-  spacing,
+  spacing = '0',
   vertical = false,
   style,
   ...props

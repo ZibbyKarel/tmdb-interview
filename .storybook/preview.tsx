@@ -1,5 +1,6 @@
 import type { Preview } from '@storybook/react-vite';
 import { DesignSystemProvider } from '@ds';
+import { withMockRouter } from './decorators/mockRouter';
 
 const preview: Preview = {
   globalTypes: {
@@ -18,6 +19,7 @@ const preview: Preview = {
     },
   },
   decorators: [
+    withMockRouter,
     (Story, context) => (
       <DesignSystemProvider
         style={{ background: '#ffffff', minHeight: 'auto' }}

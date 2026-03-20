@@ -2,7 +2,7 @@ import type { MovieTopRatedList200 } from '@data-access';
 import { movieTopRatedList, useMovieTopRatedListInfinite } from '@data-access';
 import { Container, Typography } from '@ds';
 import type * as React from 'react';
-import { InfiniteScrollList } from '../components/InfiniteScrollList/InfiniteScrollList';
+import { InfiniteScrollList } from '../components/InfiniteScrollList';
 import { MoviePosterCard } from '../components/MoviePosterCard/MoviePosterCard';
 import { MoviewResultsListsItemToMoviewListItem } from '../utils/selectTopRatedMovies';
 

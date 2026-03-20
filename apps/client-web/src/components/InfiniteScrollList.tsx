@@ -63,13 +63,9 @@ export const InfiniteScrollList = <TPage,>({
             <InView
               as="div"
               className="h-1 w-full"
-              onChange={(inView) => {
-                if (!inView || isFetchingNextPage) {
-                  return;
-                }
-
-                fetchNextPage();
-              }}
+              onChange={(inView) =>
+                inView && !isFetchingNextPage && fetchNextPage()
+              }
               rootMargin="320px"
             />
           )}

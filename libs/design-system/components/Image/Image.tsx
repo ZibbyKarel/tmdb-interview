@@ -22,8 +22,8 @@ export const Image: React.FC<ImageProps> = ({
 
   return (
     <div className="relative h-full w-full">
-      {shouldShowPlaceholder ? placeholder : null}
-      {src ? (
+      {shouldShowPlaceholder && placeholder}
+      {src && (
         <img
           {...props}
           alt={alt}
@@ -40,7 +40,7 @@ export const Image: React.FC<ImageProps> = ({
           }}
           src={src}
         />
-      ) : null}
+      )}
     </div>
   );
 };

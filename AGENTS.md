@@ -16,3 +16,9 @@ Use this file as the entry point for project-specific rules.
 - [`doc/stories.md`](doc/stories.md)
 - [`doc/testing.md`](doc/testing.md)
 - [`doc/design-system.md`](doc/design-system.md)
+
+## Quick Rules
+
+- Keep design-system icons under `libs/design-system/components/icons`.
+- Do not add per-icon tests or per-icon stories.
+- Document icons through a single shared icons story.

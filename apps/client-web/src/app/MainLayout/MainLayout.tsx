@@ -1,7 +1,17 @@
-import { Button, Container, SideMenu, SurfaceCard, Typography } from '@ds';
+import {
+  Button,
+  Container,
+  IconMoon,
+  IconSun,
+  SideMenu,
+  SurfaceCard,
+  Toggle,
+  Typography,
+} from '@ds';
 import { Outlet, useRouterState } from '@tanstack/react-router';
 import type * as React from 'react';
 import { Routes } from '../../routing/Routes';
+import { useAppTheme } from '../appTheme';
 
 export interface MainLayoutProps {}
 
@@ -9,6 +19,7 @@ export const MainLayout: React.FC<MainLayoutProps> = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
+  const { resolvedTheme, toggleTheme } = useAppTheme();
 
   const sideMenuItems = [
     {
@@ -34,12 +45,21 @@ export const MainLayout: React.FC<MainLayoutProps> = () => {
         <div className="grid min-h-0 gap-4">
           <SurfaceCard className="max-w-none" droppedShaddow>
             <Container align="end" padding="150">
-              <Button
-                href={Routes.Login}
-                variant={pathname === Routes.Login ? 'secondary' : 'primary'}
-              >
-                Login
-              </Button>
+              <div className="flex flex-wrap justify-end gap-3">
+                <Toggle
+                  aria-label="Toggle theme"
+                  offIcon={<IconSun />}
+                  onClick={toggleTheme}
+                  onIcon={<IconMoon />}
+                  pressed={resolvedTheme === 'dark'}
+                />
+                <Button
+                  href={Routes.Login}
+                  variant={pathname === Routes.Login ? 'secondary' : 'primary'}
+                >
+                  Login
+                </Button>
+              </div>
             </Container>
           </SurfaceCard>
 

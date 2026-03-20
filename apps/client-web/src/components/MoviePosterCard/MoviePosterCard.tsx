@@ -1,4 +1,4 @@
-import { Container, Placeholder, Stack, SurfaceCard, Typography } from '@ds';
+import { Container, Image, Stack, SurfaceCard, Typography } from '@ds';
 import { useLocalizedDate } from '@internationalization';
 import { Link } from '@tanstack/react-router';
 import type * as React from 'react';
@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export interface MoviePosterCardProps {
   id: number;
-  poster: string;
+  poster: string | undefined;
   rating: string;
   releaseDate: string | undefined;
   title: string;
@@ -20,7 +20,6 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
   title,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
   const localizedDate = useLocalizedDate();
 
   return (
@@ -29,24 +28,12 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       params={{ movieId: id.toString() }}
-      search={{}}
       to="/movies/$movieId"
     >
       <SurfaceCard droppedShaddow={isHovered}>
         <Stack vertical>
           <SurfaceCard>
-            <div className="relative aspect-[2/3] w-full">
-              {!isImageLoaded ? <Placeholder /> : null}
-              <img
-                alt={title}
-                className={`h-full w-full object-cover transition-opacity duration-300 ${
-                  isImageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                onError={() => setIsImageLoaded(true)}
-                onLoad={() => setIsImageLoaded(true)}
-                src={poster}
-              />
-            </div>
+            <Image alt={title} src={poster} />
           </SurfaceCard>
 
           <Container padding={['0', '0', '0', '100']}>

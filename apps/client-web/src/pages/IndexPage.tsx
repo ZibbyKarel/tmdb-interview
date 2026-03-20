@@ -2,16 +2,9 @@ import { Typography } from '@ds';
 import { useMovieTopRatedList } from '@data-access';
 import type * as React from 'react';
 import { MoviePosterCard } from '../components/MoviePosterCard/MoviePosterCard';
+import { MoviewResultsListsItemToMoviewListItem } from '../utils/selectTopRatedMovies';
 
 export interface IndexPageProps {}
-
-const getPosterUrl = (posterPath?: string): string | null => {
-  if (!posterPath) {
-    return null;
-  }
-
-  return `${posterPath}`;
-};
 
 export const IndexPage: React.FC<IndexPageProps> = () => {
   const {
@@ -22,15 +15,7 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
     query: {
       placeholderData: { results: [], total_results: 0 },
       select: (response) =>
-        (response?.results ?? []).map((movie) => ({
-          id: movie.id ?? NaN,
-          poster: movie.poster_path
-            ? `https://image.tmdb.org/t/p/w500/${movie.poster_path}`
-            : undefined,
-          rating: `${Math.round((movie.vote_average ?? 0) * 10)}%`,
-          releaseDate: movie.release_date,
-          title: movie.title ?? 'Untitled movie',
-        })),
+        MoviewResultsListsItemToMoviewListItem(response.results ?? []),
     },
   });
 

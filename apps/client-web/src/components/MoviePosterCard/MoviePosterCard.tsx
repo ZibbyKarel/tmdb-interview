@@ -1,15 +1,14 @@
-import { Container, Stack, SurfaceCard, Typography } from '@ds';
+import { Container, Placeholder, Stack, SurfaceCard, Typography } from '@ds';
 import { useLocalizedDate } from '@internationalization';
 import { Link } from '@tanstack/react-router';
 import type * as React from 'react';
 import { useState } from 'react';
-import { Placeholder } from '../Placeholder/Placeholder';
 
 export interface MoviePosterCardProps {
-  id: string;
+  id: number;
   poster: string;
   rating: string;
-  releaseDate: string;
+  releaseDate: string | undefined;
   title: string;
 }
 
@@ -29,7 +28,8 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
       className="block w-full max-w-[170px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      params={{ movieId: id }}
+      params={{ movieId: id.toString() }}
+      search={{}}
       to="/movies/$movieId"
     >
       <SurfaceCard droppedShaddow={isHovered}>
@@ -52,12 +52,16 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
           <Container padding={['0', '0', '0', '100']}>
             <Stack vertical>
               <Typography type="text">{rating}</Typography>
+
               <Typography type="text" variant="primary">
                 {title}
               </Typography>
-              <Typography type="note" variant="tertiary">
-                {localizedDate(releaseDate)}
-              </Typography>
+
+              {releaseDate && (
+                <Typography type="note" variant="tertiary">
+                  {localizedDate(releaseDate)}
+                </Typography>
+              )}
             </Stack>
           </Container>
         </Stack>

@@ -6,7 +6,7 @@ const meta = {
   title: 'TMDB app/MoviePosterCard',
   component: MoviePosterCard,
   args: {
-    id: '603',
+    id: 603,
     poster: mockImage(660, 440),
     rating: '8.4',
     releaseDate: '1999-10-15',
@@ -24,7 +24,7 @@ export const Overview: Story = {
       <MoviePosterCard {...args} />
       <MoviePosterCard
         {...args}
-        id="680"
+        id={680}
         poster={mockImage(660, 441)}
         rating="79%"
         releaseDate="1994-07-06"

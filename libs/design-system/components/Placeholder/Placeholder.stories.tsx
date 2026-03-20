@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Placeholder } from './Placeholder';
+import { Placeholder } from '@ds';
 
 const meta = {
-  title: 'TMDB app/Placeholder',
+  title: 'Components/Placeholder',
   component: Placeholder,
 } satisfies Meta<typeof Placeholder>;
 

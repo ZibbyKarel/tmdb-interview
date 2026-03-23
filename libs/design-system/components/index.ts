@@ -1,5 +1,6 @@
 export * from './Button/Button';
 export * from './Container/Container';
+export * from './Grid/Grid';
 export * from './icons/IconMoon';
 export * from './icons/IconSun';
 export * from './Image/Image';

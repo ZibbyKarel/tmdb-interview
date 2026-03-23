@@ -10,7 +10,7 @@ export interface InfiniteScrollListProps<TPage> {
   className?: string;
   renderPage: (page: TPage, index: number, inView: boolean) => React.ReactNode;
   useDataInfinite: Pick<
-    UseInfiniteQueryResult<InfiniteData<TPage>, Error>,
+    UseInfiniteQueryResult<InfiniteData<TPage>, unknown>,
     | 'data'
     | 'error'
     | 'fetchNextPage'
@@ -47,7 +47,7 @@ export const InfiniteScrollList = <TPage,>({
         ))}
       </div>
 
-      {(hasNextPage || isFetchingNextPage || isLoading || error) && (
+      {(hasNextPage || isFetchingNextPage || isLoading || Boolean(error)) && (
         <Container padding={['100', '0']}>
           {isLoading && (
             <Typography type="text" variant="secondary">
@@ -61,7 +61,7 @@ export const InfiniteScrollList = <TPage,>({
             </Typography>
           )}
 
-          {error && pages.length > 0 && (
+          {Boolean(error) && pages.length > 0 && (
             <Typography type="text" variant="secondary">
               Error
             </Typography>

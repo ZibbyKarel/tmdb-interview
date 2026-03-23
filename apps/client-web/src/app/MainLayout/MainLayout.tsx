@@ -41,8 +41,8 @@ export const MainLayout: React.FC<MainLayoutProps> = () => {
           </div>
         </SurfaceCard>
 
-        <div className="grid min-h-0 gap-4">
-          <SurfaceCard className="max-w-none" droppedShaddow>
+        <div className="flex min-h-0 flex-col gap-3">
+          <SurfaceCard className="max-w-none self-start" droppedShaddow>
             <Container align="end" padding="150">
               <div className="flex flex-wrap justify-end gap-3">
                 <Toggle

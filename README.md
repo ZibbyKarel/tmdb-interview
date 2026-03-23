@@ -23,41 +23,9 @@ This repository is notable for being almost fully generated and iterated with Op
 - infinite scrolling built with `react-intersection-observer`
 - lightweight movie-list virtualization by replacing out-of-view pages with height-preserving placeholders
 
-## Getting Started
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the web app:
-
-```bash
-npm run start
-```
-
-Run the backend:
-
-```bash
-npm run start:server
-```
-
-Run unit tests:
-
-```bash
-npm run test
-```
-
-Format the repo:
-
-```bash
-npm run format
-```
-
 ## Run With Docker
 
-You can run the whole app stack without installing Node.js or .NET locally.
+This is the preferred way to run the project if you do not want to install Node.js or .NET locally.
 
 Prerequisite:
 
@@ -92,6 +60,53 @@ Useful endpoints:
 
 - frontend: `http://localhost:4200`
 - backend health: `http://localhost:5137/health`
+
+## Run Locally
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Frontend
+
+Run the frontend app:
+
+```bash
+npm run start
+```
+
+Frontend URL:
+
+- `http://localhost:4200`
+
+### Backend
+
+Run the .NET proxy backend:
+
+```bash
+npm run start:server
+```
+
+Backend URL:
+
+- `http://localhost:5137`
+- `http://localhost:5137/health`
+
+### Other Useful Commands
+
+Run unit tests:
+
+```bash
+npm run test
+```
+
+Format the repo:
+
+```bash
+npm run format
+```
 
 ## Project Structure
 

@@ -4,6 +4,7 @@
  * tmdb-api
  * OpenAPI spec version: 3
  */
+import type { MovieDetails200BelongsToCollection } from './movieDetails200BelongsToCollection';
 import type { MovieDetails200GenresItem } from './movieDetails200GenresItem';
 import type { MovieDetails200ProductionCompaniesItem } from './movieDetails200ProductionCompaniesItem';
 import type { MovieDetails200ProductionCountriesItem } from './movieDetails200ProductionCountriesItem';
@@ -12,12 +13,13 @@ import type { MovieDetails200SpokenLanguagesItem } from './movieDetails200Spoken
 export type MovieDetails200 = {
   adult?: boolean;
   backdrop_path?: string;
-  belongs_to_collection?: unknown;
+  belongs_to_collection?: MovieDetails200BelongsToCollection;
   budget?: number;
   genres?: MovieDetails200GenresItem[];
   homepage?: string;
   id?: number;
   imdb_id?: string;
+  origin_country?: string[];
   original_language?: string;
   original_title?: string;
   overview?: string;

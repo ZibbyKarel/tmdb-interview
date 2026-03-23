@@ -1,4 +1,3 @@
-import type { MovieTopRatedList200 } from '@data-access';
 import { movieTopRatedList, useMovieTopRatedListInfinite } from '@data-access';
 import { Container, Typography } from '@ds';
 import type * as React from 'react';
@@ -11,17 +10,16 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
   const topRatedMoviesInfinite = useMovieTopRatedListInfinite(undefined, {
     query: {
       initialPageParam: 1,
-      getNextPageParam: (lastPage: MovieTopRatedList200) => {
-        const currentPage = lastPage.page ?? 1;
-        const totalPages = lastPage.total_pages ?? currentPage;
+      getNextPageParam: (lastPage) => {
+        const currentPage = lastPage.data.page ?? 1;
+        const totalPages = lastPage.data.total_pages ?? currentPage;
 
         return currentPage < totalPages ? currentPage + 1 : undefined;
       },
       queryFn: ({ pageParam, signal }) =>
         movieTopRatedList(
           { page: typeof pageParam === 'number' ? pageParam : 1 },
-          undefined,
-          signal
+          { signal }
         ),
     },
   });
@@ -36,7 +34,7 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
         className="space-y-6"
         useDataInfinite={topRatedMoviesInfinite}
         renderPage={(page, _pageIndex, inView) => (
-          <TopRatedMoviesPageSection inView={inView} page={page} />
+          <TopRatedMoviesPageSection inView={inView} page={page.data} />
         )}
       />
     </div>

@@ -1,17 +1,11 @@
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 
-export default defineConfig(({ mode }) => {
-  const workspaceRoot = path.resolve(__dirname, '../..');
-  const env = loadEnv(mode, workspaceRoot, '');
-
+export default defineConfig(() => {
   return {
     root: __dirname,
     cacheDir: '../../node_modules/.vite/apps/client-web',
-    define: {
-      'process.env.API_TOKEN': JSON.stringify(env.API_TOKEN),
-    },
     resolve: {
       alias: {
         '@ds': path.resolve(__dirname, '../../libs/design-system/index.ts'),
@@ -27,11 +21,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 4200,
-      host: 'localhost',
+      host: '0.0.0.0',
     },
     preview: {
       port: 4300,
-      host: 'localhost',
+      host: '0.0.0.0',
     },
     plugins: [react()],
     build: {

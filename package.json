@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "start": "nx serve client-web",
+    "start:server": "nx serve server",
     "storybook": "storybook dev -p 6006 --disable-telemetry",
     "test": "jest --config jest.config.ts",
     "generate:api": "curl -fsSL https://developer.themoviedb.org/openapi/tmdb-api.json -o api-doc.json && orval --config orval.config.ts",

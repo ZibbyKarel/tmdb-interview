@@ -1,0 +1,16 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - '5137:5137'
+
+  client-web:
+    build:
+      context: .
+      dockerfile: apps/client-web/Dockerfile
+    depends_on:
+      - server
+    ports:
+      - '4200:4200'

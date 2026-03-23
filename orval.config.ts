@@ -4,18 +4,14 @@ export default defineConfig({
   tmdb: {
     input: './api-doc.json',
     output: {
-      baseUrl: 'https://api.themoviedb.org',
+      baseUrl: 'http://localhost:5137',
       mode: 'tags-split',
       target: 'libs/data-access/src/api/api.ts',
       schemas: 'libs/data-access/src/api/model',
       client: 'react-query',
-      httpClient: 'axios',
+      httpClient: 'fetch',
       clean: true,
       override: {
-        mutator: {
-          path: './libs/data-access/src/utils/custom-fetch.ts',
-          name: 'customInstance',
-        },
         query: {
           useQuery: true,
           useInfinite: true,

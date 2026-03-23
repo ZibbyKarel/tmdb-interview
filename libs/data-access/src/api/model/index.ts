@@ -265,6 +265,7 @@ export * from './movieCreditsParams';
 export * from './movieDeleteRating200';
 export * from './movieDeleteRatingParams';
 export * from './movieDetails200';
+export * from './movieDetails200BelongsToCollection';
 export * from './movieDetails200GenresItem';
 export * from './movieDetails200ProductionCompaniesItem';
 export * from './movieDetails200ProductionCountriesItem';

@@ -1,5 +1,4 @@
 import {
-  Button,
   Container,
   IconMoon,
   IconSun,
@@ -53,12 +52,6 @@ export const MainLayout: React.FC<MainLayoutProps> = () => {
                   onIcon={<IconMoon />}
                   pressed={resolvedTheme === 'dark'}
                 />
-                <Button
-                  href={Routes.Login}
-                  variant={pathname === Routes.Login ? 'secondary' : 'primary'}
-                >
-                  Login
-                </Button>
               </div>
             </Container>
           </SurfaceCard>

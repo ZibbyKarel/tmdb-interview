@@ -3,8 +3,7 @@ import { movieTopRatedList, useMovieTopRatedListInfinite } from '@data-access';
 import { Container, Typography } from '@ds';
 import type * as React from 'react';
 import { InfiniteScrollList } from '../components/InfiniteScrollList';
-import { MoviePosterCard } from '../components/MoviePosterCard/MoviePosterCard';
-import { MoviewResultsListsItemToMoviewListItem } from '../utils/selectTopRatedMovies';
+import { TopRatedMoviesPageSection } from '../components/TopRatedMoviesPageSection/TopRatedMoviesPageSection';
 
 export interface IndexPageProps {}
 
@@ -34,22 +33,11 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
       </Container>
 
       <InfiniteScrollList
-        className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-6"
+        className="space-y-6"
         useDataInfinite={topRatedMoviesInfinite}
-        renderPage={(page) =>
-          MoviewResultsListsItemToMoviewListItem(page.results ?? []).map(
-            (movie) => (
-              <MoviePosterCard
-                id={movie.id}
-                key={movie.id}
-                poster={movie.poster}
-                rating={movie.rating}
-                releaseDate={movie.releaseDate}
-                title={movie.title}
-              />
-            )
-          )
-        }
+        renderPage={(page, _pageIndex, inView) => (
+          <TopRatedMoviesPageSection inView={inView} page={page} />
+        )}
       />
     </div>
   );

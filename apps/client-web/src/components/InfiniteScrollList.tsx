@@ -8,7 +8,7 @@ import { InView } from 'react-intersection-observer';
 
 export interface InfiniteScrollListProps<TPage> {
   className?: string;
-  renderPage: (page: TPage, index: number) => React.ReactNode;
+  renderPage: (page: TPage, index: number, inView: boolean) => React.ReactNode;
   useDataInfinite: Pick<
     UseInfiniteQueryResult<InfiniteData<TPage>, Error>,
     | 'data'
@@ -37,7 +37,15 @@ export const InfiniteScrollList = <TPage,>({
 
   return (
     <>
-      <div className={className}>{pages.map(renderPage)}</div>
+      <div className={className}>
+        {pages.map((page, index) => (
+          <InView key={index} rootMargin="320px">
+            {({ inView, ref }) => (
+              <div ref={ref}>{renderPage(page, index, inView)}</div>
+            )}
+          </InView>
+        ))}
+      </div>
 
       {(hasNextPage || isFetchingNextPage || isLoading || error) && (
         <Container padding={['100', '0']}>
@@ -63,9 +71,13 @@ export const InfiniteScrollList = <TPage,>({
             <InView
               as="div"
               className="h-1 w-full"
-              onChange={(inView) =>
-                inView && !isFetchingNextPage && fetchNextPage()
-              }
+              onChange={(inView) => {
+                if (!inView || isFetchingNextPage) {
+                  return;
+                }
+
+                void fetchNextPage();
+              }}
               rootMargin="320px"
             />
           )}

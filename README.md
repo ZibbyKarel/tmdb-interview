@@ -19,6 +19,7 @@ This repository is notable for being almost fully generated and iterated with Op
 - local design system with Storybook
 - generated TMDB API client via Orval
 - infinite scrolling experiment using `react-intersection-observer`
+- simple movie-list virtualization by rendering page placeholders outside the viewport
 
 ## Getting Started
 
@@ -73,6 +74,7 @@ Most of the repository has been produced with Codex assistance, including:
 - theme system and light/dark toggle
 - design-system components and icons
 - page wiring and infinite-scroll abstractions
+- lightweight movie-list virtualization for paged content
 - refactors and repository documentation
 
 ### Orval-generated API layer

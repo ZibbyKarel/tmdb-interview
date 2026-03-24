@@ -51,7 +51,7 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = () => {
           value: movie.genres.map((genre) => genre.name).join(', '),
         }
       : null,
-  ].filter((item): item is { label: string; value: string } => Boolean(item));
+  ].filter(Boolean);
 
   if (isMovieDetailsLoading) {
     return (

@@ -6,7 +6,16 @@ Use this file as the entry point for project-specific rules.
 
 - Start with the quick rules in this file.
 - Open the linked files in `doc/` for the full version of each rule set.
+- Use `doc/ai/` as the AI-facing version of documentation and keep it in sync with the human-facing `doc/` files.
 - When rules overlap, prefer the more specific rule from the relevant document.
+
+## Documentation Maintenance
+
+- Keep `doc/*.md` files human-readable.
+- Keep `doc/ai/*.md` files atomic and optimized for AI agents.
+- When updating a human rule document in `doc/`, update the paired file in `doc/ai/` in the same change.
+- When adding a new rule document in `doc/`, add an AI companion in `doc/ai/`.
+- Keep topic names aligned between human and AI documentation whenever possible.
 
 ## Documentation Index
 
@@ -16,6 +25,13 @@ Use this file as the entry point for project-specific rules.
 - [`doc/stories.md`](doc/stories.md)
 - [`doc/testing.md`](doc/testing.md)
 - [`doc/design-system.md`](doc/design-system.md)
+- [`doc/ai/README.md`](doc/ai/README.md)
+- [`doc/ai/formatting.md`](doc/ai/formatting.md)
+- [`doc/ai/file-naming.md`](doc/ai/file-naming.md)
+- [`doc/ai/react-components.md`](doc/ai/react-components.md)
+- [`doc/ai/stories.md`](doc/ai/stories.md)
+- [`doc/ai/testing.md`](doc/ai/testing.md)
+- [`doc/ai/design-system.md`](doc/ai/design-system.md)
 - [`doc/ai/frontend-workflow.md`](doc/ai/frontend-workflow.md)
 - [`doc/ai/api-regeneration.md`](doc/ai/api-regeneration.md)
 - [`doc/ai/verification.md`](doc/ai/verification.md)

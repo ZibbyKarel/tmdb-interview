@@ -11,6 +11,7 @@ Use this file as the entry point for project-specific rules.
 
 ## Documentation Maintenance
 
+- Generate project content in English unless the task explicitly asks for another language.
 - Keep `doc/*.md` files human-readable.
 - Keep `doc/ai/*.md` files atomic and optimized for AI agents.
 - When updating a human rule document in `doc/`, update the paired file in `doc/ai/` in the same change.
@@ -43,6 +44,8 @@ Use this file as the entry point for project-specific rules.
 - Do not add per-icon tests or per-icon stories.
 - Document icons through a single shared icons story.
 - Prefer existing design-system primitives from `@ds` when building app UI.
+- When generating a component, do not build bespoke Tailwind UI first if the design system can express it.
+- If the needed design-system primitive does not exist, ask whether to create it in the design system or implement it locally.
 - Treat `libs/data-access/src/api` as generated code. Change generator inputs and config instead of hand-editing generated output unless the task explicitly requires a generated-file patch.
 - Keep changes scoped. Avoid unrelated cleanup while working on a targeted task.
 
@@ -58,6 +61,7 @@ Use this file as the entry point for project-specific rules.
 - Read the closest local conventions before editing files in an unfamiliar area.
 - Prefer extending the existing app patterns over introducing a second approach.
 - For UI work, compose with design-system components first and only fall back to custom markup when the design system does not provide the needed building blocks.
+- If a missing design-system building block creates a real choice between reusable and local UI, pause and ask which direction to take before generating the component.
 - Keep generated and hand-written concerns separate so API regeneration stays safe.
 
 ## Generated Code Boundaries

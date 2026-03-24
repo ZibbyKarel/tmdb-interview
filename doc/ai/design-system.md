@@ -9,3 +9,5 @@
 - Do not add per-icon tests.
 - Do not add per-icon stories.
 - Use one shared story to display all icons together.
+- Use design-system components as the default source of UI primitives when generating new components.
+- If a required primitive is missing, ask whether to create it in `libs/design-system` or keep the implementation local to the consuming app.

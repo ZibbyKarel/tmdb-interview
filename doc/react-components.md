@@ -24,9 +24,13 @@
 
 ## Styles
 
-- primary use components from design-system to build more complex components
-- do not use classNames when using design-system components
-- do not overwrite design-system component's look by adding custom classes to parent component
+- Build new components from design-system primitives first instead of assembling bespoke Tailwind-based UI in app code.
+- Do not use `className` on design-system components unless the local rules explicitly allow it.
+- Do not overwrite a design-system component's look by adding custom classes to the parent component.
+- When the needed building block does not exist in the design system, stop and decide whether the right fix is:
+  - to add a reusable component to the design system
+  - or to implement the UI locally for that one use case
+- Do not silently invent a new app-level primitive when that design decision has not been made yet.
 
 ## Example
 

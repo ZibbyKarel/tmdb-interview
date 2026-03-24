@@ -19,6 +19,7 @@
 - Prefer explicit rules over narrative explanation.
 - Keep background context minimal unless it changes behavior.
 - Separate workflow guides from rule guides.
+- Write generated project content in English unless a task explicitly asks for another language.
 
 ## Current Pairs
 

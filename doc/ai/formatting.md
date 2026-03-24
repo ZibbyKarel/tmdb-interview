@@ -6,3 +6,4 @@
 - Format only changed files unless the task explicitly needs a broader pass.
 - Avoid formatting-only churn in untouched files.
 - Keep formatting changes separate from unrelated cleanup when possible.
+- Generate code, documentation, stories, tests, and UI copy in English.

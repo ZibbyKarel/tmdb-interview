@@ -15,6 +15,8 @@
     "paths": {
       "@ds": ["libs/design-system/index.ts"],
       "@data-access": ["libs/data-access/index.ts"],
+      "@data-access/msw": ["libs/data-access/src/api/index.msw.ts"],
+      "@data-access/utils": ["libs/data-access/utils/index.ts"],
       "@internationalization": ["libs/internationalization/index.ts"]
     },
     "resolveJsonModule": true,

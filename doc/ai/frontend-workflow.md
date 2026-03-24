@@ -26,6 +26,9 @@
 - Do not override design-system appearance indirectly with heavy parent styling when a design-system component should own that presentation.
 - Match the surrounding layout and spacing patterns before introducing new ones.
 - Add `data-testid` attributes only when tests exist and follow the naming rules in `doc/react-components.md`.
+- When a page or component story needs backend data, prefer Storybook-level MSW handlers over custom mocked hooks.
+- Reuse payloads from `libs/data-access/mocks` when they match the scenario.
+- Use generated handlers plus `withMockResponses` for story-specific backend behavior.
 
 ## Design-System Guidance
 

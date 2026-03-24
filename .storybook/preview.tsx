@@ -1,6 +1,7 @@
 import { DesignSystemProvider } from '@ds';
 import type { Preview } from '@storybook/react-vite';
 import { withMockRouter } from './decorators/mockRouter';
+import { withQueryClient } from './decorators/queryClient';
 
 const preview: Preview = {
   globalTypes: {
@@ -19,6 +20,7 @@ const preview: Preview = {
     },
   },
   decorators: [
+    withQueryClient,
     withMockRouter,
     (Story, context) => (
       <DesignSystemProvider

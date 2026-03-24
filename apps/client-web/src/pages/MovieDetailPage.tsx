@@ -7,6 +7,11 @@ import { Routes } from '../routing/Routes';
 
 export interface MovieDetailPageProps {}
 
+interface MetadataItem {
+  label: string;
+  value: string;
+}
+
 export const MovieDetailPage: React.FC<MovieDetailPageProps> = () => {
   const { movieId } = useParams({
     from: Routes.MovieDetail as '/movies/$movieId',
@@ -51,7 +56,7 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = () => {
           value: movie.genres.map((genre) => genre.name).join(', '),
         }
       : null,
-  ].filter(Boolean);
+  ].filter((item): item is MetadataItem => Boolean(item));
 
   if (isMovieDetailsLoading) {
     return (

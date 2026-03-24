@@ -9,7 +9,7 @@
 - `api-doc.json` is the downloaded TMDB OpenAPI schema snapshot.
 - `orval.config.ts` defines generation behavior.
 - `libs/data-access/src/api` is generated output.
-- `libs/data-access/src/utils` and consumer code are the preferred places for custom hand-written behavior.
+- `libs/data-access/utils`, `libs/data-access/mocks`, and consumer code are the preferred places for hand-written behavior around generated APIs.
 
 ## Default Workflow
 
@@ -33,9 +33,11 @@
 - Verify imports and public exports still resolve cleanly for app consumers.
 - Confirm hand-written helpers were not replaced with generated equivalents accidentally.
 - Make sure app code still uses the generated hooks and models in a consistent way.
+- Make sure Storybook/backend mocking still uses generated MSW handlers instead of stale custom request-matching logic.
 
 ## Common Traps
 
 - Do not quietly patch generated files when the same issue will reappear on the next regeneration.
 - Do not mix generated edits and consumer refactors in a way that hides the real source of change.
 - Do not forget to call out regeneration in the change summary when many files are updated mechanically.
+- Do not move mocked backend behavior into generated files when it belongs in `libs/data-access/mocks` or `libs/data-access/utils`.

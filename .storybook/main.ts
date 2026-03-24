@@ -9,6 +9,7 @@ const config: StorybookConfig = {
   stories: [
     '../libs/design-system/components/**/*.stories.@(ts|tsx)',
     '../apps/client-web/src/components/**/*.stories.@(ts|tsx)',
+    '../apps/client-web/src/pages/**/*.stories.@(ts|tsx)',
   ],
   framework: {
     name: '@storybook/react-vite',
@@ -17,18 +18,45 @@ const config: StorybookConfig = {
   async viteFinal(baseConfig) {
     return mergeConfig(baseConfig, {
       resolve: {
-        alias: {
-          '@ds': path.resolve(storybookDir, '../libs/design-system/index.ts'),
-          '@data-access': path.resolve(
-            storybookDir,
-            '../libs/data-access/index.ts'
-          ),
-          '@internationalization': path.resolve(
-            storybookDir,
-            '../libs/internationalization/index.ts'
-          ),
-        },
+        alias: [
+          {
+            find: '@data-access/msw',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/data-access/src/api/index.msw.ts'
+            ),
+          },
+          {
+            find: '@data-access/utils',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/data-access/utils/index.ts'
+            ),
+          },
+          {
+            find: '@data-access',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/data-access/index.ts'
+            ),
+          },
+          {
+            find: '@ds',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/design-system/index.ts'
+            ),
+          },
+          {
+            find: '@internationalization',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/internationalization/index.ts'
+            ),
+          },
+        ],
       },
+      publicDir: path.resolve(storybookDir, '../public'),
     });
   },
 };

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { MoviePosterCard } from './MoviePosterCard';
 
 const meta = {
-  title: 'TMDB app/MoviePosterCard',
+  title: 'TMDB app components/MoviePosterCard',
   component: MoviePosterCard,
   args: {
     id: 603,

@@ -34,7 +34,7 @@ it('applies active styling to the selected item', () => {
   );
 
   expect(screen.getByRole('link', { name: 'Home' })).toHaveClass(
-    'bg-white/40',
-    'border-card-border'
+    'bg-page-accent/14',
+    'border-page-accent/20'
   );
 });

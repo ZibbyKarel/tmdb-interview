@@ -11,11 +11,15 @@
     "start": "nx serve client-web",
     "start:server": "nx serve server",
     "storybook": "storybook dev -p 6006 --disable-telemetry",
+    "typecheck": "tsc --noEmit -p .storybook/tsconfig.json && tsc --noEmit -p apps/client-web/tsconfig.app.json && tsc --noEmit -p apps/e2e/tsconfig.json && tsc --noEmit -p libs/design-system/tsconfig.json && tsc --noEmit -p libs/internationalization/tsconfig.json",
     "test": "jest --config jest.config.ts",
     "e2e": "nx run e2e:e2e",
     "e2e:mocked": "ENABLE_MOCKING=true nx run e2e:e2e",
+    "format:check": "prettier . --check",
     "generate:api": "curl -fsSL https://developer.themoviedb.org/openapi/tmdb-api.json -o api-doc.json && orval --config orval.config.ts",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "build:client-web": "nx build client-web",
+    "verify:docker": "npm run typecheck && npm run format:check && npm run test && npm run e2e:mocked"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.4.0",

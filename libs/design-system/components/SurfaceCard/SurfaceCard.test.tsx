@@ -8,12 +8,11 @@ it('renders wrapper and children', () => {
     </SurfaceCard>
   );
 
-  expect(container.querySelector('section')).toBeInTheDocument();
+  const surfaceCard = container.firstElementChild;
+
+  expect(surfaceCard).toBeInTheDocument();
   expect(screen.getByText('Card content')).toBeInTheDocument();
-  expect(container.querySelector('section')).toHaveClass(
-    'border',
-    'border-transparent'
-  );
+  expect(surfaceCard).toHaveClass('border', 'border-transparent');
 });
 
 it('applies the optional shadow class', () => {
@@ -23,9 +22,9 @@ it('applies the optional shadow class', () => {
     </SurfaceCard>
   );
 
-  const section = container.querySelector('section');
+  const surfaceCard = container.firstElementChild;
 
-  expect(section).toHaveClass('shadow-hero');
+  expect(surfaceCard).toHaveClass('shadow-hero');
 });
 
 it('applies the optional border classes', () => {
@@ -35,7 +34,7 @@ it('applies the optional border classes', () => {
     </SurfaceCard>
   );
 
-  expect(container.querySelector('section')).toHaveClass(
+  expect(container.firstElementChild).toHaveClass(
     'border',
     'border-card-border'
   );

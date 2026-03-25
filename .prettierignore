@@ -4,3 +4,4 @@ dist
 coverage
 api-doc.json
 package-lock.json
+.storybook/public/mockServiceWorker.js

@@ -46,10 +46,18 @@ more useful commands:
 
 ```bash
 npm run test
+npx playwright install chromium
+npm run e2e
 npm run format
 npm run storybook
 npm run generate:api
 ```
+
+E2E notes:
+
+- Playwright tests live in `apps/e2e`
+- `npm run e2e` starts the frontend automatically and runs the smoke test against it
+- install the Chromium browser once with `npx playwright install chromium`
 
 ## Notes
 
@@ -62,5 +70,4 @@ npm run generate:api
 
 - add a forms boundary around `react-hook-form`
 - add more unit tests
-- add end-to-end tests
 - harden the backend beyond the current proxy setup

@@ -10,6 +10,7 @@
 - `orval.config.ts` defines generation behavior.
 - `libs/data-access/src/api` is generated output.
 - `libs/data-access/utils`, `libs/data-access/mocks`, and consumer code are the preferred places for hand-written behavior around generated APIs.
+- Generated MSW handler factories are the preferred source for mocked backend responses in Storybook and Playwright.
 
 ## Default Workflow
 

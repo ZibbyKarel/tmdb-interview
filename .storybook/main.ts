@@ -27,6 +27,20 @@ const config: StorybookConfig = {
             ),
           },
           {
+            find: '@data-access/mocks/handlers',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/data-access/mocks/handlers.ts'
+            ),
+          },
+          {
+            find: '@data-access/mocks',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/data-access/mocks/index.ts'
+            ),
+          },
+          {
             find: '@data-access/utils',
             replacement: path.resolve(
               storybookDir,
@@ -45,6 +59,13 @@ const config: StorybookConfig = {
             replacement: path.resolve(
               storybookDir,
               '../libs/design-system/index.ts'
+            ),
+          },
+          {
+            find: '@element-access',
+            replacement: path.resolve(
+              storybookDir,
+              '../libs/element-access/index.ts'
             ),
           },
           {

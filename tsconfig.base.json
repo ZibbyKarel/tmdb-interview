@@ -15,6 +15,11 @@
     "paths": {
       "@ds": ["libs/design-system/index.ts"],
       "@data-access": ["libs/data-access/index.ts"],
+      "@data-access/mocks": ["libs/data-access/mocks/index.ts"],
+      "@data-access/mocks/handlers": ["libs/data-access/mocks/handlers.ts"],
+      "@data-access/msw": ["libs/data-access/src/api/index.msw.ts"],
+      "@data-access/utils": ["libs/data-access/utils/index.ts"],
+      "@element-access": ["libs/element-access/index.ts"],
       "@internationalization": ["libs/internationalization/index.ts"]
     },
     "resolveJsonModule": true,

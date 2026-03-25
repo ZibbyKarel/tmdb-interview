@@ -13,6 +13,26 @@ export default defineConfig(() => {
           __dirname,
           '../../libs/data-access/index.ts'
         ),
+        '@data-access/mocks': path.resolve(
+          __dirname,
+          '../../libs/data-access/mocks/index.ts'
+        ),
+        '@data-access/mocks/handlers': path.resolve(
+          __dirname,
+          '../../libs/data-access/mocks/handlers.ts'
+        ),
+        '@data-access/msw': path.resolve(
+          __dirname,
+          '../../libs/data-access/src/api/index.msw.ts'
+        ),
+        '@data-access/utils': path.resolve(
+          __dirname,
+          '../../libs/data-access/utils/index.ts'
+        ),
+        '@element-access': path.resolve(
+          __dirname,
+          '../../libs/element-access/index.ts'
+        ),
         '@internationalization': path.resolve(
           __dirname,
           '../../libs/internationalization/index.ts'

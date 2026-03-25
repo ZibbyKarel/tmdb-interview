@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'node:path';
 
 export default defineConfig({
   testDir: './src',
@@ -11,6 +12,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
+    cwd: path.resolve(__dirname, '../..'),
     command:
       'npm exec -- vite --config apps/client-web/vite.config.ts --host 127.0.0.1 --port 4200',
     reuseExistingServer: !process.env.CI,

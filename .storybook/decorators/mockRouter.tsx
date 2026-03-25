@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { Decorator } from '@storybook/react-vite';
+import type { Decorator, StoryContext } from '@storybook/react-vite';
 import {
   createMemoryHistory,
   createRootRoute,
@@ -15,17 +15,7 @@ export const CurrentStoryContext = createContext<ReactElement | undefined>(
   undefined
 );
 
-const storyPath = '/story';
-
-const rootRoute = createRootRoute({
-  notFoundComponent: function NotFoundComponent(
-    _props: NotFoundRouteProps
-  ): ReactElement {
-    const state = useRouterState();
-
-    return <p>Simulated route for path {state.location.href}</p>;
-  },
-});
+const defaultStoryRoutePath = '/story';
 
 const RenderStory = (): ReactElement => {
   const story = useContext(CurrentStoryContext);
@@ -37,23 +27,50 @@ const RenderStory = (): ReactElement => {
   return story;
 };
 
-const storyRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: storyPath,
-  component: RenderStory,
-});
+interface MockRouterParameters {
+  mockRouter?: {
+    initialEntry?: string;
+    routePath?: string;
+  };
+}
 
-rootRoute.addChildren([storyRoute]);
+const createStoryRouter = (initialEntry: string, routePath: string) => {
+  const rootRoute = createRootRoute({
+    notFoundComponent: function NotFoundComponent(
+      _props: NotFoundRouteProps
+    ): ReactElement {
+      const state = useRouterState();
 
-export const storyRouter = createRouter({
-  history: createMemoryHistory({
-    initialEntries: [storyPath],
-  }),
-  routeTree: rootRoute,
-});
+      return <p>Simulated route for path {state.location.href}</p>;
+    },
+  });
 
-export const withMockRouter: Decorator = (Story) => (
-  <CurrentStoryContext.Provider value={<Story />}>
-    <RouterProvider router={storyRouter} />
-  </CurrentStoryContext.Provider>
-);
+  const storyRoute = createRoute({
+    getParentRoute: () => rootRoute,
+    path: routePath,
+    component: RenderStory,
+  });
+
+  rootRoute.addChildren([storyRoute]);
+
+  return createRouter({
+    history: createMemoryHistory({
+      initialEntries: [initialEntry],
+    }),
+    routeTree: rootRoute,
+  });
+};
+
+export const withMockRouter: Decorator = (Story, context) => {
+  const parameters = context.parameters as StoryContext['parameters'] &
+    MockRouterParameters;
+  const routePath = parameters.mockRouter?.routePath ?? defaultStoryRoutePath;
+  const initialEntry = parameters.mockRouter?.initialEntry ?? routePath;
+  const storyRouter = createStoryRouter(initialEntry, routePath);
+
+  return (
+    <CurrentStoryContext.Provider value={<Story />}>
+      <RouterProvider router={storyRouter} />
+    </CurrentStoryContext.Provider>
+  );
+};

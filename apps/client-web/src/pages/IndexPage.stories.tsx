@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
   movieTopRatedListMockPage1,
   movieTopRatedListMockPage2,
-} from '../../../../libs/data-access';
-import { getMovieTopRatedListMockHandler } from '../../../../libs/data-access/mocks/handlers';
-import { withMockResponses } from '../../../../libs/data-access/utils';
+} from '@data-access';
+import { getMovieTopRatedListMockHandler } from '@data-access/mocks/handlers';
+import { withMockResponses } from '@data-access/utils';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { IndexPage } from './IndexPage';
 
 const meta = {

@@ -6,19 +6,21 @@ const mockBackendResponses = createMockBackendResponses();
 const isMockingEnabled = process.env.ENABLE_MOCKING === 'true';
 
 interface E2ETestOptions {
-  mockResponseHandlers: RequestHandler[];
+  mockResponses: {
+    handlers: RequestHandler[];
+  };
 }
 
 export const test = base.extend<E2ETestOptions>({
-  mockResponseHandlers: [[], { option: true }],
-  page: async ({ mockResponseHandlers, page }, use) => {
+  mockResponses: [{ handlers: [] }, { option: true }],
+  page: async ({ mockResponses, page }, use) => {
     if (!isMockingEnabled) {
       await use(page);
       return;
     }
 
     mockBackendResponses.start();
-    mockBackendResponses.reset(...mockResponseHandlers);
+    mockBackendResponses.reset(...mockResponses.handlers);
 
     await page.route('**/3/**', (route) =>
       mockBackendResponses.fulfillRoute(route)

@@ -7,3 +7,4 @@
 - Avoid formatting-only churn in untouched files.
 - Keep formatting changes separate from unrelated cleanup when possible.
 - Generate code, documentation, stories, tests, and UI copy in English.
+- Prefer configured import aliases over long relative imports, especially for cross-workspace imports.

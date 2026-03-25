@@ -18,6 +18,7 @@
 
 - Add `data-testid` attributes only when tests exist for that component.
 - Store `data-testid` values in an enum named `<ComponentName>DataTestIds`.
+- Keep shared `data-testid` enums in `libs/element-access`.
 - Use `data-testid` only on meaningful nested elements.
 - Do not create a `data-testid` enum when the component would only have a wrapper test id.
 - Do not add a wrapper-only `data-testid`.

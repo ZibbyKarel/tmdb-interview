@@ -1,19 +1,57 @@
-import { movieTopRatedListMockPage1 } from '../../../libs/data-access';
-import { getMovieTopRatedListMockHandler } from '../../../libs/data-access/mocks/handlers';
+import { movieTopRatedListMockPage1 } from '@data-access';
+import {
+  getMovieDetailsMockHandler,
+  getMovieTopRatedListMockHandler,
+} from '@data-access/mocks/handlers';
+import {
+  MovieDetailPageDataTestIds,
+  MoviePosterCardDataTestIds,
+} from '@element-access';
 import { expect, test } from './test';
 
+const firstMovie = movieTopRatedListMockPage1.results?.[0];
+
+if (!firstMovie?.id || !firstMovie.title) {
+  throw new Error('Movie top rated list mock does not contain a first movie');
+}
+
+const firstMovieId = firstMovie.id;
+const firstMovieTitle = firstMovie.title;
+
 test.use({
-  mockResponseHandlers: [
-    getMovieTopRatedListMockHandler(movieTopRatedListMockPage1),
-  ],
+  mockResponses: {
+    handlers: [
+      getMovieTopRatedListMockHandler(movieTopRatedListMockPage1),
+      getMovieDetailsMockHandler({
+        genres: [{ id: 18, name: 'Drama' }],
+        id: firstMovieId,
+        overview:
+          'Framed for a crime he did not commit, Andy Dufresne forms a lasting bond inside Shawshank prison while quietly fighting for hope and freedom.',
+        poster_path: firstMovie.poster_path,
+        release_date: firstMovie.release_date,
+        runtime: 142,
+        tagline: 'Fear can hold you prisoner. Hope can set you free.',
+        title: firstMovieTitle,
+        vote_average: firstMovie.vote_average,
+      }),
+    ],
+  },
 });
 
-test('index page loads', async ({ page }) => {
+test('clicking a movie poster navigates to the detail page', async ({
+  page,
+}) => {
   await page.goto('/');
 
   await expect(
     page.getByRole('heading', { name: 'Top rated movies' })
   ).toBeVisible();
-  await expect(page.locator('a[href^="/movies/"]').first()).toBeVisible();
-  await expect(page.getByText('The Shawshank Redemption')).toBeVisible();
+
+  await page.getByTestId(MoviePosterCardDataTestIds.Title).first().click();
+
+  await expect(page).toHaveURL(`/movies/${firstMovieId}`);
+
+  await expect(
+    page.getByTestId(MovieDetailPageDataTestIds.PageTitle)
+  ).toHaveText(firstMovieTitle);
 });

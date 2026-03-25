@@ -19,6 +19,7 @@
 - Keep one component per file and follow the component naming and props conventions from `doc/react-components.md`.
 - Prefer local, incremental changes over cross-workspace refactors.
 - Keep route wiring, page data loading, and presentational concerns separated when possible.
+- Prefer workspace aliases over long relative imports when code crosses app or library boundaries.
 
 ## App UI Guidance
 
@@ -29,6 +30,7 @@
 - When a page or component story needs backend data, prefer Storybook-level MSW handlers over custom mocked hooks.
 - Reuse payloads from `libs/data-access/mocks` when they match the scenario.
 - Use generated handlers plus `withMockResponses` for story-specific backend behavior.
+- Reuse `libs/element-access` enums for shared selectors instead of repeating raw `data-testid` strings.
 
 ## Design-System Guidance
 

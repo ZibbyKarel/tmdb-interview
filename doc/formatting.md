@@ -6,6 +6,7 @@
 - Format only the files you changed unless a broader formatting pass is required.
 - Avoid unrelated formatting-only changes in untouched files.
 - Write generated code, documentation, stories, tests, and UI copy in English.
+- Prefer configured import aliases over long relative imports, especially across apps and libs.
 
 ## Intention
 

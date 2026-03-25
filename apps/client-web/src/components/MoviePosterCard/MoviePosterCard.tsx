@@ -1,4 +1,5 @@
 import { Container, Image, Stack, SurfaceCard, Typography } from '@ds';
+import { MoviePosterCardDataTestIds } from '@element-access';
 import { useLocalizedDate } from '@internationalization';
 import { Link } from '@tanstack/react-router';
 import type * as React from 'react';
@@ -38,14 +39,27 @@ export const MoviePosterCard: React.FC<MoviePosterCardProps> = ({
 
           <Container padding={['0', '0', '0', '100']}>
             <Stack vertical>
-              <Typography type="text">{rating}</Typography>
+              <Typography
+                data-testid={MoviePosterCardDataTestIds.Rating}
+                type="text"
+              >
+                {rating}
+              </Typography>
 
-              <Typography type="text" variant="primary">
+              <Typography
+                data-testid={MoviePosterCardDataTestIds.Title}
+                type="text"
+                variant="primary"
+              >
                 {title}
               </Typography>
 
               {releaseDate && (
-                <Typography type="note" variant="tertiary">
+                <Typography
+                  data-testid={MoviePosterCardDataTestIds.ReleaseDate}
+                  type="note"
+                  variant="tertiary"
+                >
                   {localizedDate(releaseDate)}
                 </Typography>
               )}

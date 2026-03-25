@@ -1,5 +1,6 @@
 import { useMovieCredits, useMovieDetails } from '@data-access';
 import { Container, Grid, Image, Stack, SurfaceCard, Typography } from '@ds';
+import { MovieDetailPageDataTestIds } from '@element-access';
 import { useLocalizedDate } from '@internationalization';
 import { useParams } from '@tanstack/react-router';
 import type * as React from 'react';
@@ -83,7 +84,10 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = () => {
 
         <Stack spacing="150" vertical>
           <Stack spacing="75" vertical>
-            <Typography type="pageTitle">
+            <Typography
+              data-testid={MovieDetailPageDataTestIds.PageTitle}
+              type="pageTitle"
+            >
               {movie.title ?? 'Untitled movie'}
             </Typography>
 
@@ -120,7 +124,12 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = () => {
       </Grid>
 
       <Stack spacing="100" vertical>
-        <Typography type="title">Cast</Typography>
+        <Typography
+          data-testid={MovieDetailPageDataTestIds.CastTitle}
+          type="title"
+        >
+          Cast
+        </Typography>
 
         {cast.length > 0 ? (
           <Grid layout="threeColumns" spacing="100">

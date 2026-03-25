@@ -15,9 +15,11 @@ Most of this repository was generated and iterated with OpenAI Codex. The point 
 ## Repo Shape
 
 - `apps/client-web`: main React app
+- `apps/e2e`: Playwright end-to-end tests
 - `apps/server`: .NET TMDB proxy
 - `libs/design-system`: shared UI components and Storybook
 - `libs/data-access`: generated API client and query hooks
+- `libs/element-access`: shared `data-testid` enums for app, unit tests, Storybook, and e2e
 - `libs/internationalization`: shared formatting helpers
 
 ## Run With Docker
@@ -48,6 +50,7 @@ more useful commands:
 npm run test
 npx playwright install chromium
 npm run e2e
+npm run e2e:mocked
 npm run format
 npm run storybook
 npm run generate:api
@@ -56,7 +59,8 @@ npm run generate:api
 E2E notes:
 
 - Playwright tests live in `apps/e2e`
-- `npm run e2e` starts the frontend automatically and runs the smoke test against it
+- `npm run e2e` starts the frontend automatically and runs tests against the real backend
+- `npm run e2e:mocked` runs the same tests with mocked backend responses
 - install the Chromium browser once with `npx playwright install chromium`
 
 ## Notes
@@ -65,6 +69,8 @@ E2E notes:
 - `libs/data-access/src/api` is generated from `api-doc.json` via `orval.config.ts`.
 - Storybook is focused on the design system.
 - The movie list uses infinite scroll with lightweight page-level virtualization.
+- Storybook and Playwright use the same generated Orval MSW handler factories for mocked backend responses.
+- `libs/element-access` is the single place for shared element selectors such as `data-testid` enums.
 
 ## Next Steps
 

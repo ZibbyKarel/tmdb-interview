@@ -1,5 +1,6 @@
 import { movieTopRatedList, useMovieTopRatedListInfinite } from '@data-access';
 import { Container, Typography } from '@ds';
+import { IndexPageDataTestIds } from '@element-access';
 import type * as React from 'react';
 import { InfiniteScrollList } from '../components/InfiniteScrollList';
 import { TopRatedMoviesPageSection } from '../components/TopRatedMoviesPageSection/TopRatedMoviesPageSection';
@@ -27,7 +28,12 @@ export const IndexPage: React.FC<IndexPageProps> = () => {
   return (
     <div className="space-y-8">
       <Container padding={['0', '0', '100', '0']}>
-        <Typography type="pageTitle">Top rated movies</Typography>
+        <Typography
+          data-testid={IndexPageDataTestIds.PageTitle}
+          type="pageTitle"
+        >
+          Top rated movies
+        </Typography>
       </Container>
 
       <InfiniteScrollList

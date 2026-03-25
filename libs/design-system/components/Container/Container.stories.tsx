@@ -13,7 +13,6 @@ const meta = {
         tempor incididunt ut labore et dolore magna aliqua.
       </Typography>
     ),
-    style: { border: '1px solid black' },
   },
 } satisfies Meta<typeof Container>;
 
@@ -24,9 +23,15 @@ type Story = StoryObj<typeof meta>;
 export const Overview: Story = {
   render: (args) => (
     <div className="grid gap-6">
-      <Container {...args} align="begin" />
-      <Container {...args} align="center" />
-      <Container {...args} align="end" />
+      <div className="border border-black">
+        <Container {...args} align="begin" />
+      </div>
+      <div className="border border-black">
+        <Container {...args} align="center" />
+      </div>
+      <div className="border border-black">
+        <Container {...args} align="end" />
+      </div>
     </div>
   ),
 };
@@ -34,18 +39,33 @@ export const Overview: Story = {
 export const Playground: Story = {};
 
 export const Begin: Story = {
+  render: (args) => (
+    <div className="border border-black">
+      <Container {...args} />
+    </div>
+  ),
   args: {
     align: 'begin',
   },
 };
 
 export const Center: Story = {
+  render: (args) => (
+    <div className="border border-black">
+      <Container {...args} />
+    </div>
+  ),
   args: {
     align: 'center',
   },
 };
 
 export const End: Story = {
+  render: (args) => (
+    <div className="border border-black">
+      <Container {...args} />
+    </div>
+  ),
   args: {
     align: 'end',
   },

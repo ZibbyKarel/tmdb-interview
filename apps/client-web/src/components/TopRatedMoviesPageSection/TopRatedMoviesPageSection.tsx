@@ -27,7 +27,14 @@ export const TopRatedMoviesPageSection: React.FC<
   }, [inView, movies.length]);
 
   if (!inView) {
-    return <div style={{ height: heightRef.current }} />;
+    return (
+      <svg
+        aria-hidden
+        className="block w-full"
+        height={heightRef.current}
+        role="presentation"
+      />
+    );
   }
 
   return (

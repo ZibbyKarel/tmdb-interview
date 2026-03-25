@@ -23,12 +23,11 @@ const preview: Preview = {
     withQueryClient,
     withMockRouter,
     (Story, context) => (
-      <DesignSystemProvider
-        style={{ background: '#ffffff', minHeight: 'auto' }}
-        theme={context.globals.theme}
-      >
-        <Story />
-      </DesignSystemProvider>
+      <div className="bg-white">
+        <DesignSystemProvider theme={context.globals.theme}>
+          <Story />
+        </DesignSystemProvider>
+      </div>
     ),
   ],
   parameters: {

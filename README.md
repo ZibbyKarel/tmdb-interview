@@ -77,3 +77,7 @@ E2E notes:
 - add a forms boundary around `react-hook-form`
 - add more unit tests
 - harden the backend beyond the current proxy setup
+- add backend-side caching to avoid calling the TMDB API on every request
+- add translations and internationalization coverage
+- set up GitHub Actions plus a CI/CD pipeline
+- explore visual testing in Storybook

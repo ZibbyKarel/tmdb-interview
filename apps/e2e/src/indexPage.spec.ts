@@ -1,5 +1,6 @@
 import { movieTopRatedListMockPage1 } from '@data-access';
 import {
+  getMovieCreditsMockHandler,
   getMovieDetailsMockHandler,
   getMovieTopRatedListMockHandler,
 } from '@data-access/mocks/handlers';
@@ -33,6 +34,20 @@ test.use({
         tagline: 'Fear can hold you prisoner. Hope can set you free.',
         title: firstMovieTitle,
         vote_average: firstMovie.vote_average,
+      }),
+      getMovieCreditsMockHandler({
+        cast: [
+          {
+            cast_id: 1,
+            character: 'Andy Dufresne',
+            credit_id: 'credit-andy-dufresne',
+            id: 1,
+            name: 'Tim Robbins',
+            order: 0,
+          },
+        ],
+        crew: [],
+        id: firstMovieId,
       }),
     ],
   },

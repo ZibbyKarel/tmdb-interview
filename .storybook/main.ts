@@ -56,7 +56,7 @@ const config: StorybookConfig = {
           },
         ],
       },
-      publicDir: path.resolve(storybookDir, '../public'),
+      publicDir: path.resolve(storybookDir, './public'),
     });
   },
 };

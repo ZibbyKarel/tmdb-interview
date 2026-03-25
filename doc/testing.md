@@ -4,11 +4,20 @@
 
 - Use Jest for unit tests.
 - Use React Testing Library for React component tests.
+- Use Playwright for end-to-end tests in `apps/e2e`.
 
 ## Test Structure
 
 - Prefer `data-testid` queries as the primary selection method when test ids exist.
 - Do not wrap the whole test file in a single top-level `describe` block.
+
+## End-to-End Tests
+
+- Keep Playwright tests under `apps/e2e/src`.
+- Use `npm run e2e` for flows that should exercise the real backend.
+- Use `npm run e2e:mocked` for stable mocked flows that should not depend on the local backend.
+- Let Playwright start the frontend automatically through `apps/e2e/playwright.config.ts`.
+- Install Chromium once with `npx playwright install chromium` before the first local run.
 
 ## Mocking Backend Responses
 

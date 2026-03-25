@@ -56,12 +56,18 @@ npm run storybook
 npm run generate:api
 ```
 
+## Testing
+
+- `npm run test` runs the unit and component test suite with Jest
+- `npm run e2e` runs Playwright against the real backend
+- `npm run e2e:mocked` runs Playwright with mocked backend responses
+- install Chromium once with `npx playwright install chromium`
+
 E2E notes:
 
 - Playwright tests live in `apps/e2e`
-- `npm run e2e` starts the frontend automatically and runs tests against the real backend
-- `npm run e2e:mocked` runs the same tests with mocked backend responses
-- install the Chromium browser once with `npx playwright install chromium`
+- Playwright starts the frontend automatically through `apps/e2e/playwright.config.ts`
+- mocked Playwright flows use the same generated MSW handlers as Storybook
 
 ## Notes
 

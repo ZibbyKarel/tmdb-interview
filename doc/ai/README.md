@@ -23,6 +23,11 @@
 
 ## Current Pairs
 
+- `doc/agents/README.md` <-> `doc/ai/agents/README.md`
+- `doc/agents/architect.md` <-> `doc/ai/agents/architect.md`
+- `doc/agents/developer.md` <-> `doc/ai/agents/developer.md`
+- `doc/agents/reviewer.md` <-> `doc/ai/agents/reviewer.md`
+- `doc/agents/tester.md` <-> `doc/ai/agents/tester.md`
 - `doc/formatting.md` <-> `doc/ai/formatting.md`
 - `doc/file-naming.md` <-> `doc/ai/file-naming.md`
 - `doc/react-components.md` <-> `doc/ai/react-components.md`

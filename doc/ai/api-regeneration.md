@@ -3,6 +3,7 @@
 ## Purpose
 
 - Use this guide when changing TMDB API integration, query behavior, generated models, or regeneration inputs.
+- Use `doc/ai/agents/developer.md`, `doc/ai/agents/reviewer.md`, and `doc/ai/agents/tester.md` for implementation, review, and verification workflow.
 
 ## Source Of Truth
 
@@ -11,12 +12,6 @@
 - `libs/data-access/src/api` is generated output.
 - `libs/data-access/utils`, `libs/data-access/mocks`, and consumer code are the preferred places for hand-written behavior around generated APIs.
 - Generated MSW handler factories are the preferred source for mocked backend responses in Storybook and Playwright.
-
-## Default Workflow
-
-- Confirm whether the requested change belongs in generated code, generation config, or consuming app code.
-- Prefer updating schema inputs, generator config, or hand-written wrappers over editing generated files directly.
-- Keep custom logic outside generated folders whenever possible so regeneration remains predictable.
 
 ## When To Regenerate
 
@@ -28,8 +23,9 @@
 
 - Use `npm run generate:api` to refresh the generated client from the schema and Orval config.
 
-## Review Checklist
-
+- Confirm whether the requested change belongs in generated code, generation config, or consuming app code.
+- Prefer updating schema inputs, generator config, or hand-written wrappers over editing generated files directly.
+- Keep custom logic outside generated folders whenever possible so regeneration remains predictable.
 - Check whether regeneration touched only expected files.
 - Verify imports and public exports still resolve cleanly for app consumers.
 - Confirm hand-written helpers were not replaced with generated equivalents accidentally.

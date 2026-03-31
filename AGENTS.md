@@ -22,11 +22,21 @@ Use this file as the entry point for project-specific rules.
 
 - [`doc/formatting.md`](doc/formatting.md)
 - [`doc/file-naming.md`](doc/file-naming.md)
+- [`doc/agents/README.md`](doc/agents/README.md)
+- [`doc/agents/architect.md`](doc/agents/architect.md)
+- [`doc/agents/developer.md`](doc/agents/developer.md)
+- [`doc/agents/reviewer.md`](doc/agents/reviewer.md)
+- [`doc/agents/tester.md`](doc/agents/tester.md)
 - [`doc/react-components.md`](doc/react-components.md)
 - [`doc/stories.md`](doc/stories.md)
 - [`doc/testing.md`](doc/testing.md)
 - [`doc/design-system.md`](doc/design-system.md)
 - [`doc/ai/README.md`](doc/ai/README.md)
+- [`doc/ai/agents/README.md`](doc/ai/agents/README.md)
+- [`doc/ai/agents/architect.md`](doc/ai/agents/architect.md)
+- [`doc/ai/agents/developer.md`](doc/ai/agents/developer.md)
+- [`doc/ai/agents/reviewer.md`](doc/ai/agents/reviewer.md)
+- [`doc/ai/agents/tester.md`](doc/ai/agents/tester.md)
 - [`doc/ai/formatting.md`](doc/ai/formatting.md)
 - [`doc/ai/file-naming.md`](doc/ai/file-naming.md)
 - [`doc/ai/react-components.md`](doc/ai/react-components.md)
@@ -35,11 +45,12 @@ Use this file as the entry point for project-specific rules.
 - [`doc/ai/design-system.md`](doc/ai/design-system.md)
 - [`doc/ai/frontend-workflow.md`](doc/ai/frontend-workflow.md)
 - [`doc/ai/api-regeneration.md`](doc/ai/api-regeneration.md)
-- [`doc/ai/verification.md`](doc/ai/verification.md)
-- [`doc/ai/review-checklist.md`](doc/ai/review-checklist.md)
 
 ## Quick Rules
 
+- Split agent work into four roles: `architect`, `developer`, `reviewer`, and `tester`.
+- Treat `doc/agents/*` and `doc/ai/agents/*` as the source of truth for phase-specific agent behavior.
+- Start with the role file that matches the current phase and follow its workflow before handing work forward.
 - Keep design-system icons under `libs/design-system/components/icons`.
 - Do not add per-icon tests or per-icon stories.
 - Document icons through a single shared icons story.
@@ -70,16 +81,8 @@ Use this file as the entry point for project-specific rules.
 - When API behavior needs to change, prefer updating generator inputs, wrapper utilities, or consumer code before editing generated files directly.
 - If generated files must change, call that out clearly and preserve regeneration expectations in the surrounding docs or code comments.
 
-## Verification
+## Verification And Review
 
-- Run verification steps that match the surface area you changed.
-- For general code changes, start with `npm run test`.
-- For app changes, also verify the app still builds with `npx nx build client-web`.
-- For design-system component changes, verify tests and stories expectations described in `doc/design-system.md` and `doc/stories.md`.
+- Follow the role-specific verification and review gates in `doc/agents/` or `doc/ai/agents/`.
+- Choose verification steps that match the changed surface area and keep them aligned with `doc/testing.md`, `doc/design-system.md`, and `doc/stories.md`.
 - Format changed files before finishing, following `doc/formatting.md`.
-
-## Review Focus
-
-- Look first for regressions, missing verification, and violations of local conventions.
-- Check whether changes accidentally bypass the design system, break generated-code boundaries, or add unnecessary complexity.
-- Prefer small, composable follow-up suggestions over broad rewrites.

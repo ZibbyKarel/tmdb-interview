@@ -16,17 +16,13 @@ Use this file as the entry point for project-specific rules.
 - Keep `doc/ai/*.md` files atomic and optimized for AI agents.
 - When updating a human rule document in `doc/`, update the paired file in `doc/ai/` in the same change.
 - When adding a new rule document in `doc/`, add an AI companion in `doc/ai/`.
+- Agent role documents are an explicit AI-only exception and should live only under `doc/ai/agents/`.
 - Keep topic names aligned between human and AI documentation whenever possible.
 
 ## Documentation Index
 
 - [`doc/formatting.md`](doc/formatting.md)
 - [`doc/file-naming.md`](doc/file-naming.md)
-- [`doc/agents/README.md`](doc/agents/README.md)
-- [`doc/agents/architect.md`](doc/agents/architect.md)
-- [`doc/agents/developer.md`](doc/agents/developer.md)
-- [`doc/agents/reviewer.md`](doc/agents/reviewer.md)
-- [`doc/agents/tester.md`](doc/agents/tester.md)
 - [`doc/react-components.md`](doc/react-components.md)
 - [`doc/stories.md`](doc/stories.md)
 - [`doc/testing.md`](doc/testing.md)
@@ -49,7 +45,7 @@ Use this file as the entry point for project-specific rules.
 ## Quick Rules
 
 - Split agent work into four roles: `architect`, `developer`, `reviewer`, and `tester`.
-- Treat `doc/agents/*` and `doc/ai/agents/*` as the source of truth for phase-specific agent behavior.
+- Treat `doc/ai/agents/*` as the source of truth for phase-specific agent behavior.
 - Start with the role file that matches the current phase and follow its workflow before handing work forward.
 - Keep design-system icons under `libs/design-system/components/icons`.
 - Do not add per-icon tests or per-icon stories.
@@ -83,6 +79,6 @@ Use this file as the entry point for project-specific rules.
 
 ## Verification And Review
 
-- Follow the role-specific verification and review gates in `doc/agents/` or `doc/ai/agents/`.
+- Follow the role-specific verification and review gates in `doc/ai/agents/`.
 - Choose verification steps that match the changed surface area and keep them aligned with `doc/testing.md`, `doc/design-system.md`, and `doc/stories.md`.
 - Format changed files before finishing, following `doc/formatting.md`.

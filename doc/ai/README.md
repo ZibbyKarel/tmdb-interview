@@ -5,6 +5,7 @@
 - Use `doc/ai` as the AI-facing companion to the human-readable documentation in `doc/`.
 - Keep instructions in this directory atomic, direct, and easy for agents to scan.
 - Mirror the same topics that exist in the human-readable documentation when those topics define project rules.
+- Allow AI-only documents when the content is operational guidance intended only for agents.
 
 ## Pairing Rules
 
@@ -12,6 +13,7 @@
 - Use the same topic naming in both places whenever possible.
 - Update the paired AI file whenever the human file changes.
 - Update the human file whenever the AI file changes and the rule intent changes for people as well.
+- Keep AI-only operational guides in `doc/ai/` when they do not need a human-readable companion.
 
 ## Writing Style
 
@@ -23,14 +25,17 @@
 
 ## Current Pairs
 
-- `doc/agents/README.md` <-> `doc/ai/agents/README.md`
-- `doc/agents/architect.md` <-> `doc/ai/agents/architect.md`
-- `doc/agents/developer.md` <-> `doc/ai/agents/developer.md`
-- `doc/agents/reviewer.md` <-> `doc/ai/agents/reviewer.md`
-- `doc/agents/tester.md` <-> `doc/ai/agents/tester.md`
 - `doc/formatting.md` <-> `doc/ai/formatting.md`
 - `doc/file-naming.md` <-> `doc/ai/file-naming.md`
 - `doc/react-components.md` <-> `doc/ai/react-components.md`
 - `doc/stories.md` <-> `doc/ai/stories.md`
 - `doc/testing.md` <-> `doc/ai/testing.md`
 - `doc/design-system.md` <-> `doc/ai/design-system.md`
+
+## AI-Only Docs
+
+- `doc/ai/agents/README.md`
+- `doc/ai/agents/architect.md`
+- `doc/ai/agents/developer.md`
+- `doc/ai/agents/reviewer.md`
+- `doc/ai/agents/tester.md`
